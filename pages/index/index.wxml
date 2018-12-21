@@ -1,0 +1,27 @@
+<!--index.wxml-->
+<view class="container">
+  <view class="accredit-bar column" wx:if="{{!hasUserInfo && canIUse}}">
+    <view class="userinfo column">
+      <button open-type="getUserInfo" bindgetuserinfo="getUserInfo" hover-class="none"> 授权用户信息 </button>
+    </view>
+  </view>
+  <view class="chat-content">
+    <view class="chat-item rows"bindtap="onChat">
+      <view class="chat-item-l flexrow">
+        <view class="chat-item-l-pic">
+          <image src="../imgs/lta.png" />
+        </view>
+        <view class="chat-item-l-info column">
+          <view class="chat-item-l-name">name</view>
+          <view class="chat-item-l-cnt">content</view>
+        </view>
+      </view>
+      <view class="chat-item-r column">
+        <view class="chat-item-r-time">12月12日</view>
+        <view class="chat-item-r-state">
+          <image wx:if="{{mute}}" src="../imgs/ltb.png"/>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
