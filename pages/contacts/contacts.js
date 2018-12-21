@@ -1,23 +1,38 @@
 // pages/contacts/contacts.js
 Page({
-
-  /**
-   * 页面的初始数据
-   */
   data: {
-
+    tab:1,
+    list1:[
+      {pic:'../imgs/chat/pic.jpg',title:'旷斌',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的'},
+      {pic:'../imgs/chat/pic.jpg',title:'旷斌',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的'},
+      {pic:'../imgs/chat/pic.jpg',title:'旷斌',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的'},
+    ],
+    list2:[
+      {pic:'../imgs/chat/pic.jpg',title:'旷斌--qun',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的'},
+      {pic:'../imgs/chat/pic.jpg',title:'旷斌--qun',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的'},
+      {pic:'../imgs/chat/pic.jpg',title:'旷斌--qun',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的'},
+    ],
   },
-
-  /**
-   * 生命周期函数--监听页面加载
-   */
   onLoad: function (options) {
-
+    let list = this.data.list1;
+    this.setData({list})
   },
-
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
+  onTab(e){
+    let tab = e.currentTarget.dataset.i;
+    let list = [];
+    if(tab == '1'){
+      list = this.data.list1
+    }else if(tab == '2'){
+      list = this.data.list2
+    }
+    this.setData({tab,list})
+  },
+  // 进入聊天
+  onChat(e){
+    wx.navigateTo({
+      url: '../index/chat/chat'
+    })
+  },
   onReady: function () {
 
   },

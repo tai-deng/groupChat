@@ -1,2 +1,25 @@
 <!--pages/contacts/contacts.wxml-->
-<text>pages/contacts/contacts.wxml</text>
+<view class="container">
+    <view class="tab flexrow">
+        <view class="tab-item row"bindtap='onTab'data-i='1'>
+            <view class="tab-item-v {{tab==1?'se':''}}">
+                好友
+            </view>
+        </view>
+        <view class="tab-item row"bindtap='onTab'data-i='2'>
+            <view class="tab-item-v {{tab==2?'se':''}}">
+                群聊
+            </view>
+        </view>
+    </view>
+    <view class="list">
+        <view class="list-item flexrow"wx:for='{{list}}'wx:key="{{index}}"bindtap="onChat"data-id="{{item.id}}">
+            <view class="list-item-pic">
+                <image src="{{item.pic}}"></image>
+            </view>
+            <view class="list-item-title column">
+                {{item.title}}
+            </view>
+        </view>
+    </view>
+</view>

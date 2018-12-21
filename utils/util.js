@@ -14,6 +14,16 @@ const formatNumber = n => {
   return n[1] ? n : '0' + n
 }
 
+const nowDate = ()=>{
+  const dt = new Date();
+  const month = dt.getMonth() + 1
+  const day = dt.getDate()
+  const hour = dt.getHours()
+  const minute = dt.getMinutes()
+
+  return [month, day].map(formatNumber).join('/') + ' ' + [hour, minute,].map(formatNumber).join(':')
+}
+
 const toast = (title='',icon='none',duration=1500,mask=false,image='')=>{
   wx.showToast({
     title: title,
@@ -72,5 +82,6 @@ module.exports = {
   showModal,
   preview,
   call,
-  scrool
+  scrool,
+  nowDate
 }

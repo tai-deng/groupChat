@@ -1,12 +1,14 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/index/chat/chat",
     "pages/logs/logs",
-    "pages/contacts/contacts"
+    "pages/contacts/contacts",
+    "pages/index/group/group"
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#62b900",
+    "navigationBarBackgroundColor": "#2c2c2c",
     "navigationBarTextStyle": "white"
   },
   "tabBar": {

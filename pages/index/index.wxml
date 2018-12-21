@@ -1,27 +1,86 @@
 <!--index.wxml-->
-<view class="container">
+
+<form bindsubmit="form" report-submit='true' >
+<view class="container"catchtap='onRouter'>
   <view class="accredit-bar column" wx:if="{{!hasUserInfo && canIUse}}">
     <view class="userinfo column">
-      <button open-type="getUserInfo" bindgetuserinfo="getUserInfo" hover-class="none"> 授权用户信息 </button>
+      <view class="userinfo-title">提示</view>
+      <view class="userinfo-cnt">为了更友好的为您服务请授权您的基本信息</view>
+      <view class="userinfo-bnt row">
+        <button open-type="submit" class="row" catchtap="onCancel" hover-class="none">取消</button>
+        <button open-type="getUserInfo" class="row" bindgetuserinfo="getUserInfo" hover-class="none">确定</button>
+      </view>
     </view>
   </view>
+  <view class="tm"></view>
+  <view class="topBar rows">
+    <view class="topBar-l flexrow">
+      <view class="topBar-l-input">
+        <input type="text" bindinput='onSearchV' name='search'/>
+      </view>
+      <button hover-class="none" form-type="submit" class='topBar-l-btn'>
+        <image src="../imgs/chat/search.png"></image>
+      </button>
+    </view>
+    <view class="menu">
+      <block wx:if="{{!menuShow}}">
+        <view class="menu-add" catchtap="onMenu">
+          <image src="../imgs/chat/add.png"></image>
+        </view>
+      </block>
+      <block wx:else>
+        <view class="menu-show">
+          <view class="menu-show-item tp row" catchtap="onRouter"data-r="mute">
+            <image src="../imgs/chat/flock.png"></image>
+            发起群聊
+          </view>
+          <button open-type="share" hover-class="none" class="menu-show-item row">
+            <image src="../imgs/chat/addfrend.png"></image>
+            添加朋友
+          </button>
+        </view>
+      </block>
+    </view>
+    <block wx:if="{{searchSta}}">
+      <view class="search-cnt">
+        <button form-type="submit" hover-class="none" class="chat-item rows"bindtap="onChat"wx:for="{{dataa}}"wx:key="{{index}}"data-id="{{item.id}}">
+          <view class="chat-item-l flexrow">
+            <view class="chat-item-l-pic">
+              <image src="{{item.pic}}" />
+            </view>
+            <view class="chat-item-l-info column">
+              <view class="chat-item-l-name">{{item.title}}</view>
+              <view class="chat-item-l-cnt">{{item.cont}}</view>
+            </view>
+          </view>
+          <view class="chat-item-r column">
+            <view class="chat-item-r-time">{{item.time}}</view>
+            <view class="chat-item-r-state">
+              <image wx:if="{{mute}}" src="../imgs/ltb.png"/>
+            </view>
+          </view>
+        </button>
+      </view>
+    </block>
+  </view>
   <view class="chat-content">
-    <view class="chat-item rows"bindtap="onChat">
+    <button form-type="submit" hover-class="none" class="chat-item rows"bindtap="onChat"wx:for="{{data}}"wx:key="{{index}}"data-id="{{item.id}}">
       <view class="chat-item-l flexrow">
         <view class="chat-item-l-pic">
-          <image src="../imgs/lta.png" />
+          <image src="{{item.pic}}" />
         </view>
         <view class="chat-item-l-info column">
-          <view class="chat-item-l-name">name</view>
-          <view class="chat-item-l-cnt">content</view>
+          <view class="chat-item-l-name">{{item.title}}</view>
+          <view class="chat-item-l-cnt">{{item.cont}}</view>
         </view>
       </view>
       <view class="chat-item-r column">
-        <view class="chat-item-r-time">12月12日</view>
+        <view class="chat-item-r-time">{{item.time}}</view>
         <view class="chat-item-r-state">
           <image wx:if="{{mute}}" src="../imgs/ltb.png"/>
         </view>
       </view>
-    </view>
+    </button>
   </view>
 </view>
+</form>

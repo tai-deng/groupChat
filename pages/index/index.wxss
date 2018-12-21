@@ -1,19 +1,192 @@
 /**index.wxss**/
 .container {
-
+  width: 100vw;
+  height: 100vh;
+  overflow: scroll;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  /*解决ios上滑动不流畅*/
+  -webkit-overflow-scrolling: touch;
+  background-color: #f1f1f1;
 }
-.userinfo {
-  width: 680rpx;
-  height: 300rpx;
-  border-radius: 20rpx;
-  background-color: #fff;
-  font-size: 28rpx;
-  margin-top: -250rpx;
+.tm{
+  width: 100vw;
+  height: 84rpx;
+}
+button {
+  padding: 0;
+  margin: 0;
+  line-height: 1em;
+  border: none;
 }
 .accredit-bar {
   position: fixed;
   width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, .3);
-  z-index: 2;
+  z-index: 10;
+}
+.userinfo {
+  width: 680rpx;
+  height: 270rpx;
+  border-radius: 20rpx;
+  background-color: #fff;
+  font-size: 28rpx;
+  margin-top: -250rpx;
+}
+.userinfo-title {
+  font-size: 32rpx;
+  color: #000;
+}
+.userinfo-cnt{
+  font-size: 28rpx;
+  color: #000;
+  margin-bottom: 30rpx;
+}
+.userinfo-bnt button {
+  width: 200rpx;
+  height: 70rpx;
+  border-radius: 30rpx;
+  font-size: 32rpx;
+  color: #fff;
+  background-color: #62b900;
+}
+.userinfo-bnt button:nth-child(1) {
+  background-color: #cccccc;
+  margin-right: 50rpx;
+}
+
+.chat-content {}
+.chat-item {
+  padding: 10rpx 20rpx;
+  background-color: #fff;
+  margin-bottom: 4rpx;
+}
+.chat-item-l {
+  flex: 1;
+}
+.chat-item-l-pic {
+  margin-right: 20rpx;
+  width: 80rpx;
+  height: 80rpx;
+  overflow: hidden;
+}
+.chat-item-l-pic image {
+  width: 80rpx;
+  height: 80rpx;
+  display: block;
+}
+.chat-item-l-info {
+  flex: 1;
+}
+.chat-item-l-name {
+  font-size: 26rpx;
+  margin-bottom: 10rpx;
+  color: #2d2d2d;
+  text-align: left;
+  width: 430rpx;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap
+}
+.chat-item-l-cnt {
+  font-size: 22rpx;
+  color: #8b8b8b;
+  text-align: left;
+  width: 430rpx;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap
+}
+.chat-item-r {
+  width: 150rpx;
+}
+.chat-item-r-time {
+  font-size: 22rpx;
+  color: #8b8b8b;
+}
+.chat-item-r-state {
+  width: 60rpx;
+  height: 60rpx;
+  display: block;
+}
+
+.menu {
+  position: relative;
+  width: 45rpx;
+  height: 45rpx;
+}
+.menu-add {
+  border-radius: 50%;
+  background-color: #fff;
+}
+.menu-add image {
+  width: 45rpx;
+  height: 45rpx;
+  display: block;
+}
+.menu-show {
+  background-color: #2d2d2d;
+  color: #fff;
+  position: absolute;
+  top: -17rpx;
+  right: 10rpx;
+}
+.menu-show-item {
+  width: 180rpx;
+  background-color: #3b3b3b;
+  font-size: 24rpx;
+  padding: 10rpx;
+  color: #fff;
+}
+.tp {
+  margin-bottom: 4rpx;
+}
+.menu-show-item image {
+  width: 35rpx;
+  height: 35rpx;
+  margin-right: 10rpx;
+  display: block;
+}
+
+.topBar {
+  width: 100vw;
+  padding: 0 20rpx;
+  height: 80rpx;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  background-color: #fff;
+}
+.topBar-l {
+  flex: 1;
+}
+.topBar-l-input {
+  flex: 1;
+  border-radius: 20rpx;
+  border: 1px solid #5d5d5d;
+  padding: 10rpx;
+  font-size: 26rpx;
+  height: 60rpx;
+  overflow: hidden;
+  color: #2d2d2d;
+  background-color: #f1f1f1;
+}
+.topBar-l-btn {
+  width: 45rpx;
+  height: 45rpx;
+  margin-left: 20rpx;
+  margin-right: 20rpx;
+}
+.topBar-l-btn image {
+  display: block;
+  width: 45rpx;
+  height: 45rpx;
+}
+
+.search-cnt {
+  position: absolute;
+  top: 82rpx;
+  left: 0;
 }
