@@ -197,5 +197,10 @@ Page({
       urls: [e.currentTarget.id]
     })
   },
-
+  // 群设置
+  onSeting() {
+    wx.navigateTo({
+      url:'/pages/index/group/group?tag=chat'
+    })
+  },
 })

@@ -64,7 +64,7 @@
     </block>
   </view>
   <view class="chat-content">
-    <button form-type="submit" hover-class="none" class="chat-item rows"bindtap="onChat"wx:for="{{data}}"wx:key="{{index}}"data-id="{{item.id}}">
+    <button form-type="submit" catchlongpress='onLongpress' hover-class="none" class="chat-item rows"bindtap="onChat"wx:for="{{data}}"wx:key="{{index}}"data-id="{{item.id}}"data-i="{{index}}">
       <view class="chat-item-l flexrow">
         <view class="chat-item-l-pic">
           <image src="{{item.pic}}" />

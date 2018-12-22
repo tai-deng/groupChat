@@ -11,12 +11,12 @@
 }
 .tm{
   width: 100vw;
-  height: 84rpx;
+  height: 104rpx;
 }
 button {
   padding: 0;
   margin: 0;
-  line-height: 1em;
+  line-height: 1.5em;
   border: none;
 }
 .accredit-bar {
@@ -129,14 +129,14 @@ button {
   background-color: #2d2d2d;
   color: #fff;
   position: absolute;
-  top: -17rpx;
+  top: -28rpx;
   right: 10rpx;
 }
 .menu-show-item {
-  width: 180rpx;
+  width: 200rpx;
   background-color: #3b3b3b;
   font-size: 24rpx;
-  padding: 10rpx;
+  padding: 20rpx;
   color: #fff;
 }
 .tp {
@@ -152,7 +152,7 @@ button {
 .topBar {
   width: 100vw;
   padding: 0 20rpx;
-  height: 80rpx;
+  height: 100rpx;
   position: fixed;
   top: 0;
   left: 0;

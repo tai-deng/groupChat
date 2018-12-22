@@ -193,3 +193,18 @@
 .img_msg {
   display: flex;
 }
+
+.seting {
+  width: 48rpx;
+  height: 48rpx;
+  background-color: transparent;
+  position: fixed;
+  top: 20rpx;
+  right: 30rpx;
+  z-index: 10;
+}
+.seting image {
+  width: 48rpx;
+  height: 48rpx;
+  display: block;
+}

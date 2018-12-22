@@ -9,9 +9,9 @@ Page({
     hasUserInfo: false,
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
     data:[
-      {pic:'../imgs/chat/pic.jpg',title:'旷斌',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',time:util.nowDate()},
-      {pic:'../imgs/chat/pic.jpg',title:'旷斌',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',time:util.nowDate()},
-      {pic:'../imgs/chat/pic.jpg',title:'旷斌',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',time:util.nowDate()},
+      {pic:'../imgs/chat/pic.jpg',title:'旷斌',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',time:util.nowDate(),id:1},
+      {pic:'../imgs/chat/pic.jpg',title:'旷斌',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',time:util.nowDate(),id:2},
+      {pic:'../imgs/chat/pic.jpg',title:'旷斌',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',time:util.nowDate(),id:3},
     ],
     dataa:[
       {pic:'../imgs/chat/pic.jpg',title:'旷斌--搜索',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',time:util.nowDate()},
@@ -33,7 +33,7 @@ Page({
     let router = e.currentTarget.dataset.r;
     if(router == 'mute'){
       wx.navigateTo({
-        url:'/pages/index/group/group'
+        url:'/pages/index/group/group?tag=group'
       })
     }else if(router == 'add'){
       this.sharFriend();
@@ -105,6 +105,22 @@ Page({
     this.setData({
       userInfo: e.detail.userInfo,
       hasUserInfo: true
+    })
+  },
+  // 删除聊天
+  onLongpress(e) {
+    let id = e.currentTarget.dataset.id;
+    let data = this.data.data;
+    let i = e.currentTarget.dataset.i;
+    util.showModal('提示', '确定要删除该聊天吗？', true, () => {
+      let arr = [];
+      for (var i = 0; i < data.length; i++){
+        if (data[i].id != id) {
+          arr.push(data[i])
+        }
+      }
+      console.log(arr)
+      this.setData({data:arr})
     })
   },
   onShareAppMessage: function () {

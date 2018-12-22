@@ -1,23 +1,35 @@
 // pages/index/group/group.js
+
 Page({
-
-  /**
-   * 页面的初始数据
-   */
   data: {
-
+    clue:'',
+    data:[{pic:'../../imgs/chat/pic.jpg',title:'旷斌',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:1},
+      {pic:'../../imgs/chat/pic.jpg',title:'旷斌',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:2},
+      {pic:'../../imgs/chat/pic.jpg',title:'旷斌',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:3},
+    ],
   },
-
-  /**
-   * 生命周期函数--监听页面加载
-   */
   onLoad: function (options) {
-
+    if (options.tag == 'group') {
+      wx.setNavigationBarTitle({
+        title: '创建群聊'
+      })
+    } else if (options.tag == 'chat') {
+      wx.setNavigationBarTitle({
+        title: '设置群聊'
+      })
+    }
   },
-
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
+  // 确定提交数据
+  onAffirm(e) {
+    console.log('提交成功！')
+  },
+  // checkbox
+  checkboxChange(e) {
+    let arr = e.detail.value;
+    let clue = `已选择${arr.length}个人`
+    this.setData({clue})
+    console.log(e)
+  },
   onReady: function () {
 
   },
