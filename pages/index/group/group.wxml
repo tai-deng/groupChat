@@ -5,7 +5,7 @@
         <view class="state-bar-r"bindtap='onAffirm'>确定</view>
     </view>
     <view class="state-bar flexrow">
-        <view class="state-bar-l">群名称：</view>
+        <view class="state-bar-l">讨论组名称：</view>
         <input type="text" placeholder-style='placeholder' placeholder='请输入群名称' bindinput='onGetName'/>
     </view>
     <view class="content">

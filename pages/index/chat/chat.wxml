@@ -28,14 +28,6 @@
     </scroll-view>
 
     <view class="msg_fixed">
-      <view class="msgbox">
-        <image catchtap="toggleVoice" src="../../imgs/chat/voice.png"></image>
-        <input value="{{msg}}" bindinput="inputMsg" bindfocus="inputFocus" class="msgbox_input" maxlength="999" cursor-spacing="10" bindconfirm="confirmMsg" bindblur="blurInput" confirm-type="发送" />
-        <image catchtap="toggleEmojis" src="../../imgs/chat/emotion-o.png"></image>
-        <image catchtap="toggleFiles" src="../../imgs/chat/plus.png"></image>
-        <image catchtap="sendMsg" src="../../imgs/chat/send.png"></image>
-      </view>
-
       <view wx:if="{{showEmojis}}" class="emojis_box">
         <view class="emoji_wrap" wx:for="{{emojiList}}" wx:key="key">
           <image catchtap="clickEmoji" src="{{item.img}}" data-key="{{item.key}}" class="emoji"></image>
@@ -44,6 +36,15 @@
           <!--<text catchtap="sendMsg" class="emoji_send">发送</text>-->
         </view>
       </view>
+      <view class="msgbox">
+        <!-- <image catchtap="toggleVoice" src="../../imgs/chat/voice.png"></image> -->
+        <input value="{{msg}}" bindinput="inputMsg" bindfocus="inputFocus" class="msgbox_input" maxlength="999" cursor-spacing="10" bindconfirm="confirmMsg" bindblur="blurInput" confirm-type="发送" />
+        <image catchtap="toggleEmojis" src="../../imgs/chat/emotion-o.png"></image>
+        <image catchtap="toggleFiles" src="../../imgs/chat/plus.png"></image>
+        <!-- <image catchtap="sendMsg" src="../../imgs/chat/send.png"></image> -->
+        <view class="send row" catchtap="sendMsg"> 发送</view>
+      </view>
+
 
       <view wx:if="{{showFiles}}" class="files_box">
         <view class="files_wrap">

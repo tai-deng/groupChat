@@ -10,41 +10,44 @@
     background-color: #f1f1f1;
   }
 
-  .tab {
+  .logo{
       width: 100vw;
-      height: 80rpx;
+      height: 400rpx;
       background-color: #fff;
   }
-  .tab-item {
-      flex: 1;
-      font-size: 28rpx;
-      color: #2c2c2c;
+  .logo-warp{
+      border-radius: 50%;
+      border: 2px solid #cccccc;
   }
-  .tab-item-v{
-      border-bottom: 2px solid #ffffff;
-  }
-  .se {
-    border-bottom: 2px solid #62b900;
-  }
-  .list{
-    margin-top: 4rpx;
-  }
-  .list-item {
-      padding: 10rpx 20rpx;
-      margin-bottom: 4rpx;
-      background-color: #fff;
-  }
-  .list-item-pic{
-      margin-right: 20rpx;
-      width: 80rpx;
-      height: 80rpx;
-  }
-  .list-item-pic image{
+  .logo-warp image {
+      width: 200rpx;
+      height: 200rpx;
+      border-radius: 50%;
       display: block;
-      width: 80rpx;
-      height: 80rpx;
   }
-  .list-item-title {
-      font-size: 26rpx;
-      color: #2c2c2c;
+  .menu {
+    /* height: 80rpx; */
+      margin-top: 6rpx;
+  }
+  .menu-show {
+    background-color: #2d2d2d;
+    color: #fff;
+  }
+  .menu-show-item {
+    background-color: #3b3b3b;
+    font-size: 24rpx;
+    line-height: 80rpx;
+    color: #fff;
+  }
+  .tp {
+    margin-bottom: 4rpx;
+  }
+  button {
+    line-height: 80rpx;
+  }
+  .menu-show-item image {
+    width: 35rpx;
+    height: 35rpx;
+    margin-right: 10rpx;
+    display: block;
   }

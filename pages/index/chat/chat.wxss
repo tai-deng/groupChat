@@ -59,7 +59,7 @@
 .chat_block_right .chat_cont {
   margin-left: 20px;
   margin-right: 20px;
-  background: yellowgreen;
+  background: #ff5800;
 }
 
 .chat_block_right .chat_cont::before {
@@ -69,7 +69,7 @@
 }
 
 .chat_block_right .chat_cont::after {
-  border-color: yellowgreen transparent transparent yellowgreen;
+  border-color: #ff5800 transparent transparent #ff5800;
   right: -10px;
   top: 15px;
 }
@@ -207,4 +207,8 @@
   width: 48rpx;
   height: 48rpx;
   display: block;
+}
+
+.send {
+  padding-right: 20rpx;
 }
