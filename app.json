@@ -12,24 +12,24 @@
     "navigationBarTextStyle": "white"
   },
   "tabBar": {
-    "selectedColor": "#62b900",
+    "selectedColor": "#ff5800",
     "color": "#cccccc",
     "backgroundColor": "#ffffff",
     "borderStyle": "white",
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "聊天",
+        "text": "扎堆",
         "iconPath": "pages/imgs/lta.png",
         "selectedIconPath": "pages/imgs/ltb.png"
       },
       {
         "pagePath": "pages/contacts/contacts",
-        "text": "通讯录",
+        "text": "管理",
         "iconPath": "pages/imgs/lxra.png",
         "selectedIconPath": "pages/imgs/lxrb.png"
       }
     ]
   },
-  "resizable": true
+  "resizable":true
 }

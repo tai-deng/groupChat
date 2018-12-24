@@ -1,6 +1,7 @@
 //index.js
 //获取应用实例
-const app = getApp()
+import cache from '../../../utils/cache.js'
+
 const { emojis, emojiToPath, textToEmoji } = require('../../../utils/emojis');
 const inputHeight = 51;
 const emojiHeight = 171;
@@ -20,10 +21,11 @@ Page({
     chatList: [],
   },
   onLoad: function () {
-    // 获取用户信息
-    app.getUserInfo(userInfo => {
-      this.setData({ userInfo })
-    });
+    if (cache.get('userInfo')) {
+      this.setData({
+        userInfo:cache.get('userInfo')
+      })
+    }
     // 获取表情包
     const emojiList = Object.keys(emojis).map(key => ({
       key: key,
@@ -197,5 +199,10 @@ Page({
       urls: [e.currentTarget.id]
     })
   },
-
+  // 群设置
+  onSeting() {
+    wx.navigateTo({
+      url:'/pages/index/group/group?tag=chat'
+    })
+  },
 })

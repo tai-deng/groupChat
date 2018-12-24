@@ -1,12 +1,15 @@
 <!--index.wxml-->
 <view class="page">
+  <view class="seting"catchtap='onSeting'>
+    <image src="../../imgs/chat/more.png"></image>
+  </view>
   <view class="page_bd">
     <scroll-view catchtap="scrollClick" class="msg_scroll" style="height:{{scrollHeight}}" scroll-top="{{scrollTop}}" scroll-y scroll-with-animation>
 
       <block wx:for="{{chatList}}" wx:key="id">
         <view class="chat_block chat_block_right">
           <view class="chat_avatar">
-            <image mode="aspectFit" src="{{userInfo.avatarUrl || '../../imgs/user_avatar.png'}}"></image>
+            <image mode="aspectFit" src="{{userInfo.avatarUrl || '../../imgs/chat/pic.jpg'}}"></image>
           </view>
           <view class="chat_cont">
             <view wx:if="{{item.msg_type==='text'}}">
@@ -25,14 +28,6 @@
     </scroll-view>
 
     <view class="msg_fixed">
-      <view class="msgbox">
-        <image catchtap="toggleVoice" src="../../imgs/chat/voice.png"></image>
-        <input value="{{msg}}" bindinput="inputMsg" bindfocus="inputFocus" class="msgbox_input" maxlength="999" cursor-spacing="10" bindconfirm="confirmMsg" bindblur="blurInput" confirm-type="发送" />
-        <image catchtap="toggleEmojis" src="../../imgs/chat/emotion-o.png"></image>
-        <image catchtap="toggleFiles" src="../../imgs/chat/plus.png"></image>
-        <image catchtap="sendMsg" src="../../imgs/chat/send.png"></image>
-      </view>
-
       <view wx:if="{{showEmojis}}" class="emojis_box">
         <view class="emoji_wrap" wx:for="{{emojiList}}" wx:key="key">
           <image catchtap="clickEmoji" src="{{item.img}}" data-key="{{item.key}}" class="emoji"></image>
@@ -41,6 +36,15 @@
           <!--<text catchtap="sendMsg" class="emoji_send">发送</text>-->
         </view>
       </view>
+      <view class="msgbox">
+        <!-- <image catchtap="toggleVoice" src="../../imgs/chat/voice.png"></image> -->
+        <input value="{{msg}}" bindinput="inputMsg" bindfocus="inputFocus" class="msgbox_input" maxlength="999" cursor-spacing="10" bindconfirm="confirmMsg" bindblur="blurInput" confirm-type="发送" />
+        <image catchtap="toggleEmojis" src="../../imgs/chat/emotion-o.png"></image>
+        <image catchtap="toggleFiles" src="../../imgs/chat/plus.png"></image>
+        <!-- <image catchtap="sendMsg" src="../../imgs/chat/send.png"></image> -->
+        <view class="send row" catchtap="sendMsg"> 发送</view>
+      </view>
+
 
       <view wx:if="{{showFiles}}" class="files_box">
         <view class="files_wrap">
@@ -52,7 +56,6 @@
       </view>
 
     </view>
-
 
   </view>
 </view>

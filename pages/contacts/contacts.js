@@ -33,6 +33,18 @@ Page({
       url: '../index/chat/chat'
     })
   },
+  // 菜单路由
+  onRouter(e){
+    let router = e.currentTarget.dataset.r;
+    if(router == 'mute'){
+      wx.navigateTo({
+        url:'/pages/index/group/group?tag=group'
+      })
+    }else if(router == 'add'){
+      this.sharFriend();
+    }
+    this.setData({menuShow:false})
+  },
   onReady: function () {
 
   },

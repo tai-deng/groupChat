@@ -1,2 +1,28 @@
 <!--pages/index/group/group.wxml-->
-<text>pages/index/group/group.wxml</text>
+<view class="container">
+    <view class="state-bar rows">
+        <view class="state-bar-l">{{clue}}</view>
+        <view class="state-bar-r"bindtap='onAffirm'>确定</view>
+    </view>
+    <view class="state-bar flexrow">
+        <view class="state-bar-l">讨论组名称：</view>
+        <input type="text" placeholder-style='placeholder' placeholder='请输入群名称' bindinput='onGetName'/>
+    </view>
+    <view class="content">
+        <checkbox-group bindchange="checkboxChange">
+            <label class="content-i rows"wx:for='{{data}}'wx:key="{{index}}">
+                <view class="content-i-l flexrow">
+                    <view class="content-i-l-pic">
+                        <image src="{{item.pic}}"></image>
+                    </view>
+                    <view class="content-i-l-title">
+                        {{item.title}}
+                    </view>
+                </view>
+                <view class="content-i-r">
+                    <checkbox value="{{item.id}}" checked="{{item.checked}}" />    
+                </view>
+            </label>
+        </checkbox-group>
+    </view>
+</view>

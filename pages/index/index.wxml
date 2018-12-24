@@ -12,6 +12,7 @@
       </view>
     </view>
   </view>
+
   <view class="tm"></view>
   <view class="topBar rows">
     <view class="topBar-l flexrow">
@@ -21,25 +22,6 @@
       <button hover-class="none" form-type="submit" class='topBar-l-btn'>
         <image src="../imgs/chat/search.png"></image>
       </button>
-    </view>
-    <view class="menu">
-      <block wx:if="{{!menuShow}}">
-        <view class="menu-add" catchtap="onMenu">
-          <image src="../imgs/chat/add.png"></image>
-        </view>
-      </block>
-      <block wx:else>
-        <view class="menu-show">
-          <view class="menu-show-item tp row" catchtap="onRouter"data-r="mute">
-            <image src="../imgs/chat/flock.png"></image>
-            发起群聊
-          </view>
-          <button open-type="share" hover-class="none" class="menu-show-item row">
-            <image src="../imgs/chat/addfrend.png"></image>
-            添加朋友
-          </button>
-        </view>
-      </block>
     </view>
     <block wx:if="{{searchSta}}">
       <view class="search-cnt">
@@ -63,8 +45,22 @@
       </view>
     </block>
   </view>
+
   <view class="chat-content">
-    <button form-type="submit" hover-class="none" class="chat-item rows"bindtap="onChat"wx:for="{{data}}"wx:key="{{index}}"data-id="{{item.id}}">
+      <view class="tab flexrow">
+          <view class="tab-item row"bindtap='onTab'data-i='1'>
+              <view class="tab-item-v row {{tab==1?'se':''}}">
+                  通讯录
+              </view>
+          </view>
+          <view class="tab-item row"bindtap='onTab'data-i='2'>
+              <view class="tab-item-v row {{tab==2?'se':''}}">
+                  圈子
+              </view>
+          </view>
+      </view>
+
+    <button form-type="submit" catchlongpress='onLongpress' hover-class="none" class="chat-item rows"bindtap="onChat"wx:for="{{data}}"wx:key="{{index}}"data-id="{{item.id}}"data-i="{{index}}">
       <view class="chat-item-l flexrow">
         <view class="chat-item-l-pic">
           <image src="{{item.pic}}" />
@@ -81,6 +77,8 @@
         </view>
       </view>
     </button>
+
   </view>
+
 </view>
 </form>

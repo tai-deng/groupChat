@@ -11,12 +11,12 @@
 }
 .tm{
   width: 100vw;
-  height: 84rpx;
+  height: 104rpx;
 }
 button {
   padding: 0;
   margin: 0;
-  line-height: 1em;
+  line-height: 1.5em;
   border: none;
 }
 .accredit-bar {
@@ -49,7 +49,7 @@ button {
   border-radius: 30rpx;
   font-size: 32rpx;
   color: #fff;
-  background-color: #62b900;
+  background-color: #ff5800;
 }
 .userinfo-bnt button:nth-child(1) {
   background-color: #cccccc;
@@ -57,6 +57,25 @@ button {
 }
 
 .chat-content {}
+.tab {
+    width: 100vw;
+    height: 80rpx;
+    background-color: #fff;
+    margin-bottom: 4rpx;
+}
+.tab-item {
+    flex: 1;
+    font-size: 28rpx;
+    color: #2c2c2c;
+}
+.tab-item-v{
+  height: 80rpx;
+    border-bottom: 2px solid #ffffff;
+}
+.se {
+  border-bottom: 2px solid #ff5800;
+}
+
 .chat-item {
   padding: 10rpx 20rpx;
   background-color: #fff;
@@ -111,48 +130,11 @@ button {
   display: block;
 }
 
-.menu {
-  position: relative;
-  width: 45rpx;
-  height: 45rpx;
-}
-.menu-add {
-  border-radius: 50%;
-  background-color: #fff;
-}
-.menu-add image {
-  width: 45rpx;
-  height: 45rpx;
-  display: block;
-}
-.menu-show {
-  background-color: #2d2d2d;
-  color: #fff;
-  position: absolute;
-  top: -17rpx;
-  right: 10rpx;
-}
-.menu-show-item {
-  width: 180rpx;
-  background-color: #3b3b3b;
-  font-size: 24rpx;
-  padding: 10rpx;
-  color: #fff;
-}
-.tp {
-  margin-bottom: 4rpx;
-}
-.menu-show-item image {
-  width: 35rpx;
-  height: 35rpx;
-  margin-right: 10rpx;
-  display: block;
-}
 
 .topBar {
   width: 100vw;
   padding: 0 20rpx;
-  height: 80rpx;
+  height: 100rpx;
   position: fixed;
   top: 0;
   left: 0;

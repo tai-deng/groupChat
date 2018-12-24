@@ -1,25 +1,28 @@
 <!--pages/contacts/contacts.wxml-->
 <view class="container">
-    <view class="tab flexrow">
-        <view class="tab-item row"bindtap='onTab'data-i='1'>
-            <view class="tab-item-v {{tab==1?'se':''}}">
-                好友
-            </view>
-        </view>
-        <view class="tab-item row"bindtap='onTab'data-i='2'>
-            <view class="tab-item-v {{tab==2?'se':''}}">
-                群聊
-            </view>
+    <view class="logo row">
+        <view class="logo-warp">
+            <image src="../imgs/chat/logo.png"></image>
         </view>
     </view>
-    <view class="list">
-        <view class="list-item flexrow"wx:for='{{list}}'wx:key="{{index}}"bindtap="onChat"data-id="{{item.id}}">
-            <view class="list-item-pic">
-                <image src="{{item.pic}}"></image>
-            </view>
-            <view class="list-item-title column">
-                {{item.title}}
-            </view>
+    <view class="menu">
+        <!-- <block wx:if="{{!menuShow}}">
+        <view class="menu-add" catchtap="onMenu">
+            <image src="../imgs/chat/add.png"></image>
         </view>
+        </block>
+        <block wx:else> -->
+        <view class="menu-show">
+            <view class="menu-show-item tp row" catchtap="onRouter"data-r="mute">
+            <image src="../imgs/chat/flock.png"></image>
+            创建讨论组
+            </view>
+            <button open-type="share" hover-class="none" class="menu-show-item row">
+            <image src="../imgs/chat/addfrend.png"></image>
+            邀请好友
+            </button>
+        </view>
+        <!-- </block> -->
+
     </view>
 </view>
