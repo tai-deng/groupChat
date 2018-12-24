@@ -19,11 +19,7 @@
             </view>
             <button open-type="share" hover-class="none" class="menu-show-item row">
             <image src="../imgs/chat/addfrend.png"></image>
-<<<<<<< HEAD
             邀请好友
-=======
-            分享好友
->>>>>>> 2443a6323fc7a1c978296bd42420c59fbe917399
             </button>
         </view>
         <!-- </block> -->
