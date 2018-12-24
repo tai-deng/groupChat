@@ -30,5 +30,6 @@
         "selectedIconPath": "pages/imgs/lxrb.png"
       }
     ]
-  }
+  },
+  "resizable": true
 }
