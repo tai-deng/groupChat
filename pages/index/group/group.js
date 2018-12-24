@@ -3,7 +3,8 @@
 Page({
   data: {
     clue:'',
-    data:[{pic:'../../imgs/chat/pic.jpg',title:'旷斌',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:1},
+    data:[
+      {pic:'../../imgs/chat/pic.jpg',title:'旷斌',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:1},
       {pic:'../../imgs/chat/pic.jpg',title:'旷斌',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:2},
       {pic:'../../imgs/chat/pic.jpg',title:'旷斌',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:3},
     ],
