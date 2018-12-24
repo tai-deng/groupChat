@@ -26,6 +26,7 @@
       display: block;
   }
   .menu {
+<<<<<<< HEAD
       margin-top: 6rpx;
   }
   .menu-show {
@@ -36,6 +37,20 @@
     background-color: #ffffff;
     font-size: 24rpx;
     line-height: 80rpx;
+=======
+    /* height: 80rpx; */
+      margin-top: 6rpx;
+  }
+  .menu-show {
+    background-color: #2d2d2d;
+    color: #fff;
+  }
+  .menu-show-item {
+    background-color: #3b3b3b;
+    font-size: 24rpx;
+    line-height: 80rpx;
+    color: #fff;
+>>>>>>> 2443a6323fc7a1c978296bd42420c59fbe917399
   }
   .tp {
     margin-bottom: 4rpx;
@@ -44,8 +59,13 @@
     line-height: 80rpx;
   }
   .menu-show-item image {
+<<<<<<< HEAD
     width: 48rpx;
     height: 48rpx;
+=======
+    width: 35rpx;
+    height: 35rpx;
+>>>>>>> 2443a6323fc7a1c978296bd42420c59fbe917399
     margin-right: 10rpx;
     display: block;
   }
