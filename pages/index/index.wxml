@@ -55,7 +55,7 @@
           </view>
           <view class="tab-item row"bindtap='onTab'data-i='2'>
               <view class="tab-item-v row {{tab==2?'se':''}}">
-                  讨论组
+                  扎堆会
               </view>
           </view>
       </view>

@@ -15,7 +15,7 @@
         <view class="menu-show">
             <view class="menu-show-item tp row" catchtap="onRouter"data-r="mute">
             <image src="../imgs/chat/flock.png"></image>
-            创建讨论组
+            创建扎堆会
             </view>
             <button open-type="share" hover-class="none" class="menu-show-item row">
             <image src="../imgs/chat/addfrend.png"></image>

@@ -12,11 +12,11 @@ Page({
   onLoad: function (options) {
     if (options.tag == 'group') {
       wx.setNavigationBarTitle({
-        title: '创建群聊'
+        title: '新建'
       })
     } else if (options.tag == 'chat') {
       wx.setNavigationBarTitle({
-        title: '设置群聊'
+        title: '设置'
       })
     }
   },
