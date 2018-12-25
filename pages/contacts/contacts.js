@@ -1,37 +1,8 @@
 // pages/contacts/contacts.js
 Page({
   data: {
-    tab:1,
-    list1:[
-      {pic:'../imgs/chat/pic.jpg',title:'旷斌',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的'},
-      {pic:'../imgs/chat/pic.jpg',title:'旷斌',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的'},
-      {pic:'../imgs/chat/pic.jpg',title:'旷斌',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的'},
-    ],
-    list2:[
-      {pic:'../imgs/chat/pic.jpg',title:'旷斌--qun',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的'},
-      {pic:'../imgs/chat/pic.jpg',title:'旷斌--qun',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的'},
-      {pic:'../imgs/chat/pic.jpg',title:'旷斌--qun',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的'},
-    ],
   },
   onLoad: function (options) {
-    let list = this.data.list1;
-    this.setData({list})
-  },
-  onTab(e){
-    let tab = e.currentTarget.dataset.i;
-    let list = [];
-    if(tab == '1'){
-      list = this.data.list1
-    }else if(tab == '2'){
-      list = this.data.list2
-    }
-    this.setData({tab,list})
-  },
-  // 进入聊天
-  onChat(e){
-    wx.navigateTo({
-      url: '../index/chat/chat'
-    })
   },
   // 菜单路由
   onRouter(e){
@@ -40,10 +11,7 @@ Page({
       wx.navigateTo({
         url:'/pages/index/group/group?tag=group'
       })
-    }else if(router == 'add'){
-      this.sharFriend();
     }
-    this.setData({menuShow:false})
   },
   onReady: function () {
 

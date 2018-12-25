@@ -11,19 +11,19 @@ Page({
     tab:1,
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
     data1:[
-      {pic:'../imgs/chat/pic.jpg',title:'旷斌',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',time:util.nowDate(),id:1},
-      {pic:'../imgs/chat/pic.jpg',title:'旷斌',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',time:util.nowDate(),id:2},
-      {pic:'../imgs/chat/pic.jpg',title:'旷斌',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',time:util.nowDate(),id:3},
+      {pic:'../imgs/chat/image.png',title:'鸡蛋供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',time:util.nowDate(),id:1},
+      {pic:'../imgs/chat/image.png',title:'牛肉供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',time:util.nowDate(),id:2},
+      {pic:'../imgs/chat/image.png',title:'大米供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',time:util.nowDate(),id:3},
     ],
     dataa:[
-      {pic:'../imgs/chat/pic.jpg',title:'旷斌--搜索',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',time:util.nowDate()},
-      {pic:'../imgs/chat/pic.jpg',title:'旷斌--搜索',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',time:util.nowDate()},
-      {pic:'../imgs/chat/pic.jpg',title:'旷斌--搜索',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',time:util.nowDate()},
+      {pic:'../imgs/chat/image.png',title:'鸡蛋供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',time:util.nowDate()},
+      {pic:'../imgs/chat/image.png',title:'牛肉竞价',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',time:util.nowDate()},
+      {pic:'../imgs/chat/image.png',title:'大米供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',time:util.nowDate()},
     ],
     datab:[
-      {pic:'../imgs/chat/pic.jpg',title:'旷斌--qun',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的'},
-      {pic:'../imgs/chat/pic.jpg',title:'旷斌--qun',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的'},
-      {pic:'../imgs/chat/pic.jpg',title:'旷斌--qun',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的'},
+      {pic:'../imgs/chat/image.png',title:'鸡蛋竞价',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的'},
+      {pic:'../imgs/chat/image.png',title:'牛肉竞价',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的'},
+      {pic:'../imgs/chat/image.png',title:'大米竞价',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的'},
     ],
     searchSta:false,
   },
@@ -31,23 +31,6 @@ Page({
     this.getUserInfoInit();
     let data = this.data.data1;
     this.setData({data})
-  },
-  // 菜单
-  onMenu(e){
-    let menuShow = !this.data.menuShow;
-    this.setData({menuShow})
-  },
-  // 菜单路由
-  onRouter(e){
-    let router = e.currentTarget.dataset.r;
-    if(router == 'mute'){
-      wx.navigateTo({
-        url:'/pages/index/group/group?tag=group'
-      })
-    }else if(router == 'add'){
-      this.sharFriend();
-    }
-    this.setData({menuShow:false})
   },
   // tab 菜单切换
   onTab(e){
@@ -86,8 +69,9 @@ Page({
   },
   // 进入聊天
   onChat(e){
+    let title = e.currentTarget.dataset.title;
     wx.navigateTo({
-      url: './chat/chat'
+      url: `./chat/chat?title=${title}`
     })
   },
   // 授权用户信息
@@ -127,20 +111,15 @@ Page({
       hasUserInfo: true
     })
   },
-  // 删除聊天
+  // 会话设置
   onLongpress(e) {
     let id = e.currentTarget.dataset.id;
     let data = this.data.data;
     let i = e.currentTarget.dataset.i;
-    util.showModal('提示', '确定要删除该聊天吗？', true, () => {
-      let arr = [];
-      for (var i = 0; i < data.length; i++){
-        if (data[i].id != id) {
-          arr.push(data[i])
-        }
-      }
-      console.log(arr)
-      this.setData({data:arr})
+    util.showModal('提示', '要修改该会话吗？', true, () => {
+        wx.navigateTo({
+          url:'/pages/index/group/group?tag=chat'
+        })
     })
   },
   onShareAppMessage: function () {

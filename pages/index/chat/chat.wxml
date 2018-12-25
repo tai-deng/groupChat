@@ -1,8 +1,8 @@
 <!--index.wxml-->
 <view class="page">
-  <view class="seting"catchtap='onSeting'>
+  <!-- <view class="seting"catchtap='onSeting'>
     <image src="../../imgs/chat/more.png"></image>
-  </view>
+  </view> -->
   <view class="page_bd">
     <scroll-view catchtap="scrollClick" class="msg_scroll" style="height:{{scrollHeight}}" scroll-top="{{scrollTop}}" scroll-y scroll-with-animation>
 
@@ -38,11 +38,11 @@
       </view>
       <view class="msgbox">
         <!-- <image catchtap="toggleVoice" src="../../imgs/chat/voice.png"></image> -->
-        <input value="{{msg}}" bindinput="inputMsg" bindfocus="inputFocus" class="msgbox_input" maxlength="999" cursor-spacing="10" bindconfirm="confirmMsg" bindblur="blurInput" confirm-type="发送" />
+        <input value="{{msg}}" bindinput="inputMsg"placeholder='践行言语文明风尚' placeholder-style='inputStyle' bindfocus="inputFocus" class="msgbox_input" maxlength="999" cursor-spacing="10" bindconfirm="confirmMsg" bindblur="blurInput" confirm-type="发送" />
         <image catchtap="toggleEmojis" src="../../imgs/chat/emotion-o.png"></image>
         <image catchtap="toggleFiles" src="../../imgs/chat/plus.png"></image>
-        <!-- <image catchtap="sendMsg" src="../../imgs/chat/send.png"></image> -->
-        <view class="send row" catchtap="sendMsg"> 发送</view>
+        <image catchtap="sendMsg" src="../../imgs/chat/send.png"></image>
+        <!-- <view class="send row" catchtap="sendMsg"> 发送</view> -->
       </view>
 
 

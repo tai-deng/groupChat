@@ -76,6 +76,12 @@ const scrool = (px,ms)=>{
   })
 }
 
+const setTitle = (title)=>{
+  wx.setNavigationBarTitle({
+    title: title
+  })
+}
+
 module.exports = {
   formatTime,
   toast,
@@ -83,5 +89,6 @@ module.exports = {
   preview,
   call,
   scrool,
-  nowDate
+  nowDate,
+  setTitle
 }

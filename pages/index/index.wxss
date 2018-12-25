@@ -171,4 +171,5 @@ button {
   position: absolute;
   top: 82rpx;
   left: 0;
+  background-color: #f1f1f1;
 }

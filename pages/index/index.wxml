@@ -25,7 +25,7 @@
     </view>
     <block wx:if="{{searchSta}}">
       <view class="search-cnt">
-        <button form-type="submit" hover-class="none" class="chat-item rows"bindtap="onChat"wx:for="{{dataa}}"wx:key="{{index}}"data-id="{{item.id}}">
+        <button form-type="submit" hover-class="none" class="chat-item rows"bindtap="onChat"wx:for="{{dataa}}"wx:key="{{index}}"data-id="{{item.id}}"data-title="{{item.title}}">
           <view class="chat-item-l flexrow">
             <view class="chat-item-l-pic">
               <image src="{{item.pic}}" />
@@ -60,7 +60,7 @@
           </view>
       </view>
 
-    <button form-type="submit" catchlongpress='onLongpress' hover-class="none" class="chat-item rows"bindtap="onChat"wx:for="{{data}}"wx:key="{{index}}"data-id="{{item.id}}"data-i="{{index}}">
+    <button form-type="submit" catchlongpress='onLongpress' hover-class="none" class="chat-item rows"bindtap="onChat"data-title="{{item.title}}"wx:for="{{data}}"wx:key="{{index}}"data-id="{{item.id}}"data-i="{{index}}">
       <view class="chat-item-l flexrow">
         <view class="chat-item-l-pic">
           <image src="{{item.pic}}" />

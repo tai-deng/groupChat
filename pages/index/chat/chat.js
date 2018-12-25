@@ -1,6 +1,7 @@
 //index.js
 //获取应用实例
 import cache from '../../../utils/cache.js'
+import util from '../../../utils/util.js'
 
 const { emojis, emojiToPath, textToEmoji } = require('../../../utils/emojis');
 const inputHeight = 51;
@@ -20,12 +21,8 @@ Page({
     msg: '',
     chatList: [],
   },
-  onLoad: function () {
-    if (cache.get('userInfo')) {
-      this.setData({
-        userInfo:cache.get('userInfo')
-      })
-    }
+  onLoad: function (op) {
+    this.init(op)
     // 获取表情包
     const emojiList = Object.keys(emojis).map(key => ({
       key: key,
@@ -56,6 +53,17 @@ Page({
     timeouts.forEach(item => {
       clearTimeout(item)
     })
+  },
+  // 初始化数据
+  init(op){
+    if (cache.get('userInfo')) {
+      this.setData({
+        userInfo:cache.get('userInfo')
+      })
+    }
+    if(op.title){
+      util.setTitle(op.title)
+    }
   },
   // 滚动聊天
   goBottom: function (n = 0) {
@@ -197,12 +205,6 @@ Page({
   previewImage: function (e) {
     wx.previewImage({
       urls: [e.currentTarget.id]
-    })
-  },
-  // 群设置
-  onSeting() {
-    wx.navigateTo({
-      url:'/pages/index/group/group?tag=chat'
     })
   },
 })
