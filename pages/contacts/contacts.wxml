@@ -13,13 +13,17 @@
         </block>
         <block wx:else> -->
         <view class="menu-show">
-            <view class="menu-show-item tp row" catchtap="onRouter"data-r="mute">
+            <view wx:if="{{type}}" class="menu-show-item tp row" catchtap="onRouter"data-r="mute">
             <image src="../imgs/chat/flock.png"></image>
-            创建扎堆会
+            扎堆会　
             </view>
             <button open-type="share" hover-class="none" class="menu-show-item row">
             <image src="../imgs/chat/addfrend.png"></image>
             邀请好友
+            </button>
+            <button open-type="contant" hover-class="none" class="menu-show-item row">
+            <image src="../imgs/chat/advice.png"></image>
+            投诉建议
             </button>
         </view>
         <!-- </block> -->

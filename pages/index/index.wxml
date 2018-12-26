@@ -1,7 +1,7 @@
 <!--index.wxml-->
 
 <form bindsubmit="form" report-submit='true' >
-<view class="container"catchtap='onRouter'>
+<view class="container">
   <view class="accredit-bar column" wx:if="{{!hasUserInfo && canIUse}}">
     <view class="userinfo column">
       <view class="userinfo-title">提示</view>

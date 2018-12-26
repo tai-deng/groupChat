@@ -1,6 +1,7 @@
 // pages/contacts/contacts.js
 Page({
   data: {
+    type:false,
   },
   onLoad: function (options) {
   },
