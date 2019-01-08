@@ -1,10 +1,13 @@
 
 // 数据请求
 import cache from './cache.js'
+import en from './encryption.js'
 
-// const API_URL = 'http://www.51hall.com/api/';
-const API_URL = "http://192.168.17.6:8083/api/";//彪哥的主机IP
-const IMG_URL = 'http://qiniu.51hall.com/'
+const API_URL = "https://api.752pay.com/";
+const IMG_URL = 'http://qiniu.51hall.com/';
+const key = '1afd506F2229A33a5979dc2e9e0e7R82';
+const appId = 'wx54ffdbfe8b628b63';
+const ver = '1.0.0';
 
 // GET请求
 function GET (url, params, message, config) {
@@ -48,6 +51,8 @@ function showModal (obj) {
 
 function request (url, params = {}, config,message = '加载中...',  method = 'POST') {
     let token = cache.get('token');
+    token = token ? token : "";
+    let sign = en.encryption(params, key);
     let time = setTimeout(() => { // 请求时常大于 0.5 秒显示 loading 提示框
       if (message) {
         wx.showLoading({
@@ -58,7 +63,10 @@ function request (url, params = {}, config,message = '加载中...',  method = '
     return new Promise((resolve, reject) => {
       let header = {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'X-Token':token,
+        'API-GCHAT-APPID':appId,
+        'API-GCHAT-VER':ver,
+        'API-GCHAT-TOKEN':token,
+        'API-GCHAT-SIGN':sign
       }
       wx.request(Object.assign(config || {}, {
         url: API_URL + url,

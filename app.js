@@ -1,7 +1,14 @@
 //app.js
+import {set} from './utils/cache.js'
 App({
-  onLaunch: function () {
-    //
+  onLaunch: function (e) {
+    // 登录
+    wx.login({
+      success: res => {
+        set('code',res.code)
+        set('scene',e.scene)
+      }
+    })
   },
   getUserInfo: function(cb){
     if (this.globalData.userInfo){
@@ -10,7 +17,8 @@ App({
       // 获取用户信息
       wx.getUserInfo({
         success: res => {
-          this.globalData.userInfo = res.userInfo
+          this.globalData.userInfo = res.userInfo;
+          console.log(2,res)
           cb(res.userInfo);
         }
       })

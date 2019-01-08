@@ -2,12 +2,12 @@
 
 <form bindsubmit="form" report-submit='true' >
 <view class="container">
-  <view class="accredit-bar column" wx:if="{{!hasUserInfo && canIUse}}">
+  <view class="accredit-bar column" wx:if="{{!hasUserInfo}}">
     <view class="userinfo column">
       <view class="userinfo-title">提示</view>
-      <view class="userinfo-cnt">为了更友好的为您服务请授权您的基本信息</view>
+      <view class="userinfo-cnt">为了更友好的为您服务请授权微信登录</view>
       <view class="userinfo-bnt row">
-        <button open-type="submit" class="row" catchtap="onCancel" hover-class="none">取消</button>
+        <!-- <button open-type="submit" class="row" catchtap="onCancel" hover-class="none">取消</button> -->
         <button open-type="getUserInfo" class="row" bindgetuserinfo="getUserInfo" hover-class="none">确定</button>
       </view>
     </view>

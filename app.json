@@ -4,7 +4,8 @@
     "pages/index/chat/chat",
     "pages/logs/logs",
     "pages/contacts/contacts",
-    "pages/index/group/group"
+    "pages/index/group/group",
+    "pages/market/market"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -31,5 +32,5 @@
       }
     ]
   },
-  "resizable":true
+  "resizable": true
 }

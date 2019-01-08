@@ -17,8 +17,21 @@
       margin-bottom: 4rpx;
       height: 70rpx;
   }
+  button {
+    font-size: 26rpx;
+    color: #2d2d2d;
+  }
   .placeholder {
       color: #ccc;
+  }
+  .content {
+      overflow-y: scroll;
+  }
+  .gh {
+      height: 960rpx;
+  }
+  .ch {
+    height: 880rpx;
   }
   .content-i{
       padding: 10rpx 20rpx;
@@ -26,13 +39,37 @@
       background-color: #fff;
       font-size: 26rpx;
   }
+  .content-m {
+    margin-left: 20rpx;
+    margin-bottom: 10rpx;
+    background-color: #fff;
+    font-size: 22rpx;
+    padding: 6rpx;
+  }
   .content-i-l-pic {
       width: 45rpx;
       height: 45rpx;
-      margin-right: 20rpx;
   }
   .content-i-l-pic image {
       width: 45rpx;
       height: 45rpx;
       display: block;
+  }
+  .state-bar image {
+      width: 70rpx;
+      height: 70rpx;
+      display: block;
+  }
+  .member {
+      display: flex;
+      flex-wrap: wrap;
+  }
+  textarea {
+      display: flex;
+      flex: 1;
+      height: 100rpx;
+      padding: 5rpx 0;
+  }
+  .area {
+      height: 90rpx;
   }

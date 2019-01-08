@@ -1,28 +1,73 @@
 <!--pages/index/group/group.wxml-->
+<form bindsubmit="formSubmit">
 <view class="container">
-    <view class="state-bar rows">
+    <view class="state-bar rows"wx:if="{{isGroup}}">
         <view class="state-bar-l">{{clue}}</view>
-        <view class="state-bar-r"bindtap='onAffirm'>确定</view>
+        <button form-type='submit' class="state-bar-r" >确定</button>
     </view>
-    <view class="state-bar flexrow">
+    <view class="state-bar {{isGroup? 'flexrow': 'rows'}}">
         <view class="state-bar-l">扎堆会名称：</view>
-        <input type="text" placeholder-style='placeholder' placeholder='请输入名称' bindinput='onGetName'/>
+        <block wx:if="{{isGroup}}">
+            <input type="text" value='{{title}}' name='title' placeholder-style='placeholder' placeholder='请输入名称'/>
+        </block>
+        <block wx:else>
+            <view class="mtext">{{title}}</view>
+        </block>
+            
     </view>
-    <view class="content">
-        <checkbox-group bindchange="checkboxChange">
-            <label class="content-i rows"wx:for='{{data}}'wx:key="{{index}}">
-                <view class="content-i-l flexrow">
-                    <view class="content-i-l-pic">
-                        <image src="{{item.pic}}"></image>
+    <view class="state-bar area {{isGroup? 'flexrow': 'rows'}}">
+        <view class="state-bar-l">扎堆会公告：</view>
+        <block wx:if="{{isGroup}}">
+            <textarea type="text" value="{{notice}}" maxlength='140' name='notice' placeholder-style='placeholder' placeholder='请输入公告内容'/>
+        </block>
+        <block wx:else>
+            <view class="mtext flexcolumn">{{notice}}</view>
+        </block>
+    </view>
+    <view class="state-bar {{isGroup? 'flexrow': 'rows'}}" bindtap='onPreview'>
+        <block wx:if="{{isGroup}}">
+            <view class="state-bar-l">群图标：</view>
+            <block wx:if="{{upload}}">
+                <image src="{{upload}}" catchtap="bindupload"></image>
+            </block>
+            <block wx:else>
+                <image src="../../imgs/chat/img.png" catchtap="bindupload"></image>
+            </block>
+        </block>
+        <block wx:else>
+            <view class="state-bar-l">二维码：</view>
+            <image src="../../imgs/chat/image.png"></image>
+        </block>
+    </view>
+    <view class="content {{isGroup? 'ch': 'member'}}">
+        <block wx:if="{{isGroup}}">
+            <checkbox-group bindchange="checkboxChange">
+                <label class="content-i rows"wx:for='{{data}}'wx:key="{{index}}">
+                    <view class="content-i-l flexrow">
+                        <view class="content-i-l-pic">
+                            <image src="{{item.pic}}"></image>
+                        </view>
+                        <view class="content-i-l-title">
+                            {{item.title}}
+                        </view>
                     </view>
-                    <view class="content-i-l-title">
-                        {{item.title}}
+                    <view class="content-i-r">
+                        <checkbox value="{{item.id}}" checked="{{item.checked}}" />    
                     </view>
+                </label>
+            </checkbox-group>
+        </block>
+        <block wx:else>
+            <label class="content-m column"wx:for='{{data}}'wx:key="{{index}}">
+                <view class="content-i-l-pic">
+                    <image src="{{item.pic}}"></image>
                 </view>
-                <view class="content-i-r">
-                    <checkbox value="{{item.id}}" checked="{{item.checked}}" />    
+                <view class="content-i-l-title">
+                    {{item.title}}
                 </view>
             </label>
-        </checkbox-group>
+        </block>
     </view>
 </view>
+</form>
+<canvas canvas-id="my_canvas" style="width:{{canvasWidth}}px;height:{{canvasHeight}}px;position:absolute;left:-300px;top-300px;"></canvas>

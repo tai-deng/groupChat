@@ -1,9 +1,19 @@
 // pages/contacts/contacts.js
+import {get} from '../../utils/cache.js'
 Page({
   data: {
-    type:false,
+    isGroup:false,
   },
   onLoad: function (options) {
+    this.init();
+  },
+  // 初始化
+  init(){
+    let user = get('userInfo');
+    if(user){
+      let isGroup = get('userInfo').userInfo.create_group;
+      this.setData({isGroup})
+    }
   },
   // 菜单路由
   onRouter(e){

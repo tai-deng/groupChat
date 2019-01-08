@@ -13,7 +13,7 @@
         </block>
         <block wx:else> -->
         <view class="menu-show">
-            <view wx:if="{{type}}" class="menu-show-item tp row" catchtap="onRouter"data-r="mute">
+            <view wx:if="{{isGroup}}" class="menu-show-item tp row" catchtap="onRouter"data-r="mute">
             <image src="../imgs/chat/flock.png"></image>
             扎堆会　
             </view>

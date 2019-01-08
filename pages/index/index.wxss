@@ -51,10 +51,10 @@ button {
   color: #fff;
   background-color: #ff5800;
 }
-.userinfo-bnt button:nth-child(1) {
+/* .userinfo-bnt button:nth-child(1) {
   background-color: #cccccc;
   margin-right: 50rpx;
-}
+} */
 
 .chat-content {}
 .tab {

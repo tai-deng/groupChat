@@ -1,0 +1,7 @@
+<!--pages/market/market.wxml-->
+<view class="container">
+    <view class="linebar flexrow">资源背景</view>
+    <view class="resource">{{data.resource}}</view>
+    <view class="linebar flexrow">最新价格</view>
+    <view class="resource">{{data.price}}</view>
+</view>
