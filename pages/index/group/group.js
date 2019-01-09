@@ -89,21 +89,23 @@ Page({
           }
         })
       }
+      this.setData({ gid: options.id})
       this.getData();
     }
     this.setData({tag: options.tag,isGroup})
   },
   // 获取好友列表
-  getData(tab){
+  getData(){
     let url = 'user/friend.list';
     let tm = new Date().getTime();
     let limit = this.data.limit;
     let pageData = [];
     let flag = this.data.flag;
+    let gid = this.data.gid;
 
     if(flag){
       let page = this.data.friendPage+ 1;
-      network.get(url,{tm,page,limit})
+      network.get(url,{tm,page,limit,gid})
       .then((res)=>{
         if(res.code == '0'){
           let list = res.data.list;
@@ -170,7 +172,6 @@ Page({
     let pic = '../../imgs/chat/image.png';
     if(this.data.isGroup && this.data.tag == 'group' && this.data.pic){
       pic = this.data.pic;
-      console.log(pic)
     }
     let arr = [pic];
     preview(arr,pic)
