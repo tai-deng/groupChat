@@ -66,7 +66,25 @@ Page({
   /**
    * 用户点击右上角分享
    */
-  onShareAppMessage: function () {
+  onShareAppMessage: function (res) {
+    if (res.from === 'button') {
+      let user = get('userInfo').userInfo;
+      let inviter = ''; // 分享人
+      let roomid = '';  // 房间号
+      console.log(res.target,user);
+      return {
+        title: '成功平台',
+        path: `/pages/index/index?inviter=${inviter}&roomid=${roomid}`,
+        imageUrl: "../imgs/chat/logo.png",
+        success: (res) => {
+          console.log("转发成功", res);
+        },
+        fail: (res) => {
+          console.log("转发失败", res);
+        }
+      }
+    }else {
 
+    }
   }
 })

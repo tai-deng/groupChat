@@ -1,5 +1,5 @@
 function get_sign(arys, key){
-	var str = build_query(objKeySort(arys),key);
+  var str = build_query(objKeySort(arys),key);
 	return hex_md5(str);
 }
 function build_query(arys,key){

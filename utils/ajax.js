@@ -50,52 +50,92 @@ function showModal (obj) {
 }
 
 function request (url, params = {}, config,message = '加载中...',  method = 'POST') {
-    let token = cache.get('token');
-    token = token ? token : "";
-    let sign = en.encryption(params, key);
-    let time = setTimeout(() => { // 请求时常大于 0.5 秒显示 loading 提示框
-      if (message) {
-        wx.showLoading({
-          title: message
-        })
-      }
-    }, 500)
-    return new Promise((resolve, reject) => {
-      let header = {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'API-GCHAT-APPID':appId,
-        'API-GCHAT-VER':ver,
-        'API-GCHAT-TOKEN':token,
-        'API-GCHAT-SIGN':sign
-      }
-      wx.request(Object.assign(config || {}, {
-        url: API_URL + url,
-        data: params,
-        header: header,
-        method: method, // OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT
-        success: function (res) {
-            resolve(res.data)
-        },
-        fail: function (...args) {
-          Reflect.apply(reject, reject, args)
-        },
-        complete: function () {
-          // 接口调用完成后
-          clearTimeout(time)
-          if (message) {
-            wx.hideLoading()
-          }
+  let token = cache.get('token');
+  token = token ? token : "";
+  let sign = en.encryption(params, key);
+  let time = setTimeout(() => { // 请求时常大于 0.5 秒显示 loading 提示框
+    if (message) {
+      wx.showLoading({
+        title: message
+      })
+    }
+  }, 500)
+  return new Promise((resolve, reject) => {
+    let header = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'API-GCHAT-APPID':appId,
+      'API-GCHAT-VER':ver,
+      'API-GCHAT-TOKEN':token,
+      'API-GCHAT-SIGN':sign
+    }
+    wx.request(Object.assign(config || {}, {
+      url: API_URL + url,
+      data: params,
+      header: header,
+      method: method, // OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT
+      success: function (res) {
+          resolve(res.data)
+      },
+      fail: function (...args) {
+        Reflect.apply(reject, reject, args)
+      },
+      complete: function () {
+        // 接口调用完成后
+        clearTimeout(time)
+        if (message) {
+          wx.hideLoading()
         }
-      }))
+      }
+    }))
+  })
+}
+
+// 文件上传
+const upFile = (url,file)=>{
+  let token = cache.get('token');
+  token = token ? token : "";
+  let params = {tm:new Date().getTime()};
+  let sign = en.encryption(params, key);
+  let time = setTimeout(() => { // 请求时常大于 0.5 秒显示 loading 提示框
+    wx.showLoading({
+      title: '正在上传中...'
     })
-  }
-  
-  var network = {
-    get: GET,
-    post: POST,
-    success: success,
-    prompt: prompt,
-    showModal: showModal,
-    img_url:IMG_URL
-  }
-  export default network
+  }, 500)
+  return new Promise((resolve,reject)=>{
+    let header = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'API-GCHAT-APPID':appId,
+      'API-GCHAT-VER':ver,
+      'API-GCHAT-TOKEN':token,
+      'API-GCHAT-SIGN':sign
+    }
+    wx.uploadFile({
+      url: API_URL + url,
+      filePath: file,
+      name: 'file',
+      header: header,
+      formData: params,
+      success(res) {
+        resolve(res.data)
+      },
+      fail(res){
+        reject(res.data)
+      },
+      complete(res){
+        clearTimeout(time)
+        wx.hideLoading()
+      }
+    })
+  })
+}
+var network = {
+  get: GET,
+  post: POST,
+  success: success,
+  prompt: prompt,
+  showModal: showModal,
+  img_url:IMG_URL
+}
+module.exports = {
+  network,upFile
+} 

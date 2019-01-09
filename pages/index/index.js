@@ -2,7 +2,7 @@
 //获取应用实例
 import util from '../../utils/util.js'
 import cache from '../../utils/cache.js'
-import network from '../../utils/ajax.js'
+import {network} from '../../utils/ajax.js'
 const app = getApp()
 
 Page({
@@ -11,28 +11,31 @@ Page({
     hasUserInfo: false,
     type:true,
     tab:1,
+    limit: 30,
+    friendPage: 0,
+    groupPage: 0,
+    isUpFri: true,
+    isUpGro: true,
     // canIUse: wx.canIUse('button.open-type.getUserInfo'),
     data1:[
-      {pic:'../imgs/chat/image.png',title:'鸡蛋供应',cont:'将持续更新该品类的最新价格，敬请关注！',time:util.nowDate(),id:1},
-      {pic:'../imgs/chat/image.png',title:'牛肉供应',cont:'将持续更新该品类的最新价格，敬请关注！',time:util.nowDate(),id:2},
-      {pic:'../imgs/chat/image.png',title:'大米供应',cont:'将持续更新该品类的最新价格，敬请关注！',time:util.nowDate(),id:3},
+      {gcover:'../imgs/chat/image.png',gname:'鸡蛋供应',gintro:'将持续更新该品类的最新价格，敬请关注！',gid:1},
+      {gcover:'../imgs/chat/image.png',gname:'牛肉供应',gintro:'将持续更新该品类的最新价格，敬请关注！',gid:2},
+      {gcover:'../imgs/chat/image.png',gname:'大米供应',gintro:'将持续更新该品类的最新价格，敬请关注！',gid:3},
+      {gcover:'../imgs/chat/image.png',gname:'鸡蛋供应',gintro:'将持续更新该品类的最新价格，敬请关注！',gid:1},
     ],
     dataa:[
-      {pic:'../imgs/chat/image.png',title:'鸡蛋供应',cont:'将持续更新该品类的最新价格，敬请关注！',time:util.nowDate()},
-      {pic:'../imgs/chat/image.png',title:'牛肉竞价',cont:'将持续更新该品类的最新价格，敬请关注！',time:util.nowDate()},
-      {pic:'../imgs/chat/image.png',title:'大米供应',cont:'将持续更新该品类的最新价格，敬请关注！',time:util.nowDate()},
+      {gcover:'../imgs/chat/image.png',gname:'鸡蛋供应',gintro:'将持续更新该品类的最新价格，敬请关注！'},
+      {gcover:'../imgs/chat/image.png',gname:'牛肉竞价',gintro:'将持续更新该品类的最新价格，敬请关注！'},
+      {gcover:'../imgs/chat/image.png',gname:'大米供应',gintro:'将持续更新该品类的最新价格，敬请关注！'},
     ],
     datab:[
-      {pic:'../imgs/chat/image.png',title:'鸡蛋竞价',cont:'将持续更新该品类的最新价格，敬请关注！'},
-      {pic:'../imgs/chat/image.png',title:'牛肉竞价',cont:'将持续更新该品类的最新价格，敬请关注！'},
-      {pic:'../imgs/chat/image.png',title:'大米竞价',cont:'将持续更新该品类的最新价格，敬请关注！'},
+      {gcover:'../imgs/chat/image.png',gname:'鸡蛋竞价',gintro:'将持续更新该品类的最新价格，敬请关注！'},
+      {gcover:'../imgs/chat/image.png',gname:'牛肉竞价',gintro:'将持续更新该品类的最新价格，敬请关注！'},
+      {gcover:'../imgs/chat/image.png',gname:'大米竞价',gintro:'将持续更新该品类的最新价格，敬请关注！'},
     ],
     searchSta:false,
   },
   onLoad: function (op) {
-    // this.getUserInfoInit();
-    let data = this.data.data1;
-    this.setData({data})
     this.init(op)
   },
   // 用户登录
@@ -52,14 +55,17 @@ Page({
       inviter,
       roomid,
     }).then((res)=>{
-      if (res.code == '0' && res.data.bind_id) {
-        this.setData({bind_id:res.data.bind_id})
-      } else {
-        cache.set('token', res.data.token);
-        let user = cache.get('userInfo');
-        user = user? user: {};
-        user['userInfo'] = res.data.user;
-        cache.set('userInfo',user)
+      if(res.code == '0'){
+        if (res.data.bind_id) {
+          this.setData({bind_id:res.data.bind_id})
+        } else {
+          cache.set('token', res.data.token);
+          let user = cache.get('userInfo');
+          user = user? user: {};
+          user['userInfo'] = res.data.user;
+          cache.set('userInfo',user)
+          this.getData(this.data.tab);
+        }
       }
     })
   },
@@ -78,14 +84,58 @@ Page({
       inviter,
       roomid,
     }).then((res)=>{
-      console.log('reg',res)
       if (res.code == '0') {
         cache.set('token', res.data.token);
         let user = cache.get('userInfo');
         user.userInfo = res.data.user;
         cache.set('userInfo',user);
+        this.getData(this.data.tab);
       }
     })
+  },
+  // 获取聊天
+  getData(tab){
+    let url = 'user/friend.list';
+    let tm = new Date().getTime();
+    let page = 1;
+    let limit = this.data.limit;
+    let pageData = [];
+    let flag = true;
+    if(tab == '1'){
+      url = 'user/friend.list';
+      page = this.data.friendPage+ 1;
+      flag = this.data.isUpFri;
+    }else if(tab == '2'){
+      url = 'user/group.list';
+      page = this.data.groupPage+ 1;
+      flag = this.data.isUpGro;
+    }
+    if(flag){
+      network.get(url,{tm,page,limit})
+      .then((res)=>{
+        if(res.code == '0'){
+          let list = res.data.list;
+          let goon = true;
+          pageData = this.data.data1.concat(res.data.list);
+          pageData.forEach((element,index) => {
+            pageData[index].relate_tm = util.nowDate(pageData[index].relate_tm)
+          });
+          if(list.length < this.data.limit){
+            goon =false;
+          }
+          if(tab == '1'){
+            this.setData({data: pageData,data1:pageData,isUpFri:goon})
+          }else if(tab == '2') {
+            this.setData({data: pageData,datab:pageData,isUpGro:goon})
+          }
+        }
+        console.log(res)
+      })
+    }else{
+      if(pageData.length > 0 && pageData.length < this.data.limit){
+        util.toast('加载完毕')
+      }
+    }
   },
   // tab 菜单切换
   onTab(e){
@@ -96,6 +146,7 @@ Page({
     }else if(tab == '2'){
       data = this.data.datab;
     }
+    this.getData(tab)
     this.setData({tab,data})
   },
   // from 表单提交 搜索
@@ -198,7 +249,9 @@ Page({
         })
     })
   },
-  onShareAppMessage: function () {
 
-  }
+  onReachBottom: function (e) {
+    let tab = this.data.tab;
+    this.getData(tab)
+  },
 })

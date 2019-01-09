@@ -13,7 +13,6 @@
         <block wx:else>
             <view class="mtext">{{title}}</view>
         </block>
-            
     </view>
     <view class="state-bar area {{isGroup? 'flexrow': 'rows'}}">
         <view class="state-bar-l">扎堆会公告：</view>
@@ -27,8 +26,8 @@
     <view class="state-bar {{isGroup? 'flexrow': 'rows'}}" bindtap='onPreview'>
         <block wx:if="{{isGroup}}">
             <view class="state-bar-l">群图标：</view>
-            <block wx:if="{{upload}}">
-                <image src="{{upload}}" catchtap="bindupload"></image>
+            <block wx:if="{{pic}}">
+                <image src="{{pic}}" catchtap="bindupload"></image>
             </block>
             <block wx:else>
                 <image src="../../imgs/chat/img.png" catchtap="bindupload"></image>

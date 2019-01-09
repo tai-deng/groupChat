@@ -25,18 +25,18 @@
     </view>
     <block wx:if="{{searchSta}}">
       <view class="search-cnt">
-        <button form-type="submit" hover-class="none" class="chat-item rows"bindtap="onChat"wx:for="{{dataa}}"wx:key="{{index}}"data-id="{{item.id}}"data-title="{{item.title}}">
+        <button form-type="submit" hover-class="none" class="chat-item rows"bindtap="onChat"wx:for="{{dataa}}"wx:key="{{index}}"data-id="{{item.gid}}"data-title="{{item.gname}}">
           <view class="chat-item-l flexrow">
             <view class="chat-item-l-pic">
-              <image src="{{item.pic}}" />
+              <image src="{{item.gcover}}" />
             </view>
             <view class="chat-item-l-info column">
-              <view class="chat-item-l-name">{{item.title}}</view>
-              <view class="chat-item-l-cnt">{{item.cont}}</view>
+              <view class="chat-item-l-name">{{item.gname}}</view>
+              <view class="chat-item-l-cnt">{{item.gintro}}</view>
             </view>
           </view>
           <view class="chat-item-r column">
-            <view class="chat-item-r-time">{{item.time}}</view>
+            <view class="chat-item-r-time">{{item.relate_tm}}</view>
             <view class="chat-item-r-state">
               <image wx:if="{{mute}}" src="../imgs/ltb.png"/>
             </view>
@@ -60,18 +60,18 @@
           </view>
       </view>
 
-    <button form-type="submit" catchlongpress='onLongpress' hover-class="none" class="chat-item rows"bindtap="onChat"data-title="{{item.title}}"wx:for="{{data}}"wx:key="{{index}}"data-id="{{item.id}}"data-i="{{index}}">
+    <button form-type="submit" catchlongpress='onLongpress' hover-class="none" class="chat-item rows"bindtap="onChat"data-title="{{item.gname}}"wx:for="{{data}}"wx:key="{{index}}"data-id="{{item.gid}}"data-i="{{index}}">
       <view class="chat-item-l flexrow">
         <view class="chat-item-l-pic">
-          <image src="{{item.pic}}" />
+          <image src="{{item.gcover}}" />
         </view>
         <view class="chat-item-l-info column">
-          <view class="chat-item-l-name">{{item.title}}</view>
-          <view class="chat-item-l-cnt">{{item.cont}}</view>
+          <view class="chat-item-l-name">{{item.gname}}</view>
+          <view class="chat-item-l-cnt">{{item.gintro}}</view>
         </view>
       </view>
       <view class="chat-item-r column">
-        <view class="chat-item-r-time">{{item.time}}</view>
+        <view class="chat-item-r-time">{{item.relate_tm}}</view>
         <view class="chat-item-r-state">
           <image wx:if="{{mute}}" src="../imgs/ltb.png"/>
         </view>

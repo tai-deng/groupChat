@@ -14,8 +14,8 @@ const formatNumber = n => {
   return n[1] ? n : '0' + n
 }
 
-const nowDate = ()=>{
-  const dt = new Date();
+const nowDate = (data)=>{
+  const dt = new Date(data);
   const month = dt.getMonth() + 1
   const day = dt.getDate()
   const hour = dt.getHours()
