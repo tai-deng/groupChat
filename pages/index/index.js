@@ -18,10 +18,10 @@ Page({
     isUpGro: true,
     // canIUse: wx.canIUse('button.open-type.getUserInfo'),
     data1:[
-      {gcover:'../imgs/chat/image.png',gname:'鸡蛋供应',gintro:'将持续更新该品类的最新价格，敬请关注！',gid:1},
-      {gcover:'../imgs/chat/image.png',gname:'牛肉供应',gintro:'将持续更新该品类的最新价格，敬请关注！',gid:2},
-      {gcover:'../imgs/chat/image.png',gname:'大米供应',gintro:'将持续更新该品类的最新价格，敬请关注！',gid:3},
-      {gcover:'../imgs/chat/image.png',gname:'鸡蛋供应',gintro:'将持续更新该品类的最新价格，敬请关注！',gid:1},
+      {avatar:'../imgs/chat/image.png',nickname:'鸡蛋供应',remark:'将持续更新该品类的最新价格，敬请关注！',gid:1},
+      {avatar:'../imgs/chat/image.png',nickname:'牛肉供应',remark:'将持续更新该品类的最新价格，敬请关注！',gid:2},
+      {avatar:'../imgs/chat/image.png',nickname:'大米供应',remark:'将持续更新该品类的最新价格，敬请关注！',gid:3},
+      {avatar:'../imgs/chat/image.png',nickname:'鸡蛋供应',remark:'将持续更新该品类的最新价格，敬请关注！',gid:1},
     ],
     dataa:[
       {gcover:'../imgs/chat/image.png',gname:'鸡蛋供应',gintro:'将持续更新该品类的最新价格，敬请关注！'},
@@ -36,36 +36,45 @@ Page({
     searchSta:false,
   },
   onLoad: function (op) {
-    this.init(op)
+    this.init()
   },
   // 用户登录
-  init(op){
-    let code = cache.get('code');     // code
-    let scene = cache.get('scene')    // 场景
-    let inviter = 0;                  // 邀请人
-    let roomid = 0;                 // 聊天室
-    if (op['inviter'] && op['roomid']) {
-      inviter = op.inviter;
-      roomid = op.roomid;
-    }
-    this.setData({roomid,inviter})
-    network.post('login.do',{
-      code,
-      scene,
-      inviter,
-      roomid,
-    }).then((res)=>{
-      if(res.code == '0'){
-        if (res.data.bind_id) {
-          this.setData({bind_id:res.data.bind_id})
-        } else {
-          cache.set('token', res.data.token);
-          let user = cache.get('userInfo');
-          user = user? user: {};
-          user['userInfo'] = res.data.user;
-          cache.set('userInfo',user)
-          this.getData(this.data.tab);
+  init(){
+    wx.login({
+      success: res => {
+        let code = res.code
+        let arg = wx.getLaunchOptionsSync();
+        let scene = arg.scene;    // 场景
+        let inviter = 0;                  // 邀请人
+        let roomid = 0;                 // 聊天室
+        if (arg.query['inviter']) {
+          inviter = arg.query['inviter'];
         }
+        if (arg.query['roomid']) {
+          roomid = arg.query['roomid'];
+        }
+        this.setData({roomid,inviter})
+        network.post('login.do',{
+          code,
+          scene,
+          inviter,
+          roomid,
+        }).then((res)=>{
+          if(res.code == '0'){
+            if (res.data.bind_id) {
+              this.setData({bind_id:res.data.bind_id,hasUserInfo:true})
+            } else {
+              cache.set('token', res.data.token);
+              let user = cache.get('userInfo');
+              user = user? user: {};
+              user['userInfo'] = res.data.user;
+              cache.set('userInfo',user)
+              this.getData(this.data.tab);
+            }
+          }else if(res.code == '10001'|| res.code == '10002'){
+            this.setData({hasUserInfo: true})
+          }
+        })
       }
     })
   },
@@ -74,6 +83,9 @@ Page({
     let scene= cache.get('scene'); // 场景
     let inviter= this.data.inviter;// 邀请人 id
     let roomid= this.data.roomid;  // 聊天室 id
+    wx.showLoading({
+      title: '用户注册中',
+    })
     network.post('reg.do',{
       raw_data,
       signature,
@@ -89,6 +101,7 @@ Page({
         let user = cache.get('userInfo');
         user.userInfo = res.data.user;
         cache.set('userInfo',user);
+        wx.hideLoading()
         this.getData(this.data.tab);
       }
     })
@@ -99,7 +112,7 @@ Page({
     let tm = new Date().getTime();
     let page = 1;
     let limit = this.data.limit;
-    let pageData = [];
+    let pageData = '';
     let flag = true;
     if(tab == '1'){
       url = 'user/friend.list';
@@ -116,20 +129,24 @@ Page({
         if(res.code == '0'){
           let list = res.data.list;
           let goon = true;
-          pageData = this.data.data1.concat(res.data.list);
+          if(tab == '1'){
+            pageData = this.data.data1.concat(res.data.list);
+          }else if(tab == '2') {
+            pageData = this.data.datab.concat(res.data.list);
+          }
           pageData.forEach((element,index) => {
+            if(pageData[index].relate_tm)
             pageData[index].relate_tm = util.nowDate(pageData[index].relate_tm)
           });
           if(list.length < this.data.limit){
             goon =false;
           }
           if(tab == '1'){
-            this.setData({data: pageData,data1:pageData,isUpFri:goon})
+            this.setData({fdata: pageData,data1:pageData,isUpFri:goon,hasUserInfo:false})
           }else if(tab == '2') {
-            this.setData({data: pageData,datab:pageData,isUpGro:goon})
+            this.setData({gdata: pageData,datab:pageData,isUpGro:goon,hasUserInfo:false})
           }
         }
-        console.log(res)
       })
     }else{
       if(pageData.length > 0 && pageData.length < this.data.limit){
@@ -231,10 +248,6 @@ Page({
           e.detail.iv
         )
       }
-      this.setData({
-        userInfo: e.detail.userInfo,
-        hasUserInfo: true
-      })
     }
   },
   // 会话设置

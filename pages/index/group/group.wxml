@@ -43,15 +43,15 @@
             <checkbox-group bindchange="checkboxChange">
                 <label class="content-i rows"wx:for='{{data}}'wx:key="{{index}}">
                     <view class="content-i-l flexrow">
-                        <view class="content-i-l-pic">
-                            <image src="{{item.pic}}"></image>
+                        <view class="content-i-l-pic mr26">
+                            <image src="{{item.avatar}}"></image>
                         </view>
                         <view class="content-i-l-title">
-                            {{item.title}}
+                            {{item.nickname}}
                         </view>
                     </view>
                     <view class="content-i-r">
-                        <checkbox value="{{item.id}}" checked="{{item.checked}}" />    
+                        <checkbox value="{{item.friend_id}}" checked="{{item.group_user}}" />    
                     </view>
                 </label>
             </checkbox-group>
@@ -59,10 +59,10 @@
         <block wx:else>
             <label class="content-m column"wx:for='{{data}}'wx:key="{{index}}">
                 <view class="content-i-l-pic">
-                    <image src="{{item.pic}}"></image>
+                    <image src="{{item.avatar}}"></image>
                 </view>
                 <view class="content-i-l-title">
-                    {{item.title}}
+                    {{item.nickname}}
                 </view>
             </label>
         </block>

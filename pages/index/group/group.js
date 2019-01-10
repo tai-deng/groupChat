@@ -3,49 +3,23 @@ import {preview} from '../../../utils/util.js'
 import {network,upFile} from '../../../utils/ajax.js'
 import util from '../../../utils/util.js'
 import cache from '../../../utils/cache.js'
+const _ = require('../../../utils/lodash.get/index.js');
 Page({
   data: {
     clue:'',
     data:[
-      {pic:'../../imgs/chat/image.png',title:'鸡蛋供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:1},
-      {pic:'../../imgs/chat/image.png',title:'牛肉供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:2},
-      {pic:'../../imgs/chat/image.png',title:'大米供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:3},
-      {pic:'../../imgs/chat/image.png',title:'鸡蛋供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:1},
-      {pic:'../../imgs/chat/image.png',title:'牛肉供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:2},
-      {pic:'../../imgs/chat/image.png',title:'大米供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:3},
-      {pic:'../../imgs/chat/image.png',title:'鸡蛋供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:1},
-      {pic:'../../imgs/chat/image.png',title:'牛肉供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:2},
-      {pic:'../../imgs/chat/image.png',title:'大米供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:3},
-      {pic:'../../imgs/chat/image.png',title:'鸡蛋供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:1},
-      {pic:'../../imgs/chat/image.png',title:'牛肉供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:2},
-      {pic:'../../imgs/chat/image.png',title:'大米供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:3},
-      {pic:'../../imgs/chat/image.png',title:'鸡蛋供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:1},
-      {pic:'../../imgs/chat/image.png',title:'牛肉供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:2},
-      {pic:'../../imgs/chat/image.png',title:'大米供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:3},
-      {pic:'../../imgs/chat/image.png',title:'鸡蛋供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:1},
-      {pic:'../../imgs/chat/image.png',title:'牛肉供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:2},
-      {pic:'../../imgs/chat/image.png',title:'大米供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:3},
-      {pic:'../../imgs/chat/image.png',title:'鸡蛋供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:1},
-      {pic:'../../imgs/chat/image.png',title:'牛肉供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:2},
-      {pic:'../../imgs/chat/image.png',title:'大米供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:3},
-      {pic:'../../imgs/chat/image.png',title:'鸡蛋供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:1},
-      {pic:'../../imgs/chat/image.png',title:'牛肉供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:2},
-      {pic:'../../imgs/chat/image.png',title:'大米供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:3},
-      {pic:'../../imgs/chat/image.png',title:'鸡蛋供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:1},
-      {pic:'../../imgs/chat/image.png',title:'牛肉供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:2},
-      {pic:'../../imgs/chat/image.png',title:'大米供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:3},
-      {pic:'../../imgs/chat/image.png',title:'鸡蛋供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:1},
-      {pic:'../../imgs/chat/image.png',title:'牛肉供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:2},
-      {pic:'../../imgs/chat/image.png',title:'大米供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:3},
-      {pic:'../../imgs/chat/image.png',title:'鸡蛋供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:1},
-      {pic:'../../imgs/chat/image.png',title:'牛肉供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:2},
-      {pic:'../../imgs/chat/image.png',title:'大米供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',checked:false,id:3},
+      {avatar:'../../imgs/chat/image.png',nickname:'牛肉供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',group_user:0,friend_id:'01'},
+      {avatar:'../../imgs/chat/image.png',nickname:'大米供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',group_user:0,friend_id:'02'},
     ],
     page:1,
     limit:30,
-    friends:[],
     flag:true,
     friendPage: 0,
+    gid:'',
+    allFid:[],
+    addFid:'',
+    minusFid:'',
+    pickFid:[],
   },
   onLoad: function (options) {
     this.init(options);
@@ -61,6 +35,7 @@ Page({
           wx.setNavigationBarTitle({
             title: '新建'
           })
+          this.getData();
         }else {
           wx.setNavigationBarTitle({
             title: '设置'
@@ -70,7 +45,8 @@ Page({
             if(res.code == '0'){
               if(res.data.group){
                 let data = res.data.group;
-                this.setData({groupData: data,title: data.gname,notice: data.gintro,pic: data.gcover});
+                this.setData({gid: options.id,groupData: data,title: data.gname,notice: data.gintro,pic: data.gcover});
+                this.getData();
               }
             }
           })
@@ -84,13 +60,12 @@ Page({
           if(res.code == '0'){
             if(res.data.group){
               let data = res.data.group;
-              this.setData({groupData: data,title: data.gname,notice: data.gintro,pic: data.gqrcode});
+              this.setData({gid: options.id,groupData: data,title: data.gname,notice: data.gintro,pic: data.gqrcode});
+              this.getData();
             }
           }
         })
       }
-      this.setData({ gid: options.id})
-      this.getData();
     }
     this.setData({tag: options.tag,isGroup})
   },
@@ -102,6 +77,7 @@ Page({
     let pageData = [];
     let flag = this.data.flag;
     let gid = this.data.gid;
+    let allFid = this.data.allFid;
 
     if(flag){
       let page = this.data.friendPage+ 1;
@@ -113,9 +89,15 @@ Page({
           if(list.length < limit){
             flag =false;
           }
-          this.setData({data: pageData,flag,friendPage: page})
+          if(pageData.length > 0){
+            pageData.forEach(element => {
+              if(element.group_user){
+                allFid.push(element.friend_id)
+              }
+            });
+          }
+          this.setData({data: pageData,flag,friendPage: page,allFid})
         }
-        console.log(res)
       })
     }else{
       if(pageData.length > 0 && pageData.length < this.data.limit){
@@ -123,54 +105,128 @@ Page({
       }
     }
   },
-  // 确定提交数据
+  // 提交数据
   formSubmit(e) {
-    if(this.data.tag == 'group'){
-      let name = e.detail.value.title.trim();
-      let intro = e.detail.value.notice.trim();
-      let asset_file = this.data.asset_file;
-      let cover = this.data.pic;
-      let friends = this.data.friends.join(',');
-      if(name && intro && asset_file){
-        network.post('group/create.do',{
-          tm: new Date().getTime(),
-          name,
-          intro,asset_file,cover,friends})
-        .then((res)=>{
-          util.showModal('提示',"创建成功",false,()=>{
-            wx.switchTab({
-              url:'/pages/index/index'
+    if(this.data.isGroup){
+      if(this.data.tag == 'group'){
+        let name = e.detail.value.title.trim();
+        let intro = e.detail.value.notice.trim();
+        let asset_file = this.data.asset_file;
+        let cover = this.data.pic;
+        let friends = this.data.allFid.join(',');
+        if(name && intro && asset_file){
+          network.post('group/create.do',{
+            tm: new Date().getTime(),
+            name,
+            intro,asset_file,cover,friends})
+          .then((res)=>{
+            util.showModal('提示',"创建成功",false,()=>{
+              wx.switchTab({
+                url:'/pages/index/index'
+              })
             })
           })
-        })
-      }else{
-        if(!asset_file){
-          util.toast('请上传群图片！')
+        }else{
+          if(!asset_file){
+            util.toast('请上传群图片！')
+          }
+          if(!intro){
+            util.toast('群公告不能为空！')
+          }
+          if(!name){
+            util.toast('群名称不能为空！')
+          }
+          this.setData({title:name,intro})
         }
-        if(!intro){
-          util.toast('群公告不能为空！')
-        }
-        if(!name){
-          util.toast('群名称不能为空！')
-        }
-        this.setData({title:name,intro})
+      }else {
+        this.setUpDate()
       }
-    }else if(this.data.isGroup){
-
     }
-    console.log('提交成功！',e)
   },
   // checkbox
   checkboxChange(e) {
-    let arr = e.detail.value;
-    let clue = `已选择${arr.length}个人`
-    this.setData({clue})
-    console.log(e)
+    let pickFid = e.detail.value;
+    let clue = `已选择${pickFid.length}个人`;
+    let allFid = this.data.allFid;
+    let addFid = [];
+    let minusFid = [];
+    let a =_.difference(allFid,'01')
+    console.log(a,allFid,pickFid)
+    this.setData({clue,pickFid})
+  },
+  // 更新设置
+  setUpDate(){
+    let name = e.detail.value.title.trim();
+    let intro = e.detail.value.notice.trim();
+    let asset_file = this.data.asset_file;
+    let cover = this.data.pic;
+    let gid = this.data.gid;
+    // 更新群信息
+    if(name && intro && cover){
+      network.post('group/update.do',{
+        tm: new Date().getTime(),
+        name,
+        intro,
+        asset_file,
+        cover,
+        gid
+      })
+      .then((res)=>{
+        util.showModal('提示',"修改成功",false,()=>{
+          wx.switchTab({
+            url:'/pages/index/index'
+          })
+        })
+      })
+    }else{
+      if(!cover){
+        util.toast('请上传群图片！')
+      }
+      if(!intro){
+        util.toast('群公告不能为空！')
+      }
+      if(!name){
+        util.toast('群名称不能为空！')
+      }
+      this.setData({title:name,intro})
+    }
+    // 加人
+    let allFid = this.data.allFid;
+    let pickFid = this.dtaa.pickFid;
+    if(name && intro && cover){
+      network.post('/group/user/add.do',{
+        tm: new Date().getTime(),
+        name,
+        intro,
+        asset_file,
+        cover,
+        gid
+      })
+      .then((res)=>{
+        util.showModal('提示',"修改成功",false,()=>{
+          wx.switchTab({
+            url:'/pages/index/index'
+          })
+        })
+      })
+    }else{
+      if(!cover){
+        util.toast('请上传群图片！')
+      }
+      if(!intro){
+        util.toast('群公告不能为空！')
+      }
+      if(!name){
+        util.toast('群名称不能为空！')
+      }
+      this.setData({title:name,intro})
+    }
+    // 减人
   },
   // 二维码预览
   onPreview(e){
     let pic = '../../imgs/chat/image.png';
-    if(this.data.isGroup && this.data.tag == 'group' && this.data.pic){
+    if(this.data.pic){
       pic = this.data.pic;
     }
     let arr = [pic];

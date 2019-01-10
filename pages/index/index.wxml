@@ -2,7 +2,7 @@
 
 <form bindsubmit="form" report-submit='true' >
 <view class="container">
-  <view class="accredit-bar column" wx:if="{{!hasUserInfo}}">
+  <view class="accredit-bar column" wx:if="{{hasUserInfo}}">
     <view class="userinfo column">
       <view class="userinfo-title">提示</view>
       <view class="userinfo-cnt">为了更友好的为您服务请授权微信登录</view>
@@ -47,27 +47,46 @@
   </view>
 
   <view class="chat-content">
-      <view class="tab flexrow">
-          <view class="tab-item row"bindtap='onTab'data-i='1'>
-              <view class="tab-item-v row {{tab==1?'se':''}}">
-                  通讯录
-              </view>
-          </view>
-          <view class="tab-item row"bindtap='onTab'data-i='2'>
-              <view class="tab-item-v row {{tab==2?'se':''}}">
-                  扎堆会
-              </view>
-          </view>
-      </view>
+    <view class="tab flexrow">
+        <view class="tab-item row"bindtap='onTab'data-i='1'>
+            <view class="tab-item-v row {{tab==1?'se':''}}">
+                通讯录
+            </view>
+        </view>
+        <view class="tab-item row"bindtap='onTab'data-i='2'>
+            <view class="tab-item-v row {{tab==2?'se':''}}">
+                扎堆会
+            </view>
+        </view>
+    </view>
 
-    <button form-type="submit" catchlongpress='onLongpress' hover-class="none" class="chat-item rows"bindtap="onChat"data-title="{{item.gname}}"wx:for="{{data}}"wx:key="{{index}}"data-id="{{item.gid}}"data-i="{{index}}">
+    <button form-type="submit" catchlongpress='onLongpress' hover-class="none" class="chat-item rows"bindtap="onChat"data-title="{{tab==1?item.nickname:item.gname}}"wx:for="{{tab==1?fdata:gdata}}"wx:key="{{index}}"data-id="{{tab==1?item.friend_id:item.gid}}"data-i="{{index}}">
       <view class="chat-item-l flexrow">
         <view class="chat-item-l-pic">
-          <image src="{{item.gcover}}" />
+          <block wx:if="{{tab==1}}">
+             <image src="{{item.avatar}}" />
+          </block>
+          <block wx:else>
+            <image src="{{item.gcover}}" />
+          </block>
         </view>
         <view class="chat-item-l-info column">
-          <view class="chat-item-l-name">{{item.gname}}</view>
-          <view class="chat-item-l-cnt">{{item.gintro}}</view>
+          <view class="chat-item-l-name">
+            <block wx:if="{{tab==1}}">
+              {{item.nickname}}
+            </block>
+            <block wx:else>
+              {{item.gname}}
+            </block>
+          </view>
+            <view class="chat-item-l-cnt">
+              <block wx:if="{{tab==1}}">
+                {{item.remark?item.remark:'　'}}
+              </block>
+              <block wx:else>
+                {{item.gintro}}
+              </block>
+            </view>
         </view>
       </view>
       <view class="chat-item-r column">

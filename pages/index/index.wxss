@@ -16,7 +16,7 @@
 button {
   padding: 0;
   margin: 0;
-  line-height: 1.5em;
+  line-height:normal !important;
   border: none;
 }
 .accredit-bar {

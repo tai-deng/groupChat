@@ -73,3 +73,6 @@
   .area {
       height: 90rpx;
   }
+  .mr26{
+      margin-right: 26rpx;
+  }
