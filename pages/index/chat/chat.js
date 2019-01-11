@@ -2,6 +2,7 @@
 //获取应用实例
 import cache from '../../../utils/cache.js'
 import util from '../../../utils/util.js'
+import websocket from '../../../utils/socket.js'
 
 const { emojis, emojiToPath, textToEmoji } = require('../../../utils/emojis');
 const inputHeight = 51;
@@ -47,6 +48,7 @@ Page({
       scrollHeight,
       chatList,
     })
+    websocket.setReceiveCallback(this.msgReceived, this);
   },
   onUnload: function () {
     // 清除定时器
@@ -56,14 +58,16 @@ Page({
   },
   // 初始化数据
   init(op){
-    if (cache.get('userInfo')) {
-      this.setData({
-        userInfo:cache.get('userInfo')
-      })
-    }
     if(op.title){
       util.setTitle(op.title)
     }
+    let gid = op['gid'] ? op['gid'] : '';
+    let to_uid = op['to_uid'] ? op['to_uid'] : '';
+    this.setData({
+      userInfo:cache.get('userInfo').userInfo,
+      gid,
+      to_uid
+    })
   },
   // 滚动聊天
   goBottom: function (n = 0) {
@@ -169,6 +173,28 @@ Page({
       msg_text: msg,
       text_list: textToEmoji(msg)
     }]
+    
+    let token = cache.get('token');
+    if(this.data.gid){
+      websocket.send({
+        "token": token,
+        "action": "send_to_group",
+        "gid": this.data.gid,
+        "type": 1,		//1文字 2图片 3语音
+        "content": msg,
+        "form_id": "",
+      });
+    }else{
+      websocket.send({
+        "token": token,
+        "action": "send_to_friend",
+        "to_uid": this.data.to_uid,
+        "type": 1,		//1文字 2图片 3语音
+        "content": msg,
+        "form_id": "",
+      });
+    }
+
     this.setData({
       chatList: newChatList,
       msg: ''
@@ -206,5 +232,10 @@ Page({
     wx.previewImage({
       urls: [e.currentTarget.id]
     })
+  },
+  // 获取 socket 返回
+  msgReceived(res){
+    let d = JSON.parse(res);
+    console.log(d)
   },
 })

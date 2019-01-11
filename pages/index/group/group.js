@@ -3,13 +3,12 @@ import {preview} from '../../../utils/util.js'
 import {network,upFile} from '../../../utils/ajax.js'
 import util from '../../../utils/util.js'
 import cache from '../../../utils/cache.js'
-const _ = require('../../../utils/lodash.get/index.js');
 Page({
   data: {
     clue:'',
     data:[
-      {avatar:'../../imgs/chat/image.png',nickname:'牛肉供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',group_user:0,friend_id:'01'},
-      {avatar:'../../imgs/chat/image.png',nickname:'大米供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',group_user:0,friend_id:'02'},
+      // {avatar:'../../imgs/chat/image.png',nickname:'牛肉供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',group_user:0,friend_id:1000},
+      // {avatar:'../../imgs/chat/image.png',nickname:'大米供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',group_user:0,friend_id:1001},
     ],
     page:1,
     limit:30,
@@ -96,7 +95,7 @@ Page({
               }
             });
           }
-          this.setData({data: pageData,flag,friendPage: page,allFid})
+          this.setData({data: pageData,flag,friendPage: page,allFid,clue: allFid.length})
         }
       })
     }else{
@@ -142,17 +141,51 @@ Page({
         this.setUpDate()
       }
     }
+    
   },
   // checkbox
+  checkbox(e){
+    let clue = e.detail.value.length;
+    this.setData({clue})
+  },
   checkboxChange(e) {
-    let pickFid = e.detail.value;
-    let clue = `已选择${pickFid.length}个人`;
+    let id = e.currentTarget.dataset.id;
     let allFid = this.data.allFid;
-    let addFid = [];
-    let minusFid = [];
-    let a =_.difference(allFid,'01')
-    console.log(a,allFid,pickFid)
-    this.setData({clue,pickFid})
+    let addFid = '';
+    let minusFid = '';
+    let gid = this.data.gid;
+    if(allFid.indexOf(id)!= -1){
+      minusFid = id;
+    }else{
+      addFid = id;
+    }
+    // 加人
+    if(addFid != ''){
+      network.post('group/user/add.do',{
+        tm: new Date().getTime(),
+        gid,
+        friend_id:addFid
+      })
+      .then((res)=>{
+        allFid.push(id)
+        console.log('add-->',res,'all-->',allFid)
+        this.setData({allFid})
+      })
+    }
+    // 减人
+    if(minusFid != ''){
+      network.post('group/user/kick.do',{
+        tm: new Date().getTime(),
+        gid,
+        friend_id:minusFid
+      })
+      .then((res)=>{
+        let i = allFid.indexOf(id);
+        allFid.splice(i,1)
+        console.log('minus-->',res,'all-->',allFid)
+        this.setData({allFid})
+      })
+    }
   },
   // 更新设置
   setUpDate(){
@@ -190,38 +223,6 @@ Page({
       }
       this.setData({title:name,intro})
     }
-    // 加人
-    let allFid = this.data.allFid;
-    let pickFid = this.dtaa.pickFid;
-    if(name && intro && cover){
-      network.post('/group/user/add.do',{
-        tm: new Date().getTime(),
-        name,
-        intro,
-        asset_file,
-        cover,
-        gid
-      })
-      .then((res)=>{
-        util.showModal('提示',"修改成功",false,()=>{
-          wx.switchTab({
-            url:'/pages/index/index'
-          })
-        })
-      })
-    }else{
-      if(!cover){
-        util.toast('请上传群图片！')
-      }
-      if(!intro){
-        util.toast('群公告不能为空！')
-      }
-      if(!name){
-        util.toast('群名称不能为空！')
-      }
-      this.setData({title:name,intro})
-    }
-    // 减人
   },
   // 二维码预览
   onPreview(e){

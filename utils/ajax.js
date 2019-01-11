@@ -89,7 +89,6 @@ function request (url, params = {}, config,message = '加载中...',  method = '
     }))
   })
 }
-
 // 文件上传
 const upFile = (url,file)=>{
   let token = cache.get('token');
@@ -128,6 +127,7 @@ const upFile = (url,file)=>{
     })
   })
 }
+
 var network = {
   get: GET,
   post: POST,

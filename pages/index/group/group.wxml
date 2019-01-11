@@ -2,7 +2,9 @@
 <form bindsubmit="formSubmit">
 <view class="container">
     <view class="state-bar rows"wx:if="{{isGroup}}">
-        <view class="state-bar-l">{{clue}}</view>
+        <view class="state-bar-l">
+            已选择{{clue?clue:0}}个人
+        </view>
         <button form-type='submit' class="state-bar-r" >确定</button>
     </view>
     <view class="state-bar {{isGroup? 'flexrow': 'rows'}}">
@@ -40,8 +42,8 @@
     </view>
     <view class="content {{isGroup? 'ch': 'member'}}">
         <block wx:if="{{isGroup}}">
-            <checkbox-group bindchange="checkboxChange">
-                <label class="content-i rows"wx:for='{{data}}'wx:key="{{index}}">
+            <checkbox-group bindchange="checkbox">
+                <label class="content-i rows"wx:for='{{data}}'wx:key="{{index}}" data-id='{{item.friend_id}}' catchtap="checkboxChange">
                     <view class="content-i-l flexrow">
                         <view class="content-i-l-pic mr26">
                             <image src="{{item.avatar}}"></image>
@@ -51,10 +53,10 @@
                         </view>
                     </view>
                     <view class="content-i-r">
-                        <checkbox value="{{item.friend_id}}" checked="{{item.group_user}}" />    
+                        <checkbox value="{{item.friend_id}}"  checked="{{item.group_user}}" />    
                     </view>
                 </label>
-            </checkbox-group>
+           </checkbox-group>
         </block>
         <block wx:else>
             <label class="content-m column"wx:for='{{data}}'wx:key="{{index}}">

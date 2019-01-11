@@ -9,7 +9,7 @@
       <block wx:for="{{chatList}}" wx:key="id">
         <view class="chat_block chat_block_right">
           <view class="chat_avatar">
-            <image mode="aspectFit" src="{{userInfo.avatarUrl || '../../imgs/chat/pic.jpg'}}"></image>
+            <image mode="aspectFit" src="{{userInfo.avatar}}"></image>
           </view>
           <view class="chat_cont">
             <view wx:if="{{item.msg_type==='text'}}">

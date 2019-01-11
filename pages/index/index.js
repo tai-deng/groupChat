@@ -3,8 +3,8 @@
 import util from '../../utils/util.js'
 import cache from '../../utils/cache.js'
 import {network} from '../../utils/ajax.js'
+import websocket from '../../utils/socket.js'
 const app = getApp()
-
 Page({
   data: {
     userInfo: {},
@@ -17,26 +17,53 @@ Page({
     isUpFri: true,
     isUpGro: true,
     // canIUse: wx.canIUse('button.open-type.getUserInfo'),
-    data1:[
-      {avatar:'../imgs/chat/image.png',nickname:'鸡蛋供应',remark:'将持续更新该品类的最新价格，敬请关注！',gid:1},
-      {avatar:'../imgs/chat/image.png',nickname:'牛肉供应',remark:'将持续更新该品类的最新价格，敬请关注！',gid:2},
-      {avatar:'../imgs/chat/image.png',nickname:'大米供应',remark:'将持续更新该品类的最新价格，敬请关注！',gid:3},
-      {avatar:'../imgs/chat/image.png',nickname:'鸡蛋供应',remark:'将持续更新该品类的最新价格，敬请关注！',gid:1},
-    ],
+    data1:[],
     dataa:[
       {gcover:'../imgs/chat/image.png',gname:'鸡蛋供应',gintro:'将持续更新该品类的最新价格，敬请关注！'},
       {gcover:'../imgs/chat/image.png',gname:'牛肉竞价',gintro:'将持续更新该品类的最新价格，敬请关注！'},
       {gcover:'../imgs/chat/image.png',gname:'大米供应',gintro:'将持续更新该品类的最新价格，敬请关注！'},
     ],
-    datab:[
-      {gcover:'../imgs/chat/image.png',gname:'鸡蛋竞价',gintro:'将持续更新该品类的最新价格，敬请关注！'},
-      {gcover:'../imgs/chat/image.png',gname:'牛肉竞价',gintro:'将持续更新该品类的最新价格，敬请关注！'},
-      {gcover:'../imgs/chat/image.png',gname:'大米竞价',gintro:'将持续更新该品类的最新价格，敬请关注！'},
-    ],
+    datab:[],
     searchSta:false,
+    timeId:'',
   },
   onLoad: function (op) {
     this.init()
+  },
+  // socket 链接
+  socketInit(){
+    let token = cache.get('token');
+    if (!websocket.socketOpened) {
+      websocket.setReceiveCallback(this.msgReceived, this);
+      websocket.connect();
+      websocket.send({
+        "token": token,
+        "action": "say_hello"
+      });
+      app.globalData.timeId = setTimeout(()=>{
+        websocket.send({
+          "token": token,
+          "action": "me_alive"
+        });
+      },3000)
+    }
+    network.get('config.get',{tm:new Date().getTime()})
+    .then((res)=>{
+      if(res.audit == 1){
+        let data1 = [{avatar:'../imgs/chat/image.png',nickname:'鸡蛋供应',remark:'将持续更新该品类的最新价格，敬请关注！',gid:1},
+        {avatar:'../imgs/chat/image.png',nickname:'牛肉供应',remark:'将持续更新该品类的最新价格，敬请关注！',gid:2},
+        {avatar:'../imgs/chat/image.png',nickname:'大米供应',remark:'将持续更新该品类的最新价格，敬请关注！',gid:3},
+        {avatar:'../imgs/chat/image.png',nickname:'鸡蛋供应',remark:'将持续更新该品类的最新价格，敬请关注！',gid:1},]
+        let datab= [{gcover:'../imgs/chat/image.png',gname:'鸡蛋竞价',gintro:'将持续更新该品类的最新价格，敬请关注！'},
+          {gcover:'../imgs/chat/image.png',gname:'牛肉竞价',gintro:'将持续更新该品类的最新价格，敬请关注！'},
+          {gcover:'../imgs/chat/image.png',gname:'大米竞价',gintro:'将持续更新该品类的最新价格，敬请关注！'}]
+        this.setData({
+          type:false,
+          data1,
+          datab
+        })
+      }
+    })
   },
   // 用户登录
   init(){
@@ -69,6 +96,7 @@ Page({
               user = user? user: {};
               user['userInfo'] = res.data.user;
               cache.set('userInfo',user)
+              this.socketInit()
               this.getData(this.data.tab);
             }
           }else if(res.code == '10001'|| res.code == '10002'){
@@ -102,6 +130,7 @@ Page({
         user.userInfo = res.data.user;
         cache.set('userInfo',user);
         wx.hideLoading()
+        this.socketInit()
         this.getData(this.data.tab);
       }
     })
@@ -192,17 +221,39 @@ Page({
   // 进入聊天
   onChat(e){
     let title = e.currentTarget.dataset.title;
+    let token = cache.get('token');
     let id = e.currentTarget.dataset.id;
-    let i = e.currentTarget.dataset.i;
+    let tab = this.data.tab;
     if(this.data.type){
-      wx.navigateTo({
-        url: `./chat/chat?title=${title}`
-      })
+      if(tab == '1'){
+        websocket.send({
+          "token": token,
+          "action": "view_friend",
+          "to_uid": id
+        });
+        wx.navigateTo({
+          url: `./chat/chat?title=${title}&to_uid=${id}`
+        })
+      }else if(tab == '2'){
+        websocket.send({
+          "token": token,
+          "action": "view_group",
+          "gid": id
+        });
+        wx.navigateTo({
+          url: `./chat/chat?title=${title}&gid=${id}`
+        })
+      }
     }else{
       wx.navigateTo({
         url: `../market/market?title=${title}`
       })
     }
+  },
+  // 获取 socket 返回
+  msgReceived(res){
+    let d = JSON.parse(res);
+    console.log(d)
   },
   // 授权用户信息
   getUserInfoInit() {
@@ -262,7 +313,7 @@ Page({
         })
     })
   },
-
+  // 上拉更新
   onReachBottom: function (e) {
     let tab = this.data.tab;
     this.getData(tab)
