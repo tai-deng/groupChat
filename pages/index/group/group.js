@@ -3,6 +3,7 @@ import {preview} from '../../../utils/util.js'
 import {network,upFile} from '../../../utils/ajax.js'
 import util from '../../../utils/util.js'
 import cache from '../../../utils/cache.js'
+const app = getApp();
 Page({
   data: {
     clue:'',
@@ -24,7 +25,7 @@ Page({
     this.init(options);
   },
   // 初始化
-  init(options){
+  init(options) {
     let user = cache.get('userInfo');
     let isGroup = null;
     if(user){
@@ -35,6 +36,20 @@ Page({
             title: '新建'
           })
           this.getData();
+        } else if (options.tag == 'look') {
+          wx.setNavigationBarTitle({
+            title: options.title
+          })
+          network.get(`group/${options.id}.get`,{})
+          .then((res)=>{
+            if(res.code == '0'){
+              if(res.data.group){
+                let data = res.data.group;
+                this.setData({gid: options.id,groupData: data,title: data.gname,notice: data.gintro,pic: data.gqrcode});
+                this.getData();
+              }
+            }
+          })
         }else {
           wx.setNavigationBarTitle({
             title: '设置'
@@ -50,7 +65,7 @@ Page({
             }
           })
         }
-      }else{
+      }else if (options.tag == 'look'){
         wx.setNavigationBarTitle({
           title: options.title
         })
@@ -91,7 +106,7 @@ Page({
           if(pageData.length > 0){
             pageData.forEach(element => {
               if(element.group_user){
-                allFid.push(element.friend_id)
+                allFid.push(element.uid)
               }
             });
           }
@@ -110,20 +125,25 @@ Page({
       if(this.data.tag == 'group'){
         let name = e.detail.value.title.trim();
         let intro = e.detail.value.notice.trim();
-        let asset_file = this.data.asset_file;
-        let cover = this.data.pic;
+        let asset_file = this.data.pic;
+        let cover = this.data.asset_file;
         let friends = this.data.allFid.join(',');
+        let client_id = cache.get('client_id');
         if(name && intro && asset_file){
           network.post('group/create.do',{
             tm: new Date().getTime(),
             name,
-            intro,asset_file,cover,friends})
-          .then((res)=>{
-            util.showModal('提示',"创建成功",false,()=>{
-              wx.switchTab({
-                url:'/pages/index/index'
+            intro,cover,friends,client_id})
+            .then((res) => {
+              if (res.code == '0') {
+              util.showModal('提示',"创建成功",false,()=>{
+                wx.switchTab({
+                  url:'/pages/index/index'
+                })
               })
-            })
+              } else {
+                util.toast(res.msg)
+            }
           })
         }else{
           if(!asset_file){
@@ -138,7 +158,7 @@ Page({
           this.setData({title:name,intro})
         }
       }else {
-        this.setUpDate()
+        this.setUpDate(e)
       }
     }
     
@@ -146,7 +166,7 @@ Page({
   // checkbox
   checkbox(e){
     let clue = e.detail.value.length;
-    this.setData({clue})
+    this.setData({clue,allFid:e.detail.value})
   },
   checkboxChange(e) {
     let id = e.currentTarget.dataset.id;
@@ -154,48 +174,53 @@ Page({
     let addFid = '';
     let minusFid = '';
     let gid = this.data.gid;
-    if(allFid.indexOf(id)!= -1){
-      minusFid = id;
-    }else{
-      addFid = id;
-    }
-    // 加人
-    if(addFid != ''){
-      network.post('group/user/add.do',{
-        tm: new Date().getTime(),
-        gid,
-        friend_id:addFid
-      })
-      .then((res)=>{
-        allFid.push(id)
-        console.log('add-->',res,'all-->',allFid)
-        this.setData({allFid})
-      })
-    }
-    // 减人
-    if(minusFid != ''){
-      network.post('group/user/kick.do',{
-        tm: new Date().getTime(),
-        gid,
-        friend_id:minusFid
-      })
-      .then((res)=>{
-        let i = allFid.indexOf(id);
-        allFid.splice(i,1)
-        console.log('minus-->',res,'all-->',allFid)
-        this.setData({allFid})
-      })
+    if (this.data.tag == 'group') {
+      return false;
+    } else {
+      console.log(allFid,id)
+      if (allFid.indexOf(String(id)) == -1) {
+        minusFid = id;
+      } else {
+        addFid = id;
+      }
+      // 加人
+      if (addFid != '') {
+        network.post('group/user/add.do', {
+          tm: new Date().getTime(),
+          gid,
+          friend_id: addFid
+        })
+          .then((res) => {
+            allFid.push(id)
+            console.log('add-->', res, 'all-->', allFid)
+            this.setData({ allFid })
+          })
+      }
+      // 减人
+      if (minusFid != '') {
+        network.post('group/user/kick.do', {
+          tm: new Date().getTime(),
+          gid,
+          friend_id: minusFid
+        })
+          .then((res) => {
+            let i = allFid.indexOf(id);
+            allFid.splice(i, 1)
+            console.log('minus-->', res, 'all-->', allFid)
+            this.setData({ allFid })
+          })
+      }
     }
   },
   // 更新设置
-  setUpDate(){
+  setUpDate(e){
     let name = e.detail.value.title.trim();
     let intro = e.detail.value.notice.trim();
-    let asset_file = this.data.asset_file;
-    let cover = this.data.pic;
+    let asset_file = this.data.pic;
+    let cover = this.data.asset_file?this.data.asset_file:'';
     let gid = this.data.gid;
     // 更新群信息
-    if(name && intro && cover){
+    if(name && intro && asset_file){
       network.post('group/update.do',{
         tm: new Date().getTime(),
         name,
@@ -212,7 +237,7 @@ Page({
         })
       })
     }else{
-      if(!cover){
+      if(!asset_file){
         util.toast('请上传群图片！')
       }
       if(!intro){

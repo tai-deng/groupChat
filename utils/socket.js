@@ -27,7 +27,7 @@ module.exports = (function() {
             connCallback && connCallback.call(null);
         });
         wx.onSocketMessage(function(res) { // 收到服务器消息时的处理
-            console.log('received msg: ' + res.data);
+            // console.log('received msg: ' + res.data);
             msgReceived.callback && msgReceived.callback.call(null, res.data, ...msgReceived.params);
         });
         wx.onSocketError(function(res){ // 链接出错时的处理

@@ -8,10 +8,10 @@ const app = getApp()
 Page({
   data: {
     userInfo: {},
-    hasUserInfo: false,
+    hasUserInfo: true,
     type:true,
     tab:1,
-    limit: 30,
+    limit: 50,
     friendPage: 0,
     groupPage: 0,
     isUpFri: true,
@@ -25,31 +25,21 @@ Page({
     ],
     datab:[],
     searchSta:false,
-    timeId:'',
+    timeId: '',
+    first:false,
   },
   onLoad: function (op) {
     this.init()
   },
   // socket 链接
   socketInit(){
-    let token = cache.get('token');
     if (!websocket.socketOpened) {
       websocket.setReceiveCallback(this.msgReceived, this);
       websocket.connect();
-      websocket.send({
-        "token": token,
-        "action": "say_hello"
-      });
-      app.globalData.timeId = setTimeout(()=>{
-        websocket.send({
-          "token": token,
-          "action": "me_alive"
-        });
-      },3000)
     }
     network.get('config.get',{tm:new Date().getTime()})
     .then((res)=>{
-      if(res.audit == 1){
+      if(res.audit != 1){
         let data1 = [{avatar:'../imgs/chat/image.png',nickname:'鸡蛋供应',remark:'将持续更新该品类的最新价格，敬请关注！',gid:1},
         {avatar:'../imgs/chat/image.png',nickname:'牛肉供应',remark:'将持续更新该品类的最新价格，敬请关注！',gid:2},
         {avatar:'../imgs/chat/image.png',nickname:'大米供应',remark:'将持续更新该品类的最新价格，敬请关注！',gid:3},
@@ -70,15 +60,15 @@ Page({
     wx.login({
       success: res => {
         let code = res.code
-        let arg = wx.getLaunchOptionsSync();
-        let scene = arg.scene;    // 场景
+        let query = app.globalData.query;
+        let scene = app.globalData.scene; // 场景
         let inviter = 0;                  // 邀请人
         let roomid = 0;                 // 聊天室
-        if (arg.query['inviter']) {
-          inviter = arg.query['inviter'];
+        if (query['inviter']) {
+          inviter = query['inviter'];
         }
-        if (arg.query['roomid']) {
-          roomid = arg.query['roomid'];
+        if (query['roomid']) {
+          roomid = query['roomid'];
         }
         this.setData({roomid,inviter})
         network.post('login.do',{
@@ -87,7 +77,8 @@ Page({
           inviter,
           roomid,
         }).then((res)=>{
-          if(res.code == '0'){
+          if (res.code == '0') {
+            this.setData({ first: true})
             if (res.data.bind_id) {
               this.setData({bind_id:res.data.bind_id,hasUserInfo:true})
             } else {
@@ -108,7 +99,7 @@ Page({
   },
   // 用户注册
   reg(bind_id,raw_data,signature,encrypted_data,iv){
-    let scene= cache.get('scene'); // 场景
+    let scene = app.globalData.scene;    // 场景
     let inviter= this.data.inviter;// 邀请人 id
     let roomid= this.data.roomid;  // 聊天室 id
     wx.showLoading({
@@ -136,7 +127,7 @@ Page({
     })
   },
   // 获取聊天
-  getData(tab){
+  getData(tab,upd){
     let url = 'user/friend.list';
     let tm = new Date().getTime();
     let page = 1;
@@ -159,16 +150,25 @@ Page({
           let list = res.data.list;
           let goon = true;
           if(tab == '1'){
-            pageData = this.data.data1.concat(res.data.list);
+            if(upd){
+              pageData = this.data.data1.concat(res.data.list);
+            }else{
+              pageData = res.data.list;
+            }
           }else if(tab == '2') {
-            pageData = this.data.datab.concat(res.data.list);
+            
+            if(upd){
+              pageData = this.data.datab.concat(res.data.list);
+            }else{
+              pageData = res.data.list;
+            }
           }
           pageData.forEach((element,index) => {
             if(pageData[index].relate_tm)
             pageData[index].relate_tm = util.nowDate(pageData[index].relate_tm)
           });
           if(list.length < this.data.limit){
-            goon =false;
+            // goon =false;
           }
           if(tab == '1'){
             this.setData({fdata: pageData,data1:pageData,isUpFri:goon,hasUserInfo:false})
@@ -222,26 +222,26 @@ Page({
   onChat(e){
     let title = e.currentTarget.dataset.title;
     let token = cache.get('token');
+    let uid = e.currentTarget.dataset.uid;
     let id = e.currentTarget.dataset.id;
+    let rid = e.currentTarget.dataset.rid;
     let tab = this.data.tab;
-    if(this.data.type){
+    let isOk = this.data.isOk;
+    let client_id = cache.get('client_id');
+    if (this.data.type) {
+      if (!isOk) {
+        util.toast('socket 链接失败!')
+        return false;
+      }
       if(tab == '1'){
-        websocket.send({
-          "token": token,
-          "action": "view_friend",
-          "to_uid": id
-        });
+        this.pushDo({action:'view_friend',to_uid:uid});
         wx.navigateTo({
-          url: `./chat/chat?title=${title}&to_uid=${id}`
+          url: `./chat/chat?title=${title}&to_uid=${uid}&id=${rid}&client_id=${client_id}`
         })
       }else if(tab == '2'){
-        websocket.send({
-          "token": token,
-          "action": "view_group",
-          "gid": id
-        });
+        this.pushDo({action:'view_group',gid:id});
         wx.navigateTo({
-          url: `./chat/chat?title=${title}&gid=${id}`
+          url: `./chat/chat?title=${title}&gid=${id}&id=${rid}&client_id=${client_id}`
         })
       }
     }else{
@@ -253,7 +253,16 @@ Page({
   // 获取 socket 返回
   msgReceived(res){
     let d = JSON.parse(res);
-    console.log(d)
+    let isOk = false;
+    let client_id = '';
+    if (d.action == "connect_ok") {
+      isOk = true;
+      client_id = d.client_id;
+      this.pushDo({ action: 'say_hello', client_id });
+      cache.set('client_id',client_id)
+      this.setData({ isOk,client_id })
+    }
+    console.log('index',d)
   },
   // 授权用户信息
   getUserInfoInit() {
@@ -303,19 +312,41 @@ Page({
   },
   // 会话设置
   onLongpress(e) {
+    let tab = this.data.tab;
     let id = e.currentTarget.dataset.id;
     let data = this.data.data;
     let i = e.currentTarget.dataset.i;
     let title = e.currentTarget.dataset.title;
-    util.showModal('提示', '要修改该会话吗？', true, () => {
-        wx.navigateTo({
-          url:`/pages/index/group/group?tag=chat&id=${id}&title=${title}`
-        })
-    })
+    if (tab == '2') {
+      util.showModal('提示', '要修改该会话吗？', true, () => {
+          wx.navigateTo({
+            url:`/pages/index/group/group?tag=chat&id=${id}&title=${title}`
+          })
+      })
+    }
   },
   // 上拉更新
   onReachBottom: function (e) {
     let tab = this.data.tab;
     this.getData(tab)
+  },
+  pushDo(arg) {
+    network.post('push.do',Object.assign({}, {
+      action:'',			//必传
+      client_id:'',		//可选	socket链接成功时返回
+      type:'',			//可选	1文字 2图片 3语音
+      content:'',			//可选	发送内容
+      to_uid:'',			//可选	好友id
+      gid:'',				//可选	群id
+      form_id:''			//可选
+    },arg))
+      .then((res) => {
+        console.log('pushDoIndex',res)
+    })
+  },
+  onShow: function () {
+    if (this.data.first) {
+      this.getData(this.data.tab)
+    }
   },
 })

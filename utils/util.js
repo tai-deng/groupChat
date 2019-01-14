@@ -82,6 +82,10 @@ const setTitle = (title)=>{
   })
 }
 
+const reSpace = (arys)=>{
+  return encodeURIComponent(arys);
+}
+
 module.exports = {
   formatTime,
   toast,
@@ -90,5 +94,6 @@ module.exports = {
   call,
   scrool,
   nowDate,
-  setTitle
+  setTitle,
+  reSpace
 }

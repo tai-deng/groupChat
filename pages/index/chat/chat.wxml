@@ -1,24 +1,25 @@
 <!--index.wxml-->
+<form bindsubmit="sendMsg" report-submit='true' >
 <view class="page">
-  <!-- <view class="seting"catchtap='onSeting'>
+  <view wx:if="{{gid}}" class="seting"catchtap='onSeting'>
     <image src="../../imgs/chat/more.png"></image>
-  </view> -->
+  </view>
   <view class="page_bd">
     <scroll-view catchtap="scrollClick" class="msg_scroll" style="height:{{scrollHeight}}" scroll-top="{{scrollTop}}" scroll-y scroll-with-animation>
 
       <block wx:for="{{chatList}}" wx:key="id">
-        <view class="chat_block chat_block_right">
+        <view class="chat_block {{item.isMe?'chat_block_right':'chat_block_left'}}">
           <view class="chat_avatar">
-            <image mode="aspectFit" src="{{userInfo.avatar}}"></image>
+            <image mode="aspectFit" src="{{item.avatar}}"></image>
           </view>
           <view class="chat_cont">
-            <view wx:if="{{item.msg_type==='text'}}">
+            <view wx:if="{{item.msg_type==='1'}}">
               <block wx:for="{{item.text_list}}" wx:key="{{index}}">
                 <text wx:if="{{item.msgType==='text'}}">{{item.msgCont}}</text>
                 <image wx:if="{{item.msgType==='emoji'}}" src="{{item.msgImage}}" class="emoji"></image>
               </block>
             </view>
-            <view class="img_msg" wx:if="{{item.msg_type==='image'}}">
+            <view class="img_msg" wx:if="{{item.msg_type==='2'}}">
               <image catchtap="previewImage" id="{{item.msg_image.src}}" src="{{item.msg_image.src}}" style="width:100px;height:{{item.msg_image.height*100/item.msg_image.width}}px"></image>
             </view>
           </view>
@@ -38,11 +39,11 @@
       </view>
       <view class="msgbox">
         <!-- <image catchtap="toggleVoice" src="../../imgs/chat/voice.png"></image> -->
-        <input value="{{msg}}" bindinput="inputMsg"placeholder='' placeholder-style='inputStyle' bindfocus="inputFocus" class="msgbox_input" maxlength="999" cursor-spacing="10" bindconfirm="confirmMsg" bindblur="blurInput" confirm-type="发送" />
+        <input value="{{msg}}" bindinput="inputMsg"placeholder='' placeholder-style='inputStyle' cursor-spacing='30' bindfocus="inputFocus" class="msgbox_input" maxlength="999" cursor-spacing="10" bindconfirm="confirmMsg" bindblur="blurInput" confirm-type="发送" />
         <image catchtap="toggleEmojis" src="../../imgs/chat/emotion-o.png"></image>
         <image catchtap="toggleFiles" src="../../imgs/chat/plus.png"></image>
-        <image catchtap="sendMsg" src="../../imgs/chat/send.png"></image>
-        <!-- <view class="send row" catchtap="sendMsg"> 发送</view> -->
+        <!-- <image catchtap="sendMsg" src="../../imgs/chat/send.png"></image> -->
+        <button form-type="submit" class="send row" > 发送</button>
       </view>
 
 
@@ -59,3 +60,4 @@
 
   </view>
 </view>
+</form>

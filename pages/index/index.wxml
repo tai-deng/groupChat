@@ -8,7 +8,7 @@
       <view class="userinfo-cnt">为了更友好的为您服务请授权微信登录</view>
       <view class="userinfo-bnt row">
         <!-- <button open-type="submit" class="row" catchtap="onCancel" hover-class="none">取消</button> -->
-        <button open-type="getUserInfo" class="row" bindgetuserinfo="getUserInfo" hover-class="none">确定</button>
+        <button open-type="getUserInfo" lang="zh_CN" class="row" bindgetuserinfo="getUserInfo" hover-class="none">确定</button>
       </view>
     </view>
   </view>
@@ -55,12 +55,12 @@
         </view>
         <view class="tab-item row"bindtap='onTab'data-i='2'>
             <view class="tab-item-v row {{tab==2?'se':''}}">
-                扎堆会
+                领取资料
             </view>
         </view>
     </view>
 
-    <button form-type="submit" catchlongpress='onLongpress' hover-class="none" class="chat-item rows"bindtap="onChat"data-title="{{tab==1?item.nickname:item.gname}}"wx:for="{{tab==1?fdata:gdata}}"wx:key="{{index}}"data-id="{{tab==1?item.friend_id:item.gid}}"data-i="{{index}}">
+    <button form-type="submit" catchlongpress='onLongpress' hover-class="none" class="chat-item rows"bindtap="onChat"data-title="{{tab==1?item.nickname:item.gname}}"wx:for="{{tab==1?fdata:gdata}}"wx:key="{{index}}"data-id="{{tab==1?item.friend_id:item.gid}}"data-uid="{{item.uid}}"data-rid="{{item.relate_id}}">
       <view class="chat-item-l flexrow">
         <view class="chat-item-l-pic">
           <block wx:if="{{tab==1}}">

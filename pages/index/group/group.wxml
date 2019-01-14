@@ -1,32 +1,32 @@
 <!--pages/index/group/group.wxml-->
 <form bindsubmit="formSubmit">
 <view class="container">
-    <view class="state-bar rows"wx:if="{{isGroup}}">
+    <view class="state-bar rows"wx:if="{{tag!='look'}}">
         <view class="state-bar-l">
             已选择{{clue?clue:0}}个人
         </view>
         <button form-type='submit' class="state-bar-r" >确定</button>
     </view>
-    <view class="state-bar {{isGroup? 'flexrow': 'rows'}}">
+    <view class="state-bar {{tag!='look'? 'flexrow': 'rows'}}">
         <view class="state-bar-l">扎堆会名称：</view>
-        <block wx:if="{{isGroup}}">
+        <block wx:if="{{tag!='look'}}">
             <input type="text" value='{{title}}' name='title' placeholder-style='placeholder' placeholder='请输入名称'/>
         </block>
         <block wx:else>
             <view class="mtext">{{title}}</view>
         </block>
     </view>
-    <view class="state-bar area {{isGroup? 'flexrow': 'rows'}}">
+    <view class="state-bar area {{tag!='look'? 'flexrow': 'rows'}}">
         <view class="state-bar-l">扎堆会公告：</view>
-        <block wx:if="{{isGroup}}">
+        <block wx:if="{{tag!='look'}}">
             <textarea type="text" value="{{notice}}" maxlength='140' name='notice' placeholder-style='placeholder' placeholder='请输入公告内容'/>
         </block>
         <block wx:else>
             <view class="mtext flexcolumn">{{notice}}</view>
         </block>
     </view>
-    <view class="state-bar {{isGroup? 'flexrow': 'rows'}}" bindtap='onPreview'>
-        <block wx:if="{{isGroup}}">
+    <view class="state-bar {{tag!='look'? 'flexrow': 'rows'}}" bindtap='onPreview'>
+        <block wx:if="{{tag!='look'}}">
             <view class="state-bar-l">群图标：</view>
             <block wx:if="{{pic}}">
                 <image src="{{pic}}" catchtap="bindupload"></image>
@@ -37,13 +37,13 @@
         </block>
         <block wx:else>
             <view class="state-bar-l">二维码：</view>
-            <image src="../../imgs/chat/image.png"></image>
+            <image src="{{pic}}"></image>
         </block>
     </view>
-    <view class="content {{isGroup? 'ch': 'member'}}">
-        <block wx:if="{{isGroup}}">
+    <view class="content {{tag!='look'? 'ch': 'member'}}">
+        <block wx:if="{{tag!='look'}}">
             <checkbox-group bindchange="checkbox">
-                <label class="content-i rows"wx:for='{{data}}'wx:key="{{index}}" data-id='{{item.friend_id}}' catchtap="checkboxChange">
+                <label class="content-i rows"wx:for='{{data}}'wx:key="{{index}}" data-id='{{item.uid}}' catchtap="checkboxChange">
                     <view class="content-i-l flexrow">
                         <view class="content-i-l-pic mr26">
                             <image src="{{item.avatar}}"></image>
@@ -53,7 +53,7 @@
                         </view>
                     </view>
                     <view class="content-i-r">
-                        <checkbox value="{{item.friend_id}}"  checked="{{item.group_user}}" />    
+                        <checkbox value="{{item.uid}}"  checked="{{item.group_user}}" />    
                     </view>
                 </label>
            </checkbox-group>

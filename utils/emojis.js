@@ -6,7 +6,6 @@ const emojiToPath = (i) => `/pages/imgs/emojis/${emojis[i]}.gif`
 // 将聊天内容转为一个文字和图片混合的列表
 const textToEmoji = (s) => {
   const r = /\[[^\[\]]+?\]/g;
-
   const a = [];
   let t = null;
   let i = 0;

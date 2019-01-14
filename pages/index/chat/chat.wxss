@@ -23,6 +23,8 @@
   position: relative;
   border-radius: 5px;
   font-size: 14px;
+  max-width: 500rpx;
+  word-break:break-all;
 }
 
 .chat_cont::before, .chat_cont::after {

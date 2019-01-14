@@ -17,11 +17,11 @@
                 <image src="../imgs/chat/flock.png"></image>
                 扎堆会　
             </view>
-            <button open-type="share" hover-class="none" class="menu-show-item row">
-            <image wx:if="{{isGroup}}" src="../imgs/chat/addfrend.png"></image>
+            <button wx:if="{{isGroup}}" open-type="share" hover-class="none" class="menu-show-item row">
+            <image src="../imgs/chat/addfrend.png"></image>
             邀请好友
             </button>
-            <button open-type="contant" hover-class="none" class="menu-show-item row">
+            <button open-type="contact" hover-class="none" class="menu-show-item row">
             <image src="../imgs/chat/advice.png"></image>
             投诉建议
             </button>

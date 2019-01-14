@@ -3,6 +3,7 @@
 import cache from '../../../utils/cache.js'
 import util from '../../../utils/util.js'
 import websocket from '../../../utils/socket.js'
+import {network} from '../../../utils/ajax.js'
 
 const { emojis, emojiToPath, textToEmoji } = require('../../../utils/emojis');
 const inputHeight = 51;
@@ -21,6 +22,9 @@ Page({
     scrollTop: 9999,
     msg: '',
     chatList: [],
+    limit: 50,
+    page: 0,
+    type:'1', // 1 文字 2 图片 3 语音
   },
   onLoad: function (op) {
     this.init(op)
@@ -33,22 +37,67 @@ Page({
     const sysInfo = wx.getSystemInfoSync()
     windowHeight = sysInfo.windowHeight
     const scrollHeight = `${windowHeight - inputHeight}px`
-    // 获取缓存中聊天记录
-    // const chatList = (wx.getStorageSync('chatList') || []).map(chat=>{
-    //   if (chat.msg_type === 'text') {
-    //     chat.text_list = textToEmoji(chat.msg_text)
-    //   }
-    //   return chat
-    // })
-    const chatList = (wx.getStorageSync('chatList') || [])
     // 更新状态
     this.setData({
       emojiList,
       sysInfo,
       scrollHeight,
-      chatList,
     })
+    this.getData()
     websocket.setReceiveCallback(this.msgReceived, this);
+  },
+  // 获取历史消息
+  getData() {
+    let gid = this.data.gid;
+    let to_uid = this.data.to_uid;
+    let type = to_uid ? 1 : 2; 
+    let relate_id = this.data.id;
+    let page = this.data.page + 1;
+    let meId = cache.get('userInfo').userInfo.uid;
+    network.get("chat.list", {
+      tm: new Date().getTime(),
+      type,
+      relate_id,
+      page,
+      limit: this.data.limit,
+    })
+    .then((res) => {
+      if (res.code == '0') {
+        let { chatList } = this.data;
+        let d = res.data.list;
+        let avatar = '';
+        let nickname = '';
+        if (d.length > 0) {
+          d.forEach(el => {
+            let isMe = false;
+            if (gid) {
+              avatar = el.from_user.avatar;
+              nickname = el.from_user.nickname;
+              if (meId == el.from_uid) {
+                isMe = true;
+              }
+            } else {
+              avatar = el.from_user.avatar;
+              nickname = el.from_user.nickname;
+              if (meId == el.from_user.uid) {
+                isMe = true;
+              }
+            }
+            chatList.unshift({
+              msg_type:String(el.type),
+              msg_text: el.content,
+              text_list: textToEmoji(el.content),
+              avatar,nickname,isMe
+            })
+          });
+          console.log(chatList)
+        }
+        this.setData({
+          chatList,list:d
+        })
+        this.goBottom(500);
+      }
+    })
   },
   onUnload: function () {
     // 清除定时器
@@ -63,10 +112,15 @@ Page({
     }
     let gid = op['gid'] ? op['gid'] : '';
     let to_uid = op['to_uid'] ? op['to_uid'] : '';
+    let id = op['id'];
+    let client_id = op['client_id'];
     this.setData({
       userInfo:cache.get('userInfo').userInfo,
       gid,
-      to_uid
+      to_uid,
+      id,
+      client_id,
+      title:op.title,
     })
   },
   // 滚动聊天
@@ -164,48 +218,63 @@ Page({
   },
   // 发送信息
   sendMsg: function (e) {
-    const { msg, chatList } = this.data
+    let { msg,chatList } = this.data
     if (!msg) {
       return
     }
-    const newChatList = [...chatList, {
-      msg_type: 'text',
-      msg_text: msg,
-      text_list: textToEmoji(msg)
-    }]
-    
-    let token = cache.get('token');
-    if(this.data.gid){
-      websocket.send({
-        "token": token,
-        "action": "send_to_group",
-        "gid": this.data.gid,
-        "type": 1,		//1文字 2图片 3语音
-        "content": msg,
-        "form_id": "",
+    let type = '1'; // 1 文字 2 图片 3 语音
+    let form_id = util.reSpace(e.detail.formId);
+    if (this.data.gid) {
+      this.pushDo({
+        action: 'send_to_group',
+        gid: this.data.gid,
+        type,
+        content: msg,
+        form_id
+      }, (res) => {
+        if (res.code == '0') {
+          this.setData({msg:'',type,
+          scrollHeight: `${windowHeight - inputHeight}px`,showEmojis:false})
+          this.goBottom(500);
+        }
       });
-    }else{
-      websocket.send({
-        "token": token,
-        "action": "send_to_friend",
-        "to_uid": this.data.to_uid,
-        "type": 1,		//1文字 2图片 3语音
-        "content": msg,
-        "form_id": "",
+    } else {
+      this.pushDo({
+        action: 'send_to_friend',
+        to_uid: this.data.to_uid,
+        type,
+        content: msg,
+        form_id
+      }, (res) => {
+        if (res.code == '0') {
+          this.setData({msg:'',type,
+          scrollHeight: `${windowHeight - inputHeight}px`,showEmojis:false})
+          this.goBottom(500);
+        }
       });
     }
-
-    this.setData({
-      chatList: newChatList,
-      msg: ''
+  },
+  pushDo(arg,cb) {
+    network.post('push.do',Object.assign({}, {
+      action:'',			//必传
+      client_id:'',		//可选	socket链接成功时返回
+      type:'',			//可选	1文字 2图片 3语音
+      content:'',			//可选	发送内容
+      to_uid:0,			//可选	好友id
+      gid:0,				//可选	群id
+      form_id:''			//可选
+    },arg))
+      .then((res) => {
+        if (typeof cb == 'function') {
+          cb(res);
+        }
     })
-    wx.setStorageSync('chatList', newChatList);
-    this.goBottom(500);
   },
   // 发送图片
   sendPic: function (e) {
     const that = this
     const { chatList } = this.data
+    let type = 2;
 
     wx.chooseImage({
       count: 1,
@@ -220,7 +289,7 @@ Page({
               msg_image: { src, width, height }
             }]
             that.setData({ chatList: newChatList })
-            wx.setStorageSync('chatList', newChatList);
+            // wx.setStorageSync('chatList', newChatList);
             that.goBottom(500);
           }
         })
@@ -236,6 +305,52 @@ Page({
   // 获取 socket 返回
   msgReceived(res){
     let d = JSON.parse(res);
-    console.log(d)
+    const { chatList } = this.data
+    let myId = cache.get('userInfo').userInfo.uid;
+    console.log(d,this.data.gid)
+    if (typeof d.content == 'undefined') {
+      return false;
+    }
+    let isMe = false;
+    let avatar = '';
+    let nickname = '';
+    let uid = cache.get('userInfo').userInfo.uid;
+    avatar = d.user.avatar;
+    nickname = d.user.nickname;
+    if (uid == d.user.uid) {
+      isMe = true;
+    }
+    if(d.action == 'receive_from_friend'){
+      if(this.data.to_uid == d.uid || d.uid == myId){
+        chatList.push({
+          msg_type:d.type,
+          msg_text: d.content,
+          text_list: textToEmoji(d.content),
+          nickname,avatar,isMe
+        })
+        this.setData({chatList})
+        this.goBottom(500);
+      }
+    }else if(d.action = 'receive_from_group'){
+      if(this.data.gid == d.gid){
+        chatList.push({
+          msg_type:d.type,
+          msg_text: d.content,
+          text_list: textToEmoji(d.content),
+          nickname,avatar,isMe
+        })
+        this.setData({chatList})
+        this.goBottom(500);
+      }
+    }
+  },
+  onSeting(e) {
+    let gid = this.data.gid;
+    let title = this.data.title;
+    if (gid) {
+      wx.navigateTo({
+        url:`/pages/index/group/group?tag=look&id=${gid}&title=${title}`
+      })
+    }
   },
 })

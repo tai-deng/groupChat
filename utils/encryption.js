@@ -1,23 +1,24 @@
 function get_sign(arys, key){
   var str = build_query(objKeySort(arys),key);
+  console.log('str-->'+str)
 	return hex_md5(str);
 }
 function build_query(arys,key){
-	var str = '';
-	for(var i in arys){
-    if (i == 'sign' || arys[i] == undefined) continue;
-		var val = encodeURIComponent(arys[i]);
-    val = val.replace(/\%20/g, '+');
-		val = val.replace(/\(/g, '%28');
-		val = val.replace(/\)/g, '%29');
-		val = val.replace(/\!/g, '%21');
-		val = val.replace(/\'/g, '%27');
-		val = val.replace(/\~/g, '%7E');
-		str += '&' + i + '=' + val; 
-	}
-	
-	var query = str.substr(1) + '&key=' + key;
-	return query;
+    var str = '';
+    for(var i in arys){
+  if (i == 'sign' || arys[i] == undefined) continue;
+      var val = encodeURIComponent(arys[i]);
+  val = val.replace(/\+/g, '%20');
+      val = val.replace(/\(/g, '%28');
+      val = val.replace(/\)/g, '%29');
+      val = val.replace(/\!/g, '%21');
+      val = val.replace(/\'/g, '%27');
+      val = val.replace(/\~/g, '%7E');
+      str += '&' + i + '=' + val; 
+    }
+    
+    var query = str.substr(1) + '&key=' + key;
+    return query;
 }
 //排序的函数
 function objKeySort(arys) {
