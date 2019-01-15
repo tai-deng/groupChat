@@ -55,6 +55,7 @@ Page({
         websocket.setReceiveCallback(this.msgReceived, this);
         websocket.connect();
         clearInterval(time)
+        wx.hideLoading({})
       } else {
         wx.showLoading({title:'网络连接中'})
       }
@@ -158,7 +159,6 @@ Page({
         let user = cache.get('userInfo');
         user.userInfo = res.data.user;
         cache.set('userInfo',user);
-        wx.hideLoading()
         this.socketInit()
         this.getData(this.data.tab);
       }
@@ -270,7 +270,7 @@ Page({
     let tab = this.data.tab;
     let isOk = app.globalData.isOk;
     let client_id = cache.get('client_id');
-    if (this.data.type) {
+    if (id) {
       if (!isOk) {
         util.toast('socket 链接失败!')
         return false;
@@ -298,7 +298,6 @@ Page({
     let client_id = '';
     if (d.action == "connect_ok") {
       app.globalData.isOk = true;
-      wx.hideLoading({})
       client_id = d.client_id;
       this.pushDo({ action: 'say_hello', client_id });
       cache.set('client_id',client_id)
