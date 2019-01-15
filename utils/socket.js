@@ -59,11 +59,16 @@ module.exports = (function() {
         initEvent();
     }
 
+    function onClose(cb) {
+        wx.onSocketClose(cb);
+    }
+
     init();
     return {
         connect: connect,
         send: sendSocketMessage,
         setReceiveCallback: setReceiveCallback,
-        socketOpened: socketOpened
+        socketOpened: socketOpened,
+        onClose:onClose
     };
 })();

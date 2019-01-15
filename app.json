@@ -20,7 +20,7 @@
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "扎堆",
+        "text": "首页",
         "iconPath": "pages/imgs/lta.png",
         "selectedIconPath": "pages/imgs/ltb.png"
       },

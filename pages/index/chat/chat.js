@@ -5,6 +5,7 @@ import util from '../../../utils/util.js'
 import websocket from '../../../utils/socket.js'
 import {network} from '../../../utils/ajax.js'
 
+const app = getApp();
 const { emojis, emojiToPath, textToEmoji } = require('../../../utils/emojis');
 const inputHeight = 51;
 const emojiHeight = 171;
@@ -44,7 +45,6 @@ Page({
       scrollHeight,
     })
     this.getData()
-    websocket.setReceiveCallback(this.msgReceived, this);
   },
   // 获取历史消息
   getData() {
@@ -113,7 +113,7 @@ Page({
     let gid = op['gid'] ? op['gid'] : '';
     let to_uid = op['to_uid'] ? op['to_uid'] : '';
     let id = op['id'];
-    let client_id = op['client_id'];
+    let client_id = cache.get('client_id');
     this.setData({
       userInfo:cache.get('userInfo').userInfo,
       gid,
@@ -190,6 +190,7 @@ Page({
         showFiles: false,
       });
     }
+    this.goBottom(50)
   },
   inputMsg: function(e){
     //
@@ -198,6 +199,7 @@ Page({
     this.setData({
       msg: e.detail.value
     })
+    this.goBottom(50)
   },
   // 点击滚动框
   scrollClick: function () {
@@ -307,8 +309,24 @@ Page({
     let d = JSON.parse(res);
     const { chatList } = this.data
     let myId = cache.get('userInfo').userInfo.uid;
-    console.log(d,this.data.gid)
-    if (typeof d.content == 'undefined') {
+    console.log('chat',d)
+    if (typeof d.content == 'undefined' || typeof d.client_id != 'undefined') {
+      if (typeof d.client_id != 'undefined') {
+        cache.set('client_id',d.client_id)
+        this.pushDo({ action: 'say_hello', client_id:d.client_id });
+        let tab = to_uid?1:2;
+        let id = this.data.id;
+        let title =  this.data.title;
+        let to_uid = this.data.to_uid;
+        let gid = this.data.gid;
+        let back = JSON.stringify({
+          tab,id,title,to_uid,gid
+        })
+        wx.hideLoading({})
+        wx.switchTab({
+          url:`pages/index/index?back=${back}`
+        })
+      }
       return false;
     }
     let isMe = false;
@@ -352,5 +370,8 @@ Page({
         url:`/pages/index/group/group?tag=look&id=${gid}&title=${title}`
       })
     }
+  },
+  onShow: function () {
+    websocket.setReceiveCallback(this.msgReceived, this);
   },
 })

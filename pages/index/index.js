@@ -9,7 +9,7 @@ Page({
   data: {
     userInfo: {},
     hasUserInfo: true,
-    type:true,
+    audit:false,
     tab:1,
     limit: 50,
     friendPage: 0,
@@ -29,17 +29,39 @@ Page({
     first:false,
   },
   onLoad: function (op) {
-    this.init()
+    this.init(op)
+  },
+  // 处理 back
+  onBack(op){
+    if(op['back']){
+      let back = JSON.parse(op['back']);
+      let url = '';
+      if(back.tab == '1'){
+        url= `./chat/chat?title=${back.title}&to_uid=${back.to_uid}&id=${back.id}`
+        this.pushDo({action:'view_friend',to_uid:back.to_uid});
+      }else if(back.tab == '2'){
+        this.pushDo({action:'view_group',gid:back.gid});
+        url= `./chat/chat?title=${back.title}&gid=${back.gid}&id=${back.id}`
+      }
+      wx.navigateTo({
+        url
+      })
+    }
   },
   // socket 链接
-  socketInit(){
-    if (!websocket.socketOpened) {
-      websocket.setReceiveCallback(this.msgReceived, this);
-      websocket.connect();
-    }
+  socketInit() {
+    let time = setInterval(() => {
+      if (!websocket.socketOpened) {
+        websocket.setReceiveCallback(this.msgReceived, this);
+        websocket.connect();
+        clearInterval(time)
+      } else {
+        wx.showLoading({title:'网络连接中'})
+      }
+    }, 2000);
     network.get('config.get',{tm:new Date().getTime()})
     .then((res)=>{
-      if(res.audit != 1){
+      if(res.audit == 1){
         let data1 = [{avatar:'../imgs/chat/image.png',nickname:'鸡蛋供应',remark:'将持续更新该品类的最新价格，敬请关注！',gid:1},
         {avatar:'../imgs/chat/image.png',nickname:'牛肉供应',remark:'将持续更新该品类的最新价格，敬请关注！',gid:2},
         {avatar:'../imgs/chat/image.png',nickname:'大米供应',remark:'将持续更新该品类的最新价格，敬请关注！',gid:3},
@@ -48,15 +70,18 @@ Page({
           {gcover:'../imgs/chat/image.png',gname:'牛肉竞价',gintro:'将持续更新该品类的最新价格，敬请关注！'},
           {gcover:'../imgs/chat/image.png',gname:'大米竞价',gintro:'将持续更新该品类的最新价格，敬请关注！'}]
         this.setData({
-          type:false,
+          audit:true,
           data1,
           datab
         })
+      }else{
+        this.setData({audit:false})
       }
+      this.getData(this.data.tab);
     })
   },
   // 用户登录
-  init(){
+  init(op){
     wx.login({
       success: res => {
         let code = res.code
@@ -88,7 +113,20 @@ Page({
               user['userInfo'] = res.data.user;
               cache.set('userInfo',user)
               this.socketInit()
-              this.getData(this.data.tab);
+              websocket.onClose((res) => {
+                app.globalData.isOk = false;
+                this.socketInit()
+              })
+              let isOk = app.globalData.isOk;
+              if(isOk && op['back']){
+                let time = setInterval(()=>{
+                  let isOk = app.globalData.isOk;
+                  if(isOk){
+                    this.onBack(op);
+                    clearInterval(time)
+                  }
+                },500)
+              }
             }
           }else if(res.code == '10001'|| res.code == '10002'){
             this.setData({hasUserInfo: true})
@@ -127,7 +165,8 @@ Page({
     })
   },
   // 获取聊天
-  getData(tab,upd){
+  getData(tab){
+    let upd= this.data.audit;
     let url = 'user/friend.list';
     let tm = new Date().getTime();
     let page = 1;
@@ -151,14 +190,15 @@ Page({
           let goon = true;
           if(tab == '1'){
             if(upd){
-              pageData = this.data.data1.concat(res.data.list);
+              pageData = this.data.data1;
+              // .concat(res.data.list)
             }else{
               pageData = res.data.list;
             }
           }else if(tab == '2') {
             
             if(upd){
-              pageData = this.data.datab.concat(res.data.list);
+              pageData = this.data.datab;
             }else{
               pageData = res.data.list;
             }
@@ -198,7 +238,9 @@ Page({
   // from 表单提交 搜索
   form(e){
     let fromId = e.detail.formId;
-    // 搜索内容
+  },
+  // 搜索
+  onSearch(){
     let searchcnt = e.detail.value.search;
     let searchSta = this.data.searchSta;
     if(!searchSta && searchcnt){
@@ -226,7 +268,7 @@ Page({
     let id = e.currentTarget.dataset.id;
     let rid = e.currentTarget.dataset.rid;
     let tab = this.data.tab;
-    let isOk = this.data.isOk;
+    let isOk = app.globalData.isOk;
     let client_id = cache.get('client_id');
     if (this.data.type) {
       if (!isOk) {
@@ -236,12 +278,12 @@ Page({
       if(tab == '1'){
         this.pushDo({action:'view_friend',to_uid:uid});
         wx.navigateTo({
-          url: `./chat/chat?title=${title}&to_uid=${uid}&id=${rid}&client_id=${client_id}`
+          url: `./chat/chat?title=${title}&to_uid=${uid}&id=${rid}`
         })
       }else if(tab == '2'){
         this.pushDo({action:'view_group',gid:id});
         wx.navigateTo({
-          url: `./chat/chat?title=${title}&gid=${id}&id=${rid}&client_id=${client_id}`
+          url: `./chat/chat?title=${title}&gid=${id}&id=${rid}`
         })
       }
     }else{
@@ -253,16 +295,16 @@ Page({
   // 获取 socket 返回
   msgReceived(res){
     let d = JSON.parse(res);
-    let isOk = false;
     let client_id = '';
     if (d.action == "connect_ok") {
-      isOk = true;
+      app.globalData.isOk = true;
+      wx.hideLoading({})
       client_id = d.client_id;
       this.pushDo({ action: 'say_hello', client_id });
       cache.set('client_id',client_id)
-      this.setData({ isOk,client_id })
+      this.setData({ client_id })
     }
-    console.log('index',d)
+    // console.log('index',d)
   },
   // 授权用户信息
   getUserInfoInit() {
@@ -341,12 +383,12 @@ Page({
       form_id:''			//可选
     },arg))
       .then((res) => {
-        console.log('pushDoIndex',res)
+        // console.log('pushDoIndex',res)
     })
   },
   onShow: function () {
     if (this.data.first) {
-      this.getData(this.data.tab)
+      // this.getData(this.data.tab)
     }
   },
 })

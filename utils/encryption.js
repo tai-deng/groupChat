@@ -1,6 +1,6 @@
 function get_sign(arys, key){
   var str = build_query(objKeySort(arys),key);
-  console.log('str-->'+str)
+  // console.log('str-->'+str)
 	return hex_md5(str);
 }
 function build_query(arys,key){
