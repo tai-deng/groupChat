@@ -30,6 +30,7 @@ Page({
   },
   onLoad: function (op) {
     this.init(op)
+    console.log('index-->',op)
   },
   // 处理 back
   onBack(op){
@@ -90,11 +91,26 @@ Page({
         let scene = app.globalData.scene; // 场景
         let inviter = 0;                  // 邀请人
         let roomid = 0;                 // 聊天室
-        if (query['inviter']) {
-          inviter = query['inviter'];
-        }
-        if (query['roomid']) {
-          roomid = query['roomid'];
+        if(op.scene){
+          let str = decodeURIComponent(op.scene).split('|');
+          for(var i =0;i<str.length;i++){
+            let item = str[i].split(':')
+            let key = item[0];
+            let v = item[1];
+            if (key == 'inviter') {
+              inviter = v;
+            }
+            if (key == 'roomid') {
+              roomid = v;
+            }
+          }
+        }else{
+          if (query['inviter']) {
+            inviter = query['inviter'];
+          }
+          if (query['roomid']) {
+            roomid = query['roomid'];
+          }
         }
         this.setData({roomid,inviter})
         network.post('login.do',{

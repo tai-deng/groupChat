@@ -39,7 +39,7 @@
       </view>
       <view class="msgbox">
         <!-- <image catchtap="toggleVoice" src="../../imgs/chat/voice.png"></image> -->
-        <input value="{{msg}}" bindinput="inputMsg"placeholder='' placeholder-style='inputStyle' cursor-spacing='10' bindfocus="inputFocus" class="msgbox_input" maxlength="999" bindconfirm="confirmMsg" bindblur="blurInput" confirm-type="发送" />
+        <input value="{{msg}}" bindinput="inputMsg"placeholder='' placeholder-style='inputStyle' cursor-spacing='10' bindfocus="inputFocus" class="msgbox_input" maxlength="999" bindconfirm="confirmMsg" confirm-hold='true' bindblur="blurInput" confirm-type="发送" />
         <image catchtap="toggleEmojis" src="../../imgs/chat/emotion-o.png"></image>
         <image catchtap="toggleFiles" src="../../imgs/chat/plus.png"></image>
         <!-- <image catchtap="sendMsg" src="../../imgs/chat/send.png"></image> -->
