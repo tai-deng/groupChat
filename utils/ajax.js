@@ -7,7 +7,7 @@ const API_URL = "https://api.752pay.com/";
 const IMG_URL = 'http://qiniu.51hall.com/';
 const key = '1afd506F2229A33a5979dc2e9e0e7R82';
 const appId = 'wx54ffdbfe8b628b63';
-const ver = '1.0.1';
+const ver = '1.0.2';
 
 // GET请求
 function GET (url, params, message, config) {
