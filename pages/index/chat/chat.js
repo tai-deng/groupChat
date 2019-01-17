@@ -3,7 +3,7 @@
 import cache from '../../../utils/cache.js'
 import util from '../../../utils/util.js'
 import websocket from '../../../utils/socket.js'
-import {network} from '../../../utils/ajax.js'
+import {network,upFile} from '../../../utils/ajax.js'
 
 const app = getApp();
 const { emojis, emojiToPath, textToEmoji } = require('../../../utils/emojis');
@@ -26,6 +26,8 @@ Page({
     limit: 50,
     page: 0,
     type:'1', // 1 文字 2 图片 3 语音
+    isSpeaking:false,
+    j:1,
   },
   onLoad: function (op) {
     this.init(op)
@@ -65,30 +67,32 @@ Page({
       if (res.code == '0') {
         let { chatList } = this.data;
         let d = res.data.list;
-        let avatar = '';
-        let nickname = '';
         if (d.length > 0) {
           d.forEach(el => {
-            let isMe = false;
+            let obj = new Object();
+            obj.msg_type= String(el.type);
+            obj.isMe= false;
+            obj.avatar= el.from_user.avatar;
+            obj.nickname= el.from_user.nickname;
+            obj.msg_text= el.content;
             if (gid) {
-              avatar = el.from_user.avatar;
-              nickname = el.from_user.nickname;
               if (meId == el.from_uid) {
-                isMe = true;
+                obj.isMe = true;
               }
             } else {
-              avatar = el.from_user.avatar;
-              nickname = el.from_user.nickname;
               if (meId == el.from_user.uid) {
-                isMe = true;
+                obj.isMe = true;
               }
             }
-            chatList.unshift({
-              msg_type:String(el.type),
-              msg_text: el.content,
-              text_list: textToEmoji(el.content),
-              avatar,nickname,isMe
-            })
+            if(el.type == '1'){
+              obj.text_list= textToEmoji(el.content);
+            }else if(el.type == '2'){
+              if(el.extend){
+                let ex= JSON.parse(el.extend)
+                obj.msg_image= { src:el.content, width:ex.width, height:ex.height }
+              }
+            }
+            chatList.unshift(obj)
           });
           console.log(chatList)
         }
@@ -219,42 +223,47 @@ Page({
     this.setData({ msg: msg + key });
   },
   // 发送信息
-  sendMsg: function (e) {
-    let { msg,chatList } = this.data
+  sendMsg: function (e,type='1') {
+    let { msg } = this.data
     if (!msg) {
       return
     }
-    let type = '1'; // 1 文字 2 图片 3 语音
-    let form_id = util.reSpace(e.detail.formId);
+    // let type = '1'; // 1 文字 2 图片 3 语音
+    console.log(type)
+    let form_id = '';
+    let agrs = '';
+    if(e){
+      form_id = util.reSpace(e.detail.formId);
+    }
     if (this.data.gid) {
-      this.pushDo({
+      agrs= {
         action: 'send_to_group',
         gid: this.data.gid,
         type,
         content: msg,
         form_id
-      }, (res) => {
-        if (res.code == '0') {
-          this.setData({msg:'',type,
-          scrollHeight: `${windowHeight - inputHeight}px`,showEmojis:false})
-          this.goBottom(500);
-        }
-      });
+      }
     } else {
-      this.pushDo({
+      agrs={
         action: 'send_to_friend',
         to_uid: this.data.to_uid,
         type,
         content: msg,
         form_id
-      }, (res) => {
-        if (res.code == '0') {
-          this.setData({msg:'',type,
-          scrollHeight: `${windowHeight - inputHeight}px`,showEmojis:false})
-          this.goBottom(500);
-        }
-      });
+      }
     }
+    if(type == '2'){
+      let width= this.data.width;
+      let height= this.data.height;
+      agrs = Object.assign({},agrs,{extend:JSON.stringify({width,height})})
+    }
+    this.pushDo(agrs, (res) => {
+      if (res.code == '0') {
+        this.setData({msg:'',type,
+        scrollHeight: `${windowHeight - inputHeight}px`,showEmojis:false})
+        this.goBottom(500);
+      }
+    });
   },
   pushDo(arg,cb) {
     network.post('push.do',Object.assign({}, {
@@ -265,7 +274,7 @@ Page({
       to_uid:0,			//可选	好友id
       gid:0,				//可选	群id
       form_id:''			//可选
-    },arg))
+    },arg),'正在发送')
       .then((res) => {
         if (typeof cb == 'function') {
           cb(res);
@@ -275,28 +284,72 @@ Page({
   // 发送图片
   sendPic: function (e) {
     const that = this
-    const { chatList } = this.data
     let type = 2;
-
     wx.chooseImage({
       count: 1,
       success: function (res) {
         const src = res.tempFilePaths[0]
         wx.getImageInfo({
           src,
-          success: function (res) {
-            const { width, height } = res
-            const newChatList = [...chatList, {
-              msg_type: 'image',
-              msg_image: { src, width, height }
-            }]
-            that.setData({ chatList: newChatList })
-            // wx.setStorageSync('chatList', newChatList);
-            that.goBottom(500);
+          success: function (info) {
+            const { width, height } = info
+            upFile('upload/image.do',src)
+            .then((res)=>{
+              if(!res){
+                return false;
+              }
+              let r = JSON.parse(res)
+              if(r.code == '0'){
+                let msg = r.data.asset.asset_url;
+                that.setData({msg,width,height,showFiles:false,
+                  scrollHeight: `${windowHeight - inputHeight}px`,showEmojis:false})
+                that.sendMsg('',type)
+              }else{
+                util.toast(r.msg)
+              }
+            })
           }
         })
       }
     })
+  },
+  // 语音-手指按下
+  touchStartSilk(e){
+    console.log("手指按下...")
+    // voice
+    let that= this;
+    wx.getSetting({
+      success(res) {
+        if (res.authSetting['scope.record']) {
+          wx.startRecord({
+            success(res) {
+              that.speaking(true)
+              that.setData({audioF:res.tempFilePath})
+              console.log(res.tempFilePath)
+              that.timerTouch= setTimeout(()=> {
+                that.touchUpSilk()
+                clearTimeout(that.timerTouch)
+              }, 10000)
+            }
+          })
+        }else{
+          util.showModal('提示','需要授权录音权限',true,(res)=>{
+            wx.openSetting({
+              success(res) {}
+            })
+          })
+        }
+      }
+    })
+  },
+  // 语音-手指抬起 上传文件
+  touchUpSilk() {
+      this.speaking(false)
+      clearTimeout(this.timerTouch)
+  },
+  // 语音-单击
+  onVoice(){
+    // this.setData({msg:''})
   },
   // 预览图片
   previewImage: function (e) {
@@ -333,6 +386,7 @@ Page({
     let avatar = '';
     let nickname = '';
     let uid = cache.get('userInfo').userInfo.uid;
+    let obj = new Object();
     avatar = d.user.avatar;
     nickname = d.user.nickname;
     if (uid == d.user.uid) {
@@ -340,27 +394,31 @@ Page({
     }
     if(d.action == 'receive_from_friend'){
       if(this.data.to_uid == d.uid || d.uid == myId){
-        chatList.push({
-          msg_type:d.type,
-          msg_text: d.content,
-          text_list: textToEmoji(d.content),
-          nickname,avatar,isMe
-        })
-        this.setData({chatList})
-        this.goBottom(500);
+        if(d.type == '1'){
+          obj.text_list= textToEmoji(d.content);
+        }else if(d.type == '2'){
+          let ex= JSON.parse(d.extend)
+          obj.msg_image= { src:d.content, width:ex.width, height:ex.height }
+        }
       }
     }else if(d.action = 'receive_from_group'){
       if(this.data.gid == d.gid){
-        chatList.push({
-          msg_type:d.type,
-          msg_text: d.content,
-          text_list: textToEmoji(d.content),
-          nickname,avatar,isMe
-        })
-        this.setData({chatList})
-        this.goBottom(500);
+        if(d.type == '1'){
+          obj.text_list= textToEmoji(d.content);
+        }else if(d.type == '2'){
+          let ex= JSON.parse(d.extend)
+          obj.msg_image= { src:d.content, width:ex.width, height:ex.height }
+        }
       }
     }
+    obj.msg_type= d.type;
+    obj.msg_text= d.content;
+    obj.nickname= nickname;
+    obj.avatar= avatar;
+    obj.isMe= isMe;
+    chatList.push(obj)
+    this.setData({chatList})
+    this.goBottom(500);
   },
   onSeting(e) {
     let gid = this.data.gid;
@@ -374,4 +432,23 @@ Page({
   onShow: function () {
     websocket.setReceiveCallback(this.msgReceived, this);
   },
+  //话筒帧动画 
+  speaking(click) {
+    let isSpeaking = this.data.isSpeaking;
+    isSpeaking = click;
+    var i = 1;
+    if(isSpeaking){
+      this.timer = setInterval(()=> {
+        i++;
+        i = i % 5;
+        this.setData({
+          j: i
+        })
+      }, 300);
+    }else{
+      clearInterval(this.timer)
+      wx.stopRecord()
+    }
+    this.setData({isSpeaking})
+  }
 })

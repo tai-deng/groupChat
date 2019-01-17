@@ -92,7 +92,7 @@ Page({
         let inviter = 0;                  // 邀请人
         let roomid = 0;                 // 聊天室
         if(op.scene){
-          let str = decodeURIComponent(op.scene).split('|');
+          let str = decodeURIComponent(op.scene).split('/');
           for(var i =0;i<str.length;i++){
             let item = str[i].split(':')
             let key = item[0];
@@ -104,6 +104,7 @@ Page({
               roomid = v;
             }
           }
+          console.log(op,str,inviter,roomid)
         }else{
           if (query['inviter']) {
             inviter = query['inviter'];
@@ -288,7 +289,7 @@ Page({
     let client_id = cache.get('client_id');
     if (id) {
       if (!isOk) {
-        util.toast('socket 链接失败!')
+        util.toast('正在连接')
         return false;
       }
       if(tab == '1'){
@@ -355,6 +356,7 @@ Page({
   },
   // 获取用户信息
   getUserInfo: function (e) {
+    console.log(e)
     if (e.errMsg = 'getUserInfo:ok') {
       if (this.data.bind_id) {
         cache.set('userInfo', e.detail);

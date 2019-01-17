@@ -7,7 +7,7 @@ const API_URL = "https://api.752pay.com/";
 const IMG_URL = 'http://qiniu.51hall.com/';
 const key = '1afd506F2229A33a5979dc2e9e0e7R82';
 const appId = 'wx54ffdbfe8b628b63';
-const ver = '1.0.2';
+const ver = '1.0.3';
 
 // GET请求
 function GET (url, params, message, config) {
@@ -49,11 +49,11 @@ function showModal (obj) {
   })
 }
 
-function request (url, params = {}, config,message = '加载中...',  method = 'POST') {
+function request (url, params = {},message = '加载中...', config,  method = 'POST') {
   let token = cache.get('token');
   token = token ? token : "";
   let sign = en.encryption(params, key);
-  let time = setTimeout(() => { // 请求时常大于 0.5 秒显示 loading 提示框
+  let time = setTimeout(() => {
     if (message) {
       wx.showLoading({
         title: message
@@ -95,7 +95,7 @@ const upFile = (url,file)=>{
   token = token ? token : "";
   let params = {tm:new Date().getTime()};
   let sign = en.encryption(params, key);
-  let time = setTimeout(() => { // 请求时常大于 0.5 秒显示 loading 提示框
+  let time = setTimeout(() => {
     wx.showLoading({
       title: '正在上传中...'
     })

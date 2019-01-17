@@ -42,7 +42,7 @@
 					"id": 0,
 					"name": "分享测试",
 					"pathName": "pages/index/index",
-					"query": "scene=inviter:10000|roomid:10000",
+					"query": "scene=inviter:0/roomid:10000",
 					"scene": "1031"
 				}
 			]

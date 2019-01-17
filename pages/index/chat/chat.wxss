@@ -214,3 +214,26 @@
 .send {
   padding-right: 20rpx;
 }
+/* 录音 */
+.speak-style{ 
+  position: fixed; 
+  height: 240rpx; 
+  width: 240rpx; 
+  border-radius: 20rpx;
+  background: rgba(0, 0, 0, .4);
+  top:30%;
+  margin-left: 255rpx;
+  z-index: 10;
+} 
+.sound-style{ 
+  position: absolute; 
+  width: 74rpx; 
+  height:150rpx; 
+  margin-top: 45rpx; 
+  margin-left: 83rpx; 
+} 
+.replace-input{
+  flex: 1;
+  font-size: 28rpx;
+  color: #888;
+}

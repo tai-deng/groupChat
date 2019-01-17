@@ -37,15 +37,16 @@
           <!--<text catchtap="sendMsg" class="emoji_send">发送</text>-->
         </view>
       </view>
+
       <view class="msgbox">
-        <!-- <image catchtap="toggleVoice" src="../../imgs/chat/voice.png"></image> -->
-        <input value="{{msg}}" bindinput="inputMsg"placeholder='' placeholder-style='inputStyle' cursor-spacing='10' bindfocus="inputFocus" class="msgbox_input" maxlength="999" bindconfirm="confirmMsg" confirm-hold='true' bindblur="blurInput" confirm-type="发送" />
+        <image catchtap='onVoice' style="background-color:{{isSpeaking?'#f9f9f9;':''}}" bindtouchstart="touchStartSilk" bindtouchend='touchUpSilk' src="../../imgs/chat/voice.png"></image>
+        <input value="{{msg}}" wx:if='{{!isSpeaking}}' bindinput="inputMsg"placeholder='' placeholder-style='inputStyle' cursor-spacing='10' bindfocus="inputFocus" class="msgbox_input" maxlength="999" bindconfirm="confirmMsg" confirm-hold='true' bindblur="blurInput" confirm-type="发送" />
+        <view wx:else class="msgbox_input replace-input row">正在录音</view>
         <image catchtap="toggleEmojis" src="../../imgs/chat/emotion-o.png"></image>
         <image catchtap="toggleFiles" src="../../imgs/chat/plus.png"></image>
         <!-- <image catchtap="sendMsg" src="../../imgs/chat/send.png"></image> -->
         <button form-type="submit" class="send row" > 发送</button>
       </view>
-
 
       <view wx:if="{{showFiles}}" class="files_box">
         <view class="files_wrap">
@@ -55,9 +56,15 @@
           <text>图片</text>
         </view>
       </view>
-
     </view>
 
+    <view  wx:if="{{isSpeaking}}"  class="speak-style">
+      <image class="sound-style" src="../../imgs/chat/voice_icon_speech_sound_1.png" ></image>
+      <image wx:if="{{j==2}}" class="sound-style" src="../../imgs/chat/voice_icon_speech_sound_2.png" ></image>
+      <image wx:if="{{j==3}}" class="sound-style" src="../../imgs/chat/voice_icon_speech_sound_3.png" ></image>
+      <image wx:if="{{j==4}}" class="sound-style" src="../../imgs/chat/voice_icon_speech_sound_4.png" ></image>
+      <image wx:if="{{j==5}}"class="sound-style" src="../../imgs/chat/voice_icon_speech_sound_5.png" ></image>
+    </view>
   </view>
 </view>
 </form>
