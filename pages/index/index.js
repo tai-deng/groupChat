@@ -60,7 +60,7 @@ Page({
       } else {
         wx.showLoading({title:'网络连接中'})
       }
-    }, 2000);
+    }, 500);
     network.get('config.get',{tm:new Date().getTime()})
     .then((res)=>{
       if(res.audit == 1){

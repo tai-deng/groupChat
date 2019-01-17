@@ -16,6 +16,7 @@ App({
     client_id:null,
     scene:null,
     query:null,
-    isOk:null,
+    isOk: null,
+    isAuth:null,
   },
 })

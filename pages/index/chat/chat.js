@@ -91,6 +91,11 @@ Page({
                 let ex= JSON.parse(el.extend)
                 obj.msg_image= { src:el.content, width:ex.width, height:ex.height }
               }
+            } else if (el.type == '3') {
+              if (el.extend) {
+                let ms = JSON.parse(el.extend);
+                obj.msg_audio= { src:el.content, ms:ms.ms }
+              }
             }
             chatList.unshift(obj)
           });
@@ -126,6 +131,13 @@ Page({
       client_id,
       title:op.title,
     })
+    this.manger = wx.getRecorderManager();
+    this.manger.onStop(this.onVoice)
+    this.manger.onInterruptionBegin((res)=> {
+      console.log('被中断')
+      this.speaking(false)
+    })
+    this.bgmanger = wx.createInnerAudioContext();
   },
   // 滚动聊天
   goBottom: function (n = 0) {
@@ -200,9 +212,7 @@ Page({
     //
   },
   blurInput: function (e) {
-    this.setData({
-      msg: e.detail.value
-    })
+    this.msg = e.detail.value;
     this.goBottom(50)
   },
   // 点击滚动框
@@ -219,17 +229,16 @@ Page({
   // 点击表情
   clickEmoji: function (e) {
     const { key } = e.currentTarget.dataset;
-    const { msg } = this.data;
-    this.setData({ msg: msg + key });
+    let msg= this.msg;
+    this.msg= msg + key;
+    this.setData({msg})
   },
   // 发送信息
   sendMsg: function (e,type='1') {
-    let { msg } = this.data
+    let msg = this.msg;
     if (!msg) {
       return
     }
-    // let type = '1'; // 1 文字 2 图片 3 语音
-    console.log(type)
     let form_id = '';
     let agrs = '';
     if(e){
@@ -241,7 +250,7 @@ Page({
         gid: this.data.gid,
         type,
         content: msg,
-        form_id
+        form_id,extend:''
       }
     } else {
       agrs={
@@ -249,7 +258,7 @@ Page({
         to_uid: this.data.to_uid,
         type,
         content: msg,
-        form_id
+        form_id,extend:''
       }
     }
     if(type == '2'){
@@ -257,11 +266,16 @@ Page({
       let height= this.data.height;
       agrs = Object.assign({},agrs,{extend:JSON.stringify({width,height})})
     }
+    if(type == '3'){
+      let ms= this.data.ms;
+      agrs = Object.assign({},agrs,{extend:JSON.stringify({ms})})
+    }
     this.pushDo(agrs, (res) => {
       if (res.code == '0') {
-        this.setData({msg:'',type,
+        this.setData({type,msg:'',
         scrollHeight: `${windowHeight - inputHeight}px`,showEmojis:false})
         this.goBottom(500);
+        this.msg = '';
       }
     });
   },
@@ -300,8 +314,8 @@ Page({
               }
               let r = JSON.parse(res)
               if(r.code == '0'){
-                let msg = r.data.asset.asset_url;
-                that.setData({msg,width,height,showFiles:false,
+                that.msg = r.data.asset.asset_url;
+                that.setData({width,height,showFiles:false,
                   scrollHeight: `${windowHeight - inputHeight}px`,showEmojis:false})
                 that.sendMsg('',type)
               }else{
@@ -314,42 +328,77 @@ Page({
     })
   },
   // 语音-手指按下
-  touchStartSilk(e){
-    console.log("手指按下...")
-    // voice
-    let that= this;
+  touchStartSilk(e) {
+    if (app.globalData.isAuth) {
+      this.timerTouch= setTimeout(()=> {
+        this.touchUpSilk()
+        clearTimeout(this.timerTouch)
+      }, 10000)
+      this.speaking(true)
+    } else {
+      this.isAuth()
+    } 
+  },
+  // 语音授权判断
+  isAuth() {
+    let that = this;
     wx.getSetting({
       success(res) {
-        if (res.authSetting['scope.record']) {
-          wx.startRecord({
+        if (!res.authSetting['scope.record']) {
+          wx.authorize({
+            scope: 'scope.record',
             success(res) {
-              that.speaking(true)
-              that.setData({audioF:res.tempFilePath})
-              console.log(res.tempFilePath)
-              that.timerTouch= setTimeout(()=> {
-                that.touchUpSilk()
-                clearTimeout(that.timerTouch)
-              }, 10000)
+              app.globalData.isAuth = true;
+            }, fail(res) {
+              app.globalData.isAuth = false;
+              util.showModal('提示','需要授权录音权限',true,(res)=>{
+                wx.openSetting({
+                  success(res) {
+                    if (res.authSetting['scope.record']) {
+                      app.globalData.isAuth = true;
+                    }
+                  }
+                })
+              })
             }
           })
-        }else{
-          util.showModal('提示','需要授权录音权限',true,(res)=>{
-            wx.openSetting({
-              success(res) {}
-            })
-          })
+        } else {
+          app.globalData.isAuth = true;
         }
       }
     })
   },
   // 语音-手指抬起 上传文件
   touchUpSilk() {
+    if (this.timerTouch) {
       this.speaking(false)
       clearTimeout(this.timerTouch)
+    }
   },
-  // 语音-单击
-  onVoice(){
-    // this.setData({msg:''})
+  // 语音-发送
+  onVoice(res) {
+    let ms = Math.round(res.duration/1000);
+    let file = res.tempFilePath;
+    if (ms) {
+      upFile('upload/voice.do', file)
+        .then((res) => {
+          let r = JSON.parse(res)
+          this.msg = r.data.asset.asset_url;
+          this.setData({ms})
+          this.sendMsg('',3)
+      })
+    } else {
+      util.toast('录音时间过短')
+    }
+  },
+  // 播放语音
+  onPlayAudio(e) {
+    let sr = e.currentTarget.dataset.src;
+    if (!this.bgmanger.paused) {
+      this.bgmanger.stop();
+    }
+    this.bgmanger.src = sr;
+    this.bgmanger.play();
   },
   // 预览图片
   previewImage: function (e) {
@@ -399,6 +448,9 @@ Page({
         }else if(d.type == '2'){
           let ex= JSON.parse(d.extend)
           obj.msg_image= { src:d.content, width:ex.width, height:ex.height }
+        }else if(d.type == '3'){
+          let ex= JSON.parse(d.extend)
+          obj.msg_audio= { src:d.content, ms:ex.ms }
         }
       }
     }else if(d.action = 'receive_from_group'){
@@ -408,6 +460,9 @@ Page({
         }else if(d.type == '2'){
           let ex= JSON.parse(d.extend)
           obj.msg_image= { src:d.content, width:ex.width, height:ex.height }
+        }else if(d.type == '3'){
+          let ex= JSON.parse(d.extend)
+          obj.msg_audio= { src:d.content, ms:ex.ms }
         }
       }
     }
@@ -437,7 +492,7 @@ Page({
     let isSpeaking = this.data.isSpeaking;
     isSpeaking = click;
     var i = 1;
-    if(isSpeaking){
+    if (isSpeaking) {
       this.timer = setInterval(()=> {
         i++;
         i = i % 5;
@@ -445,9 +500,13 @@ Page({
           j: i
         })
       }, 300);
+      this.manger.start({
+        duration: 60000,
+        format:'mp3'
+      })
     }else{
       clearInterval(this.timer)
-      wx.stopRecord()
+      this.manger.stop()
     }
     this.setData({isSpeaking})
   }

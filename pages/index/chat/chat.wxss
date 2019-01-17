@@ -1,5 +1,7 @@
 /**index.wxss**/
-
+.page{
+  padding-bottom: 1rpx;
+}
 .chat_block {
   display: flex;
   align-items: flex-start;
@@ -61,7 +63,7 @@
 .chat_block_right .chat_cont {
   margin-left: 20px;
   margin-right: 20px;
-  background: #ff5800;
+  background: #1aad19;
 }
 
 .chat_block_right .chat_cont::before {
@@ -71,7 +73,7 @@
 }
 
 .chat_block_right .chat_cont::after {
-  border-color: #ff5800 transparent transparent #ff5800;
+  border-color: #1aad19 transparent transparent #1aad19;
   right: -10px;
   top: 15px;
 }
@@ -236,4 +238,13 @@
   flex: 1;
   font-size: 28rpx;
   color: #888;
+}
+.audio_msg image {
+  width: 32rpx;
+  height: 32rpx;
+  display: block;
+  margin: 0 10rpx;
+}
+.myAudio {
+  transform: rotateY(180deg);
 }

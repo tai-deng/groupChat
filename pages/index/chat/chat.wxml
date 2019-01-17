@@ -22,6 +22,14 @@
             <view class="img_msg" wx:if="{{item.msg_type==='2'}}">
               <image catchtap="previewImage" id="{{item.msg_image.src}}" src="{{item.msg_image.src}}" style="width:100px;height:{{item.msg_image.height*100/item.msg_image.width}}px"></image>
             </view>
+            <view class="audio_msg flexrow" wx:if="{{item.msg_type==='3'}}"catchtap="onPlayAudio" data-src="{{item.msg_audio.src}}">
+              <block wx:if="{{item.isMe}}">
+                {{item.msg_audio.ms}}''<image class='myAudio' src='../../imgs/chat/audioIcon.png'></image>
+              </block>
+              <block wx:else>
+                <image src='../../imgs/chat/audioIcon.png'></image>{{item.msg_audio.ms}}''
+              </block>
+            </view>
           </view>
         </view>
       </block>
@@ -39,7 +47,7 @@
       </view>
 
       <view class="msgbox">
-        <image catchtap='onVoice' style="background-color:{{isSpeaking?'#f9f9f9;':''}}" bindtouchstart="touchStartSilk" bindtouchend='touchUpSilk' src="../../imgs/chat/voice.png"></image>
+        <image style="background-color:{{isSpeaking?'#f9f9f9;':''}}" bindtouchstart="touchStartSilk" bindtouchend='touchUpSilk' src="../../imgs/chat/voice.png"></image>
         <input value="{{msg}}" wx:if='{{!isSpeaking}}' bindinput="inputMsg"placeholder='' placeholder-style='inputStyle' cursor-spacing='10' bindfocus="inputFocus" class="msgbox_input" maxlength="999" bindconfirm="confirmMsg" confirm-hold='true' bindblur="blurInput" confirm-type="发送" />
         <view wx:else class="msgbox_input replace-input row">正在录音</view>
         <image catchtap="toggleEmojis" src="../../imgs/chat/emotion-o.png"></image>
