@@ -133,8 +133,7 @@ button {
 
 .topBar {
   width: 100vw;
-  padding: 0 20rpx;
-  height: 100rpx;
+  padding: 20rpx;
   position: fixed;
   top: 0;
   left: 0;
@@ -143,6 +142,13 @@ button {
 }
 .topBar-l {
   flex: 1;
+}
+.topBar-l-warp{
+  width: 70%;
+}
+.systemMsg{
+  font-size: 28rpx;
+  color: #ff5800;
 }
 .topBar-l-input {
   flex: 1;
@@ -154,6 +160,7 @@ button {
   overflow: hidden;
   color: #2d2d2d;
   background-color: #f1f1f1;
+  display: flex;
 }
 .topBar-l-btn {
   width: 45rpx;
@@ -171,5 +178,6 @@ button {
   position: absolute;
   top: 82rpx;
   left: 0;
+  width: 100vw;
   background-color: #f1f1f1;
 }

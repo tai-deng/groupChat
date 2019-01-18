@@ -28,6 +28,7 @@ Page({
     type:'1', // 1 文字 2 图片 3 语音
     isSpeaking:false,
     j:1,
+    maxUnum:30,
   },
   onLoad: function (op) {
     this.init(op)
@@ -48,22 +49,30 @@ Page({
     })
     this.getData()
   },
+  onPull() {
+    if(this.data.pull){
+      this.getData("p")
+    }
+  },
   // 获取历史消息
-  getData() {
+  getData(p) {
     let gid = this.data.gid;
     let to_uid = this.data.to_uid;
     let type = to_uid ? 1 : 2; 
     let relate_id = this.data.id;
     let page = this.data.page + 1;
     let meId = cache.get('userInfo').userInfo.uid;
+    let limit= this.data.limit;
+    let pull = true;
     network.get("chat.list", {
       tm: new Date().getTime(),
       type,
       relate_id,
       page,
-      limit: this.data.limit,
+      limit,
     })
     .then((res) => {
+      wx.stopPullDownRefresh();
       if (res.code == '0') {
         let { chatList } = this.data;
         let d = res.data.list;
@@ -75,6 +84,8 @@ Page({
             obj.avatar= el.from_user.avatar;
             obj.nickname= el.from_user.nickname;
             obj.msg_text= el.content;
+            obj.chat_id= el.chat_id;
+            obj.chat_tm= util.nowDate(el.chat_tm);
             if (gid) {
               if (meId == el.from_uid) {
                 obj.isMe = true;
@@ -94,12 +105,13 @@ Page({
             }
             chatList.unshift(obj)
           });
-          console.log(chatList)
+          if(d.length> 0 && d.length < limit){
+            pull= false;
+          }
+          this.setData({chatList,page,pull})
+          if(!p)
+          this.goBottom(500);
         }
-        this.setData({
-          chatList,list:d
-        })
-        this.goBottom(500);
       }
     })
   },
@@ -116,6 +128,10 @@ Page({
     }
     let gid = op['gid'] ? op['gid'] : '';
     let to_uid = op['to_uid'] ? op['to_uid'] : '';
+    let unum = op['unum'] ? op['unum'] : '';
+    if(unum!=''){
+      unum=Number(unum)
+    }
     let id = op['id'];
     let client_id = cache.get('client_id');
     this.setData({
@@ -125,6 +141,7 @@ Page({
       id,
       client_id,
       title:op.title,
+      unum,
     })
   },
   // 滚动聊天
@@ -262,6 +279,8 @@ Page({
         this.setData({msg:'',type,
         scrollHeight: `${windowHeight - inputHeight}px`,showEmojis:false})
         this.goBottom(500);
+      }else{
+        util.toast(res.msg)
       }
     });
   },
@@ -347,16 +366,6 @@ Page({
       this.speaking(false)
       clearTimeout(this.timerTouch)
   },
-  // 语音-单击
-  onVoice(){
-    // this.setData({msg:''})
-  },
-  // 预览图片
-  previewImage: function (e) {
-    wx.previewImage({
-      urls: [e.currentTarget.id]
-    })
-  },
   // 获取 socket 返回
   msgReceived(res){
     let d = JSON.parse(res);
@@ -383,12 +392,9 @@ Page({
       return false;
     }
     let isMe = false;
-    let avatar = '';
-    let nickname = '';
     let uid = cache.get('userInfo').userInfo.uid;
     let obj = new Object();
-    avatar = d.user.avatar;
-    nickname = d.user.nickname;
+    
     if (uid == d.user.uid) {
       isMe = true;
     }
@@ -413,9 +419,11 @@ Page({
     }
     obj.msg_type= d.type;
     obj.msg_text= d.content;
-    obj.nickname= nickname;
-    obj.avatar= avatar;
+    obj.nickname= d.user.nickname;
+    obj.avatar= d.user.avatar;
+    obj.chat_id= d.chat_id;
     obj.isMe= isMe;
+    obj.chat_tm= util.nowDate(d.chat_tm);
     chatList.push(obj)
     this.setData({chatList})
     this.goBottom(500);
@@ -432,7 +440,7 @@ Page({
   onShow: function () {
     websocket.setReceiveCallback(this.msgReceived, this);
   },
-  //话筒帧动画 
+  // 话筒帧动画 
   speaking(click) {
     let isSpeaking = this.data.isSpeaking;
     isSpeaking = click;
@@ -450,5 +458,65 @@ Page({
       wx.stopRecord()
     }
     this.setData({isSpeaking})
-  }
+  },
+  // 监听左滑删除
+  onTouchMoveItem(e){
+    let chat_id= e.currentTarget.dataset.chat_id;
+    let type= e.type;
+    let i= e.currentTarget.dataset.i;
+    let {chatList} = this.data;
+    let power = cache.get('userInfo').userInfo.create_group;
+    let genre = e.currentTarget.dataset.genre;
+    if(!e.changedTouches[0]){
+      return false
+    }
+    if(type == 'touchstart'){
+      this.start= e.changedTouches[0]['pageX'];
+      this.startTime= e.timeStamp;
+    }else if(type == 'touchend'){
+      this.end= e.changedTouches[0]['pageX'];
+      this.endTime= e.timeStamp;
+    }
+    if(this.start && this.end && this.start > this.end && power){
+      util.showModal('提示','是否确定删除?',true,()=>{
+        network.post('chat/remove.do',{chat_id})
+        .then((res)=>{
+          if(res.code == '0'){
+            chatList.splice(i,1);
+            util.toast(res.data.message)
+            this.setData({chatList})
+          }else{
+            util.toast(res.msg)
+          }
+          this.restore(1)
+        })
+      },()=>{
+        this.restore(2)
+      })
+      return false;
+    }else if(this.start == this.end){
+      let t = e.currentTarget.dataset.content;
+        if((this.endTime-this.startTime > 350)){
+          util.copy(t)
+          this.restore(3)
+          return false;
+        }else if(genre == '2'){
+          util.preview([t],t)
+          this.restore(4)
+          return false;
+        }
+    }else{
+      if(!power){
+        util.toast('不能删除')
+      }
+    }
+  },
+  // 还原 触摸参数
+  restore(s){
+    this.start='';
+    this.end= '';
+    this.startTime= '';
+    this.endTime= '';
+    // console.log('调试-->'+s)
+  },
 })

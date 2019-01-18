@@ -5,7 +5,8 @@
     "pages/logs/logs",
     "pages/contacts/contacts",
     "pages/index/group/group",
-    "pages/market/market"
+    "pages/market/market",
+    "pages/index/systemMsg/systemMsg"
   ],
   "window": {
     "backgroundTextStyle": "light",

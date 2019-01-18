@@ -40,7 +40,7 @@
       font-size: 26rpx;
   }
   .content-m {
-    margin-left: 20rpx;
+    margin-left: 16rpx;
     margin-bottom: 10rpx;
     background-color: #fff;
     font-size: 22rpx;
@@ -75,4 +75,10 @@
   }
   .mr26{
       margin-right: 26rpx;
+  }
+  .content-i-l-title{
+      width: 120rpx;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
   }
