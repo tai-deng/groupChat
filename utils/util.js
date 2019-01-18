@@ -14,14 +14,15 @@ const formatNumber = n => {
   return n[1] ? n : '0' + n
 }
 
-const nowDate = (data)=>{
-  const dt = new Date(data);
+const nowDate = (data) => {
+  const dt = new Date(data*1000);
+  const year = dt.getFullYear()
   const month = dt.getMonth() + 1
   const day = dt.getDate()
   const hour = dt.getHours()
   const minute = dt.getMinutes()
 
-  return [month, day].map(formatNumber).join('/') + ' ' + [hour, minute,].map(formatNumber).join(':')
+  return [year,month].map(formatNumber).join('/') + ' ' + [hour, minute,].map(formatNumber).join(':')
 }
 
 const toast = (title='',icon='none',duration=1500,mask=false,image='')=>{
@@ -86,6 +87,37 @@ const reSpace = (arys)=>{
   return encodeURIComponent(arys);
 }
 
+const copy= (text)=>{
+  wx.setClipboardData({
+    data: text,
+    success: function (res) {
+      // toast('复制成功');
+    }
+  })
+}
+
+const getCopy=()=>{
+  wx.getClipboardData({
+    success(res) {
+      return res.data;
+    }
+  })
+}
+
+const isClick =(that,v='0')=>{
+  // 0 获取 1 设置为true -1 设置为false
+  if(v=='0'){
+    return that.data.click;
+  }else if(v== '-1'){
+    that.setData({click:false})
+  }else if(v== '1'){
+    that.setData({click:true})
+  }else{
+    toast('点击失败')
+  }
+  // console.log(v)
+}
+
 module.exports = {
   formatTime,
   toast,
@@ -95,5 +127,8 @@ module.exports = {
   scrool,
   nowDate,
   setTitle,
-  reSpace
+  reSpace,
+  copy,
+  getCopy,
+  isClick
 }

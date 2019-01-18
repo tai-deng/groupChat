@@ -12,7 +12,7 @@ Page({
       // {avatar:'../../imgs/chat/image.png',nickname:'大米供应',cont:'这里是最后一次的聊天内容,就是有点长了，用来测试的',group_user:0,friend_id:1001},
     ],
     page:1,
-    limit:30,
+    limit:50,
     flag:true,
     friendPage: 0,
     gid:'',

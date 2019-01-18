@@ -14,14 +14,17 @@
   </view>
 
   <view class="tm"></view>
-  <view class="topBar rows">
-    <view class="topBar-l flexrow">
-      <view class="topBar-l-input">
-        <input type="text" bindinput='onSearchV' name='search'/>
+  <view class="topBar">
+    <view class="topBar-l rows">
+      <view class="topBar-l-warp flexrow">
+        <view class="topBar-l-input">
+          <input type="text" bindinput='onSearchV' name='search'/>
+        </view>
+          <button hover-class="none" form-type="submit" class='topBar-l-btn'>
+            <image src="../imgs/chat/search.png"></image>
+          </button>
       </view>
-      <button hover-class="none" form-type="submit" class='topBar-l-btn'>
-        <image src="../imgs/chat/search.png"></image>
-      </button>
+      <view class="systemMsg"catchtap='onSystemMsg'>系统消息</view>
     </view>
     <block wx:if="{{searchSta}}">
       <view class="search-cnt">
@@ -36,7 +39,7 @@
             </view>
           </view>
           <view class="chat-item-r column">
-            <view class="chat-item-r-time">{{item.relate_tm}}</view>
+            <view class="chat-item-r-time">{{item.last_view_tm}}</view>
             <view class="chat-item-r-state">
               <image wx:if="{{mute}}" src="../imgs/ltb.png"/>
             </view>
@@ -60,7 +63,10 @@
         </view>
     </view>
 
-    <button form-type="submit" catchlongpress='onLongpress' hover-class="none" class="chat-item rows"bindtap="onChat"data-title="{{tab==1?item.nickname:item.gname}}"wx:for="{{tab==1?fdata:gdata}}"wx:key="{{index}}"data-id="{{tab==1?item.friend_id:item.gid}}"data-uid="{{item.uid}}"data-rid="{{item.relate_id}}">
+    <button form-type="submit" hover-class="none" class="chat-item rows"
+    catchtouchstart='onTouchMoveItem'catchtouchend='onTouchMoveItem'
+    data-title="{{tab==1?item.nickname:item.gname}}"wx:for="{{tab==1?fdata:gdata}}"wx:key="{{index}}"data-id="{{tab==1?item.friend_id:item.gid}}"data-uid="{{item.relate_id}}"data-rid="{{item.relate_id}}"
+    data-unum="{{item.unum}}">
       <view class="chat-item-l flexrow">
         <view class="chat-item-l-pic">
           <block wx:if="{{tab==1}}">
@@ -90,7 +96,7 @@
         </view>
       </view>
       <view class="chat-item-r column">
-        <view class="chat-item-r-time">{{item.relate_tm}}</view>
+        <view class="chat-item-r-time">{{item.last_view_tm}}</view>
         <view class="chat-item-r-state">
           <image wx:if="{{mute}}" src="../imgs/ltb.png"/>
         </view>

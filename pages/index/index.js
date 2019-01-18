@@ -8,7 +8,7 @@ const app = getApp()
 Page({
   data: {
     userInfo: {},
-    hasUserInfo: true,
+    hasUserInfo: false,
     audit:false,
     tab:1,
     limit: 50,
@@ -27,6 +27,7 @@ Page({
     searchSta:false,
     timeId: '',
     first:false,
+    click:true,
   },
   onLoad: function (op) {
     this.init(op)
@@ -56,7 +57,7 @@ Page({
         websocket.setReceiveCallback(this.msgReceived, this);
         websocket.connect();
         clearInterval(time)
-        wx.hideLoading({})
+        wx.hideLoading()
       } else {
         wx.showLoading({title:'网络连接中'})
       }
@@ -113,7 +114,8 @@ Page({
             roomid = query['roomid'];
           }
         }
-        this.setData({roomid,inviter})
+        let has = cache.get('userInfo') ? false : true;
+        this.setData({roomid,inviter,hasUserInfo:has})
         network.post('login.do',{
           code,
           scene,
@@ -183,6 +185,8 @@ Page({
   },
   // 获取聊天
   getData(tab){
+    if(util.isClick(this)){
+      util.isClick(this,'-1')
     let upd= this.data.audit;
     let url = 'user/friend.list';
     let tm = new Date().getTime();
@@ -202,10 +206,12 @@ Page({
     if(flag){
       network.get(url,{tm,page,limit})
       .then((res)=>{
+        util.isClick(this,'1')
         if(res.code == '0'){
           let list = res.data.list;
           let goon = true;
           if(tab == '1'){
+            // update
             if(upd){
               pageData = this.data.data1;
               // .concat(res.data.list)
@@ -221,25 +227,32 @@ Page({
             }
           }
           pageData.forEach((element,index) => {
-            if(pageData[index].relate_tm)
-            pageData[index].relate_tm = util.nowDate(pageData[index].relate_tm)
+            if (pageData[index].last_view_tm) {
+              pageData[index].last_view_tm = util.nowDate(pageData[index].last_view_tm)
+            } else {
+              pageData[index].last_view_tm = util.nowDate(pageData[index].relate_tm)
+            }
           });
           if(list.length < this.data.limit){
             // goon =false;
           }
           if(tab == '1'){
+            console.log(pageData)
             this.setData({fdata: pageData,data1:pageData,isUpFri:goon,hasUserInfo:false})
           }else if(tab == '2') {
             this.setData({gdata: pageData,datab:pageData,isUpGro:goon,hasUserInfo:false})
           }
         }
+      },()=>{
+        util.isClick(this,'1')
       })
     }else{
       if(pageData.length > 0 && pageData.length < this.data.limit){
         util.toast('加载完毕')
       }
     }
-  },
+  
+    }},
   // tab 菜单切换
   onTab(e){
     let tab = e.currentTarget.dataset.i;
@@ -255,12 +268,9 @@ Page({
   // from 表单提交 搜索
   form(e){
     let fromId = e.detail.formId;
-  },
-  // 搜索
-  onSearch(){
-    let searchcnt = e.detail.value.search;
+    let v = e.detail.value.search;
     let searchSta = this.data.searchSta;
-    if(!searchSta && searchcnt){
+    if(!searchSta && v){
       searchSta = true;
     }
     this.setData({searchSta})
@@ -274,40 +284,7 @@ Page({
   },
   // 取消授权
   onCancel(e){
-    console.log(e)
     this.setData({hasUserInfo:true})
-  },
-  // 进入聊天
-  onChat(e){
-    let title = e.currentTarget.dataset.title;
-    let token = cache.get('token');
-    let uid = e.currentTarget.dataset.uid;
-    let id = e.currentTarget.dataset.id;
-    let rid = e.currentTarget.dataset.rid;
-    let tab = this.data.tab;
-    let isOk = app.globalData.isOk;
-    let client_id = cache.get('client_id');
-    if (id) {
-      if (!isOk) {
-        util.toast('正在连接')
-        return false;
-      }
-      if(tab == '1'){
-        this.pushDo({action:'view_friend',to_uid:uid});
-        wx.navigateTo({
-          url: `./chat/chat?title=${title}&to_uid=${uid}&id=${rid}`
-        })
-      }else if(tab == '2'){
-        this.pushDo({action:'view_group',gid:id});
-        wx.navigateTo({
-          url: `./chat/chat?title=${title}&gid=${id}&id=${rid}`
-        })
-      }
-    }else{
-      wx.navigateTo({
-        url: `../market/market?title=${title}`
-      })
-    }
   },
   // 获取 socket 返回
   msgReceived(res){
@@ -369,21 +346,6 @@ Page({
       }
     }
   },
-  // 会话设置
-  onLongpress(e) {
-    let tab = this.data.tab;
-    let id = e.currentTarget.dataset.id;
-    let data = this.data.data;
-    let i = e.currentTarget.dataset.i;
-    let title = e.currentTarget.dataset.title;
-    if (tab == '2') {
-      util.showModal('提示', '要修改该会话吗？', true, () => {
-          wx.navigateTo({
-            url:`/pages/index/group/group?tag=chat&id=${id}&title=${title}`
-          })
-      })
-    }
-  },
   // 上拉更新
   onReachBottom: function (e) {
     let tab = this.data.tab;
@@ -407,5 +369,112 @@ Page({
     if (this.data.first) {
       // this.getData(this.data.tab)
     }
+  },
+  // 监听左滑删除
+  onTouchMoveItem(e){
+    let type= e.type;
+    let title = e.currentTarget.dataset.title;
+    let uid = e.currentTarget.dataset.uid;
+    let id = e.currentTarget.dataset.id;
+    let rid = e.currentTarget.dataset.rid;
+    let tab = this.data.tab;
+    let isOk = app.globalData.isOk;
+    let unum = e.currentTarget.dataset.unum;
+    let power = cache.get('userInfo').userInfo.create_group;
+    if(!e.changedTouches[0]){
+      return false
+    }
+    if(type == 'touchstart'){
+      this.start= e.changedTouches[0]['pageX'];
+      this.startTime= e.timeStamp;
+    }else if(type == 'touchend'){
+      this.end= e.changedTouches[0]['pageX'];
+      this.endTime= e.timeStamp;
+    }
+    if(this.start && this.end && this.start > this.end && power){
+      util.showModal('提示','是否确定删除?',true,()=>{
+        network.post('chat/remove.do',{chat_id})
+        .then((res)=>{
+          if(res.code == '0'){
+            if(tab == '1'){
+              let fdata= this.data.fdata;
+              fdata.splice(i,1);
+              util.toast(res.data.message)
+              this.setData({fdata})
+            }
+            if(tab == '2'){
+              let gdata= this.data.gdata;
+              gdata.splice(i,1);
+              util.toast(res.data.message)
+              this.setData({gdata})
+            }
+          }else{
+            util.toast(res.msg)
+          }
+        },()=>{
+        })
+      },()=>{
+      })
+      this.restore(1)
+      return false;
+    }else if(this.start == this.end){
+      if((this.endTime-this.startTime >= 350)){
+        if (tab == '2') {
+          util.showModal('提示', '要设置该会话吗？', true, () => {
+              wx.navigateTo({
+                url:`/pages/index/group/group?tag=chat&id=${id}&title=${title}`
+              })
+          })
+        }
+        this.restore(2)
+        return false;
+      }else{
+        if (id) {
+          if (!isOk) {
+            util.toast('正在连接')
+            this.restore(3)
+            return false;
+          }
+          if(tab == '1'){
+            this.pushDo({action:'view_friend',to_uid:uid});
+            wx.navigateTo({
+              url: `./chat/chat?title=${title}&to_uid=${uid}&id=${rid}`
+            })
+          }else if(tab == '2'){
+            this.pushDo({action:'view_group',gid:id});
+            wx.navigateTo({
+              url: `./chat/chat?title=${title}&gid=${id}&id=${rid}&unum=${unum}`
+            })
+          }
+          this.restore(4)
+          return false;
+        }else{
+          wx.navigateTo({
+            url: `../market/market?title=${title}`
+          })
+        }
+        this.restore(5)
+        return false;
+      }
+    }else{
+      if(!power){
+        util.toast('不能删除')
+      }
+    }
+  },
+  // 体统消息
+  onSystemMsg(e){
+    wx.navigateTo({
+      url:'/pages/index/systemMsg/systemMsg'
+    })
+  },
+  // 还原 触摸参数
+  restore(s){
+    this.start='';
+    this.end= '';
+    this.startTime= '';
+    this.endTime= '';
+    // console.log('调试-->'+s)
+    // util.isClick(this,'1')
   },
 })

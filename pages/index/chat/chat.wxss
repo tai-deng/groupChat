@@ -1,7 +1,4 @@
 /**index.wxss**/
-.page{
-  padding-bottom: 1rpx;
-}
 .chat_block {
   display: flex;
   align-items: flex-start;
@@ -10,18 +7,19 @@
 
 .chat_avatar {
   display: flex;
+  position: relative;
 }
 
 .chat_avatar image {
   border-radius: 50%;
-  width: 80rpx;
-  height: 80rpx;
+  width: 65rpx;
+  height: 65rpx;
 }
 
 .chat_cont {
   /* flex: 1; */
   border: 1px solid #ccc;
-  padding: 10px;
+  padding: 7px;
   position: relative;
   border-radius: 5px;
   font-size: 14px;
@@ -39,8 +37,8 @@
 }
 
 .chat_block_left .chat_cont {
-  margin-left: 20px;
-  margin-right: 20px;
+  margin-left: 30rpx;
+  /* margin-right: 20px; */
   background: #fff;
 }
 
@@ -61,8 +59,8 @@
 }
 
 .chat_block_right .chat_cont {
-  margin-left: 20px;
-  margin-right: 20px;
+  /* margin-left: 20px; */
+  margin-right: 30px;
   background: #1aad19;
 }
 
@@ -133,7 +131,7 @@
 .files_box {
   background: #fff;
   border-top: 1px solid #ccc;
-  height: 150px;
+  height: 170px;
   overflow: scroll;
   padding: 10px 25rpx;
   display: flex;
@@ -247,4 +245,31 @@
 }
 .myAudio {
   transform: rotateY(180deg);
+}
+/* 名字/时间 */
+.userchata{
+  position: absolute;
+  bottom: 70rpx;
+  right: 0;
+}
+.userchatb{
+  position: absolute;
+  bottom: 70rpx;
+  left: 0;
+}
+.userchat-time{
+  font-size: 24rpx;
+  color: #ccc;
+}
+.userchat-name{
+  max-width: 150rpx;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size: 24rpx;
+}
+.pull{
+  font-size: 26rpx;
+  color: blue;
+  background: transparent;
 }

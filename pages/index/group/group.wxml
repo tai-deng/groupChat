@@ -48,7 +48,7 @@
                         <view class="content-i-l-pic mr26">
                             <image src="{{item.avatar}}"></image>
                         </view>
-                        <view class="content-i-l-title">
+                        <view class="content-i-l-title row">
                             {{item.nickname}}
                         </view>
                     </view>
@@ -63,7 +63,7 @@
                 <view class="content-i-l-pic">
                     <image src="{{item.avatar}}"></image>
                 </view>
-                <view class="content-i-l-title">
+                <view class="content-i-l-title row">
                     {{item.nickname}}
                 </view>
             </label>
