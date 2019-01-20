@@ -1,4 +1,9 @@
 /**index.wxss**/
+.page{
+  width:100vw;
+  height:100vh;
+  overflow:hidden;
+}
 .chat_block {
   display: flex;
   align-items: flex-start;
@@ -101,10 +106,10 @@
 }
 
 .msg_fixed {
-  position: fixed;
+  /* position: fixed;
   width: 100%;
   left: 0;
-  bottom: 0;
+  bottom: 0; */
 }
 
 .msgbox {
@@ -201,7 +206,7 @@
   height: 48rpx;
   background-color: transparent;
   position: fixed;
-  top: 20rpx;
+  top: 20;
   right: 30rpx;
   z-index: 10;
 }

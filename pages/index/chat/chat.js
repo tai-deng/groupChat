@@ -7,10 +7,10 @@ import {network,upFile} from '../../../utils/ajax.js'
 
 const app = getApp();
 const { emojis, emojiToPath, textToEmoji } = require('../../../utils/emojis');
-const inputHeight = 51;
-const emojiHeight = 171;
+// let inputHeight = 51;
+// let emojiHeight = 171;
 const timeouts = [];
-let windowHeight;
+// let windowHeight;
 
 Page({
   data: {
@@ -28,7 +28,10 @@ Page({
     type:'1', // 1 文字 2 图片 3 语音
     isSpeaking:false,
     j:1,
-    maxUnum:30,
+    maxUnum:1,
+    inputHeight: 51,
+    emojiHeight: 171,
+    windowHeight:'',
   },
   onLoad: function (op) {
     this.init(op)
@@ -39,15 +42,16 @@ Page({
     }))
     // 获取屏幕高度信息
     const sysInfo = wx.getSystemInfoSync()
-    windowHeight = sysInfo.windowHeight;
     let ratio = 750 / sysInfo.windowWidth;
-    let v = ratio*(windowHeight-inputHeight);
-    const scrollHeight = `${windowHeight - inputHeight}px`
+    let windowHeight = sysInfo.windowHeight * ratio;
+    let inputHeight = this.data.inputHeight * ratio;
+    let emojiHeight = this.data.emojiHeight * ratio;
+    const scrollHeight = `${windowHeight - inputHeight}rpx`
+    console.log(windowHeight,inputHeight,sysInfo,ratio)
     // 更新状态
     this.setData({
       emojiList,
-      sysInfo,
-      scrollHeight,
+      scrollHeight,windowHeight,inputHeight,emojiHeight
     })
     this.getData()
   },
@@ -74,7 +78,7 @@ Page({
       limit,
     })
     .then((res) => {
-      wx.stopPullDownRefresh();
+      // wx.stopPullDownRefresh();
       if (res.code == '0') {
         let { chatList } = this.data;
         let d = res.data.list;
@@ -174,7 +178,7 @@ Page({
   },
   // 隐藏或显示表情选择框
   toggleEmojis: function () {
-    const { showEmojis, showFiles } = this.data;
+    const { showEmojis, showFiles,windowHeight,inputHeight,emojiHeight } = this.data;
     if (showFiles) {
       this.setData({
         showEmojis: true,
@@ -183,12 +187,12 @@ Page({
     } else {
       if (showEmojis) {
         this.setData({
-          scrollHeight: `${windowHeight - inputHeight}px`,
+          scrollHeight: `${windowHeight - inputHeight}rpx`,
           showEmojis: !showEmojis
         })
       } else {
         this.setData({
-          scrollHeight: `${windowHeight - inputHeight - emojiHeight}px`,
+          scrollHeight: `${windowHeight - inputHeight - emojiHeight}rpx`,
           showEmojis: !showEmojis
         });
         this.goBottom(50);
@@ -197,7 +201,7 @@ Page({
   },
   // 隐藏或显示图片选择框
   toggleFiles: function () {
-    const { showEmojis, showFiles } = this.data;
+    const { showEmojis, showFiles,windowHeight,inputHeight,emojiHeight } = this.data;
     if (showEmojis) {
       this.setData({
         showEmojis: false,
@@ -206,12 +210,12 @@ Page({
     } else {
       if (showFiles) {
         this.setData({
-          scrollHeight: `${windowHeight - inputHeight}px`,
+          scrollHeight: `${windowHeight - inputHeight}rpx`,
           showFiles: !showFiles
         })
       } else {
         this.setData({
-          scrollHeight: `${windowHeight - inputHeight - emojiHeight}px`,
+          scrollHeight: `${windowHeight - inputHeight - emojiHeight}rpx`,
           showFiles: !showFiles
         });
         this.goBottom(50);
@@ -219,14 +223,15 @@ Page({
     }
   },
   inputFocus: function () {
-    const { showEmojis, showFiles } = this.data;
+    const { showEmojis, showFiles,windowHeight,inputHeight,emojiHeight } = this.data;
     if (showEmojis || showFiles) {
       this.setData({
-        scrollHeight: `${windowHeight - inputHeight}px`,
+        scrollHeight: `${windowHeight - inputHeight-emojiHeight}rpx`,
         showEmojis: false,
         showFiles: false,
       });
     }
+    this.setData({focus:true})
     this.goBottom(50)
   },
   inputMsg: function(e){
@@ -234,18 +239,24 @@ Page({
   },
   blurInput: function (e) {
     this.msg = e.detail.value;
-    this.goBottom(50)
+  },
+  // @名字
+  onCopyName(e) {
+    let msg = '@' + e.currentTarget.dataset.name+" ";
+    this.msg = msg
+    this.setData({ msg })
   },
   // 点击滚动框
   scrollClick: function () {
-    const { showEmojis, showFiles } = this.data;
-    if (showEmojis || showFiles) {
+    const { showEmojis, showFiles,windowHeight,inputHeight,emojiHeight } = this.data;
+    // if (showEmojis || showFiles) {
       this.setData({
-        scrollHeight: `${windowHeight - inputHeight}px`,
+        scrollHeight: `${windowHeight - inputHeight}rpx`,
         showEmojis: false,
         showFiles: false,
       });
-    }
+    // }
+    this.goBottom(50)
   },
   // 点击表情
   clickEmoji: function (e) {
@@ -255,7 +266,8 @@ Page({
     this.setData({msg:this.msg})
   },
   // 发送信息
-  sendMsg: function (e,type='1') {
+  sendMsg: function (e, type = '1') {
+    let { windowHeight, inputHeight, emojiHeight } = this.data;
     let msg = this.msg;
     if (!msg) {
       return
@@ -293,9 +305,8 @@ Page({
     }
     this.pushDo(agrs, (res) => {
       if (res.code == '0') {
-        this.setData({type,msg:'',
-        scrollHeight: `${windowHeight - inputHeight}px`,showEmojis:false})
-        this.goBottom(500);
+        this.setData({type,msg:'',showEmojis:false})
+        this.scrollClick();
         this.msg = '';
       }else{
         util.toast(res.msg)
@@ -320,6 +331,7 @@ Page({
   },
   // 发送图片
   sendPic: function (e) {
+    let { windowHeight, inputHeight, emojiHeight } = this.data;
     const that = this
     let type = 2;
     wx.chooseImage({
@@ -338,8 +350,7 @@ Page({
               let r = JSON.parse(res)
               if(r.code == '0'){
                 that.msg = r.data.asset.asset_url;
-                that.setData({width,height,showFiles:false,
-                  scrollHeight: `${windowHeight - inputHeight}px`,showEmojis:false})
+                that.setData({width,height,showFiles:false,showEmojis:false})
                 that.sendMsg('',type)
               }else{
                 util.toast(r.msg)
@@ -461,7 +472,15 @@ Page({
     if (uid == d.user.uid) {
       isMe = true;
     }
-    if(d.action == 'receive_from_friend'){
+    obj.msg_type= d.type;
+    obj.msg_text= d.content;
+    obj.nickname= d.user.nickname;
+    obj.avatar= d.user.avatar;
+    obj.chat_id= d.chat_id;
+    obj.isMe= isMe;
+    obj.chat_tm = util.nowDate(d.chat_tm);
+    
+    if (d.action == 'receive_from_friend') {
       if(this.data.to_uid == d.uid || d.uid == myId){
         if(d.type == '1'){
           obj.text_list= textToEmoji(d.content);
@@ -472,6 +491,9 @@ Page({
           let ex= JSON.parse(d.extend)
           obj.msg_audio= { src:d.content, ms:ex.ms }
         }
+        chatList.push(obj)
+        this.setData({chatList})
+        this.goBottom(500);
       }
     }else if(d.action = 'receive_from_group'){
       if(this.data.gid == d.gid){
@@ -484,18 +506,11 @@ Page({
           let ex= JSON.parse(d.extend)
           obj.msg_audio= { src:d.content, ms:ex.ms }
         }
+        chatList.push(obj)
+        this.setData({chatList})
+        this.goBottom(500);
       }
     }
-    obj.msg_type= d.type;
-    obj.msg_text= d.content;
-    obj.nickname= d.user.nickname;
-    obj.avatar= d.user.avatar;
-    obj.chat_id= d.chat_id;
-    obj.isMe= isMe;
-    obj.chat_tm= util.nowDate(d.chat_tm);
-    chatList.push(obj)
-    this.setData({chatList})
-    this.goBottom(500);
   },
   onSeting(e) {
     let gid = this.data.gid;
@@ -550,7 +565,8 @@ Page({
       this.end= e.changedTouches[0]['pageX'];
       this.endTime= e.timeStamp;
     }
-    if(this.start && this.end && this.start > this.end && power){
+    console.log(this.start,this.end,power)
+    if(this.start && this.end && (this.start- this.end)>30 && power){
       util.showModal('提示','是否确定删除?',true,()=>{
         network.post('chat/remove.do',{chat_id})
         .then((res)=>{

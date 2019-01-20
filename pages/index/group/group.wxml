@@ -43,7 +43,7 @@
     <view class="content {{tag!='look'? 'ch': 'member'}}">
         <block wx:if="{{tag!='look'}}">
             <checkbox-group bindchange="checkbox">
-                <label class="content-i rows"wx:for='{{data}}'wx:key="{{index}}" data-id='{{item.uid}}' catchtap="checkboxChange">
+                <label class="content-i rows"wx:for='{{data}}'wx:key="{{index}}" data-id='{{item.relate_id}}' catchtap="checkboxChange">
                     <view class="content-i-l flexrow">
                         <view class="content-i-l-pic mr26">
                             <image src="{{item.avatar}}"></image>
@@ -53,7 +53,7 @@
                         </view>
                     </view>
                     <view class="content-i-r">
-                        <checkbox value="{{item.uid}}"  checked="{{item.group_user}}" />    
+                        <checkbox value="{{item.relate_id}}"  checked="{{item.group_user}}" />    
                     </view>
                 </label>
            </checkbox-group>

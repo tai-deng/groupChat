@@ -5,14 +5,18 @@
     <image src="../../imgs/chat/more.png"></image>
   </view>
   <view class="page_bd">
-    <scroll-view catchtap="scrollClick" class="msg_scroll" style="height:{{scrollHeight}}" scroll-top="{{scrollTop}}" scroll-y scroll-with-animation>
+    <scroll-view bindtap="scrollClick" class="msg_scroll" style="height:{{scrollHeight}}" scroll-top="{{scrollTop}}" scroll-y scroll-with-animation>
       <view class="pull row"bindtap='onPull'wx:if="{{pull}}">加载更多</view>
       <block wx:for="{{chatList}}" wx:key="id">
+          <view class="userchat-time row">{{item.chat_tm}}</view>
           <view class="chat_block {{item.isMe?'chat_block_right':'chat_block_left'}}">
             <view class="chat_avatar">
               <image mode="aspectFit" src="{{item.avatar}}"></image>
+              <view class="{{item.isMe?'userchata':'userchatb'}} flexrow"wx:if="{{unum>maxUnum}}"catchlongpress='onCopyName'data-name="{{item.nickname}}">
+                  <view class="userchat-name">{{item.nickname}}</view>
+              </view>
             </view>
-            <view class="chat_cont">
+            <view class="chat_cont"catchtouchstart ='onTouchMoveItem'catchtouchend ='onTouchMoveItem'data-chat_id ='{{item.chat_id}}'data-content ='{{item.msg_text}}'data-i ="{{ index}}"data-genre ="{{item.msg_type}}">
               <view wx:if="{{item.msg_type==='1'}}">
                 <block wx:for="{{item.text_list}}" wx:key="{{index}}">
                   <text wx:if="{{item.msgType==='text'}}">{{item.msgCont}}</text>
@@ -35,8 +39,17 @@
         </block>
         
       </scroll-view>
+        <view class="msgbox">
+          <image style="background-color:{{isSpeaking?'#f9f9f9;':''}}" bindtouchstart="touchStartSilk" bindtouchend='touchUpSilk' src="../../imgs/chat/voice.png"></image>
+          <input value="{{msg}}"placeholder="" wx:if='{{!isSpeaking}}' bindinput="inputMsg" placeholder-style='inputStyle' cursor-spacing='10' bindfocus="inputFocus" class="msgbox_input" maxlength="999" bindconfirm="scrollClick" confirm-hold='true' bindblur="blurInput" confirm-type="发送" />
+          <view wx:else class="msgbox_input replace-input row">正在录音</view>
+          <image catchtap="toggleEmojis" src="../../imgs/chat/emotion-o.png"></image>
+          <image catchtap="toggleFiles" src="../../imgs/chat/plus.png"></image>
+          <!-- <image catchtap="sendMsg" src="../../imgs/chat/send.png"></image> -->
+          <button form-type="submit" class="send row" > 发送</button>
+        </view>
   
-      <view class="msg_fixed">
+      <!-- <view class="msg_fixed"> -->
         <view wx:if="{{showEmojis}}" class="emojis_box">
           <view class="emoji_wrap" wx:for="{{emojiList}}" wx:key="key">
             <image catchtap="clickEmoji" src="{{item.img}}" data-key="{{item.key}}" class="emoji"></image>
@@ -45,17 +58,6 @@
             <!--<text catchtap="sendMsg" class="emoji_send">发送</text>-->
           </view>
         </view>
-  
-        <view class="msgbox">
-          <image style="background-color:{{isSpeaking?'#f9f9f9;':''}}" bindtouchstart="touchStartSilk" bindtouchend='touchUpSilk' src="../../imgs/chat/voice.png"></image>
-          <input value="{{msg}}" wx:if='{{!isSpeaking}}' bindinput="inputMsg"placeholder='' placeholder-style='inputStyle' cursor-spacing='10' bindfocus="inputFocus" class="msgbox_input" maxlength="999" bindconfirm="confirmMsg" confirm-hold='true' bindblur="blurInput" confirm-type="发送" />
-          <view wx:else class="msgbox_input replace-input row">正在录音</view>
-          <image catchtap="toggleEmojis" src="../../imgs/chat/emotion-o.png"></image>
-          <image catchtap="toggleFiles" src="../../imgs/chat/plus.png"></image>
-          <!-- <image catchtap="sendMsg" src="../../imgs/chat/send.png"></image> -->
-          <button form-type="submit" class="send row" > 发送</button>
-        </view>
-  
         <view wx:if="{{showFiles}}" class="files_box">
           <view class="files_wrap">
             <view catchtap="sendPic" class="files_icon">
@@ -64,7 +66,7 @@
             <text>图片</text>
           </view>
         </view>
-      </view>
+      <!-- </view> -->
   
       <view  wx:if="{{isSpeaking}}"  class="speak-style">
         <image class="sound-style" src="../../imgs/chat/voice_icon_speech_sound_1.png" ></image>

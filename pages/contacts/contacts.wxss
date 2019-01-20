@@ -38,6 +38,7 @@
     line-height: 80rpx;
     /* height: 80rpx; */
       margin-top: 6rpx;
+    /* padding: 20rpx; */
   }
   .tp {
     margin-bottom: 4rpx;

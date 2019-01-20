@@ -127,6 +127,7 @@ button {
 .chat-item-r-state{
   width: 48rpx;
   height: 48rpx;
+  align-content: flex-end;
 }
 .chat-item-r-state image{
   width: 48rpx;
@@ -148,7 +149,7 @@ button {
   flex: 1;
 }
 .topBar-l-warp{
-  width: 70%;
+  width: 100%;
 }
 .systemMsg{
   font-size: 28rpx;
@@ -184,4 +185,10 @@ button {
   left: 0;
   width: 100vw;
   background-color: #f1f1f1;
+}
+.ring{
+  width: 30rpx;
+  height: 30rpx;
+  border-radius: 50%;
+  background-color: #ff5800;
 }

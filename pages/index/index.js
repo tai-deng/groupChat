@@ -26,7 +26,6 @@ Page({
     datab:[],
     searchSta:false,
     timeId: '',
-    first:false,
     click:true,
   },
   onLoad: function (op) {
@@ -123,7 +122,6 @@ Page({
           roomid,
         }).then((res)=>{
           if (res.code == '0') {
-            this.setData({ first: true})
             if (res.data.bind_id) {
               this.setData({bind_id:res.data.bind_id,hasUserInfo:true})
             } else {
@@ -184,10 +182,8 @@ Page({
     })
   },
   // 获取聊天
-  getData(tab){
-    if(util.isClick(this)){
-      util.isClick(this,'-1')
-    let upd= this.data.audit;
+  getData(tab=1){
+    let audit= this.data.audit;
     let url = 'user/friend.list';
     let tm = new Date().getTime();
     let page = 1;
@@ -211,48 +207,56 @@ Page({
           let list = res.data.list;
           let goon = true;
           if(tab == '1'){
-            // update
-            if(upd){
+            if(audit){
               pageData = this.data.data1;
-              // .concat(res.data.list)
             }else{
-              pageData = res.data.list;
+              pageData = this.data.data1.concat(list);
             }
           }else if(tab == '2') {
-            
-            if(upd){
+            if(audit){
               pageData = this.data.datab;
             }else{
-              pageData = res.data.list;
+              pageData = this.data.datab.concat(list);
             }
           }
           pageData.forEach((element,index) => {
-            if (pageData[index].last_view_tm) {
-              pageData[index].last_view_tm = util.nowDate(pageData[index].last_view_tm)
+            if (pageData[index]["last_info"]) {
+              if (pageData[index].last_info.type=='1') {
+                pageData[index].last_content = pageData[index].last_info.content;
+              }
+              if (pageData[index].last_info.type=='2') {
+                pageData[index].last_content='图片'
+              }
+              if (pageData[index].last_info.type=='3') {
+                pageData[index].last_content='语音'
+              }
+              pageData[index].now_tm = util.nowDate(pageData[index].last_info.time);
+              if (pageData[index].last_view_tm<pageData[index].last_info.time) {
+                pageData[index].mute = true;
+              } else {
+                pageData[index].mute = false;
+              }
             } else {
-              pageData[index].last_view_tm = util.nowDate(pageData[index].relate_tm)
+              pageData[index].last_content = '你们可以聊天了';
+              pageData[index].mute = false;
+              pageData[index].now_tm = util.nowDate(pageData[index].last_info.relate_tm);
             }
           });
-          if(list.length < this.data.limit){
-            // goon =false;
+          if(list.length !=0 && list.length < this.data.limit){
+            goon =false;
           }
           if(tab == '1'){
-            console.log(pageData)
-            this.setData({fdata: pageData,data1:pageData,isUpFri:goon,hasUserInfo:false})
+            this.setData({fdata: pageData,data1:pageData,isUpFri:goon,hasUserInfo:false,friendPage:page})
           }else if(tab == '2') {
-            this.setData({gdata: pageData,datab:pageData,isUpGro:goon,hasUserInfo:false})
+            this.setData({gdata: pageData,datab:pageData,isUpGro:goon,hasUserInfo:false,groupPage:page})
           }
         }
-      },()=>{
-        util.isClick(this,'1')
       })
-    }else{
-      if(pageData.length > 0 && pageData.length < this.data.limit){
-        util.toast('加载完毕')
-      }
+    } else {
+      if(page!=2)
+      util.toast('没有更多')
     }
-  
-    }},
+  },
   // tab 菜单切换
   onTab(e){
     let tab = e.currentTarget.dataset.i;
@@ -289,15 +293,118 @@ Page({
   // 获取 socket 返回
   msgReceived(res){
     let d = JSON.parse(res);
-    let client_id = '';
-    if (d.action == "connect_ok") {
-      app.globalData.isOk = true;
-      client_id = d.client_id;
-      this.pushDo({ action: 'say_hello', client_id });
-      cache.set('client_id',client_id)
-      this.setData({ client_id })
+    console.log(d)
+    switch (d.action) {
+      case "connect_ok":    // 链接成功
+        app.globalData.isOk = true;
+        this.pushDo({ action: 'say_hello', client_id: d.client_id });
+        cache.set('client_id', d.client_id)
+        this.setData({ client_id: d.client_id })
+        break;
+      case 'receive_from_friend':  // 收到新聊天消息1
+        this.pageDataManage('1','3',d)
+        break;
+      case 'receive_from_group':  // 收到新聊天消息2
+      this.pageDataManage('2','4',d)
+        break;
+      case 'receive_add_friend':  // 添加好友
+        this.pageDataManage('1','1', d.user)
+        break;
+      case 'receive_join_group':  // 添加群
+      this.pageDataManage('2','2', d)
+        break;
+      case 'receive_del_friend':  // 删除好友
+        this.pageDataManage('1','-1',d.uid)
+        break;
+      case 'receive_leave_group':  // 退出除群
+        this.pageDataManage('2','-2', d)
+        break;
+      case 'receive_ungroup':  // 群解散
+        this.pageDataManage('2','-2', d)
+        break;
+      default:
+        console.log('该内容不做处理',d.action)
     }
-    // console.log('index',d)
+  },
+  // 数据处理
+  pageDataManage(tab,f,d) {
+    let dm = '';
+    if (tab == '1') {
+      dm = this.data.fdata;
+    } else if(tab== '2'){
+      dm = this.data.gdata;
+    }
+    // 加减好友
+    if (f == '1') {
+      dm.unshift(Object.assign({}, d, {
+        mute: true,
+        now_tm: util.nowDate(new Date().getTime() / 1000),
+        relate_id:d.uid
+      }))
+    }
+    if (f == '-1') {
+      dm.forEach((el,ind) => {
+        if (el.relate_id == d)
+          dm.splice(ind, 1);
+      });
+    }
+    // 新聊天消息
+    if (f == '3') {
+      dm.forEach((el, ind) => {
+        let obj = {};
+        if (el.relate_id == d.uid) {
+          if(d.type == '1'){
+            obj.last_content= d.content;
+          }else if(d.type == '2'){
+            obj.last_content= '图片';
+          }else if(d.type == '3'){
+            obj.last_content= '语音';
+          }
+          obj.mute= true
+          let item = dm.splice(ind, 1)['0'];
+          dm.unshift(Object.assign({}, item, obj))
+        }
+      });
+    }
+    if (f == '4') {
+      dm.forEach((el, ind) => {
+        let obj = {};
+        if (el.gid == d.gid) {
+          if(d.type == '1'){
+            obj.last_content= d.content;
+          }else if(d.type == '2'){
+            obj.last_content= '图片';
+          }else if(d.type == '3'){
+            obj.last_content= '语音';
+          }
+          obj.mute = true;
+          obj.now_tm=util.nowDate(d.chat_tm)
+          let item = dm.splice(ind, 1)['0'];
+          dm.unshift(Object.assign({}, item, obj))
+        }
+      });
+    }
+    // 加减群
+    if (f == '2') {
+      dm.unshift(Object.assign({}, d.group, {
+        mute: true,
+        now_tm: util.nowDate(new Date().getTime() / 1000),
+        gid:d.gid
+      }))
+    }
+    if (f == '-2') {
+      dm.forEach((el,ind) => {
+        if (el.gid == d.gid) {
+          dm.splice(ind, 1);
+        }
+      });
+    }
+    if (tab == '1') {
+      this.setData({ fdata: dm });
+    } else if(tab== '2'){
+      this.setData({ gdata: dm });
+    }
+    
   },
   // 授权用户信息
   getUserInfoInit() {
@@ -365,11 +472,6 @@ Page({
         // console.log('pushDoIndex',res)
     })
   },
-  onShow: function () {
-    if (this.data.first) {
-      // this.getData(this.data.tab)
-    }
-  },
   // 监听左滑删除
   onTouchMoveItem(e){
     let type= e.type;
@@ -381,6 +483,9 @@ Page({
     let isOk = app.globalData.isOk;
     let unum = e.currentTarget.dataset.unum;
     let power = cache.get('userInfo').userInfo.create_group;
+    let i = e.currentTarget.dataset.i;
+    let gdata= this.data.gdata;
+    let fdata= this.data.fdata;
     if(!e.changedTouches[0]){
       return false
     }
@@ -391,29 +496,33 @@ Page({
       this.end= e.changedTouches[0]['pageX'];
       this.endTime= e.timeStamp;
     }
-    if(this.start && this.end && this.start > this.end && power){
-      util.showModal('提示','是否确定删除?',true,()=>{
-        network.post('chat/remove.do',{chat_id})
-        .then((res)=>{
-          if(res.code == '0'){
-            if(tab == '1'){
-              let fdata= this.data.fdata;
-              fdata.splice(i,1);
-              util.toast(res.data.message)
-              this.setData({fdata})
+    if(this.start && this.end && (this.start- this.end)>30 && power){
+      util.showModal('提示', '是否确定删除?', true, () => {
+        let tm = new Date().getTime();
+        if(tab == '1'){
+          network.post('user/friend.remove',{relate_id:rid,tm})
+          .then((res)=>{
+            if(res.code == '0'){
+              // fdata.splice(i,1);
+              // util.toast(res.data.message)
+              // this.setData({fdata})
+            }else{
+              util.toast(res.msg)
             }
-            if(tab == '2'){
-              let gdata= this.data.gdata;
-              gdata.splice(i,1);
-              util.toast(res.data.message)
-              this.setData({gdata})
+          })
+        }
+        if(tab == '2'){
+          network.post('user/group.remove',{gid:id,tm})
+          .then((res)=>{
+            if(res.code == '0'){
+              // gdata.splice(i,1);
+              // util.toast(res.data.message)
+              // this.setData({ gdata })
+            } else {
+              util.toast(res.msg)
             }
-          }else{
-            util.toast(res.msg)
-          }
-        },()=>{
-        })
-      },()=>{
+          })
+        }
       })
       this.restore(1)
       return false;
@@ -436,12 +545,20 @@ Page({
             return false;
           }
           if(tab == '1'){
-            this.pushDo({action:'view_friend',to_uid:uid});
+            this.pushDo({ action: 'view_friend', to_uid: uid });
+            if (fdata[i]['mute']) {
+              fdata[i]['mute'] = false;
+              this.setData({ fdata });
+            }
             wx.navigateTo({
               url: `./chat/chat?title=${title}&to_uid=${uid}&id=${rid}`
             })
           }else if(tab == '2'){
-            this.pushDo({action:'view_group',gid:id});
+            this.pushDo({ action: 'view_group', gid: id });
+            if (gdata[i]['mute']) {
+              gdata[i]['mute'] = false;
+              this.setData({ gdata });
+            }
             wx.navigateTo({
               url: `./chat/chat?title=${title}&gid=${id}&id=${rid}&unum=${unum}`
             })
@@ -477,4 +594,9 @@ Page({
     // console.log('调试-->'+s)
     // util.isClick(this,'1')
   },
+  onShow() {
+    if (!websocket.socketOpened) {
+      websocket.setReceiveCallback(this.msgReceived, this);
+    }
+  }
 })

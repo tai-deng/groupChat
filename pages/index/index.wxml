@@ -24,7 +24,7 @@
             <image src="../imgs/chat/search.png"></image>
           </button>
       </view>
-      <view class="systemMsg"catchtap='onSystemMsg'>系统消息</view>
+      <!-- <view class="systemMsg"catchtap='onSystemMsg'>系统消息</view> -->
     </view>
     <block wx:if="{{searchSta}}">
       <view class="search-cnt">
@@ -65,7 +65,7 @@
 
     <button form-type="submit" hover-class="none" class="chat-item rows"
     catchtouchstart='onTouchMoveItem'catchtouchend='onTouchMoveItem'
-    data-title="{{tab==1?item.nickname:item.gname}}"wx:for="{{tab==1?fdata:gdata}}"wx:key="{{index}}"data-id="{{tab==1?item.friend_id:item.gid}}"data-uid="{{item.relate_id}}"data-rid="{{item.relate_id}}"
+    data-title="{{tab==1?item.nickname:item.gname}}"wx:for="{{tab==1?fdata:gdata}}"wx:key="{{index}}"data-id="{{tab==1?item.friend_id:item.gid}}"data-uid="{{item.relate_id}}"data-rid="{{item.relate_id}}"data-i="{{index}}"
     data-unum="{{item.unum}}">
       <view class="chat-item-l flexrow">
         <view class="chat-item-l-pic">
@@ -87,18 +87,18 @@
           </view>
             <view class="chat-item-l-cnt">
               <block wx:if="{{tab==1}}">
-                {{item.remark?item.remark:'　'}}
+                {{item.last_content}}
               </block>
               <block wx:else>
-                {{item.gintro}}
+                {{item.last_content}}
               </block>
             </view>
         </view>
       </view>
       <view class="chat-item-r column">
-        <view class="chat-item-r-time">{{item.last_view_tm}}</view>
-        <view class="chat-item-r-state">
-          <image wx:if="{{mute}}" src="../imgs/ltb.png"/>
+        <view class="chat-item-r-time">{{item.now_tm}}</view>
+        <view class="chat-item-r-state row">
+          <view wx:if="{{item.mute}}"class="ring"></view>
         </view>
       </view>
     </button>

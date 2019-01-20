@@ -22,7 +22,7 @@ const nowDate = (data) => {
   const hour = dt.getHours()
   const minute = dt.getMinutes()
 
-  return [year,month].map(formatNumber).join('/') + ' ' + [hour, minute,].map(formatNumber).join(':')
+  return [month,day].map(formatNumber).join('/') + ' ' + [hour, minute,].map(formatNumber).join(':')
 }
 
 const toast = (title='',icon='none',duration=1500,mask=false,image='')=>{

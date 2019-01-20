@@ -17,6 +17,6 @@ App({
     scene:null,
     query:null,
     isOk: null,
-    isAuth:null,
+    isAuth: null,
   },
 })
