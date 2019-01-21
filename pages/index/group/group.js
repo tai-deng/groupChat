@@ -22,6 +22,7 @@ Page({
     pickFid:[],
   },
   onLoad: function (options) {
+    this.setData({tag:options.tag})
     this.init(options);
   },
   // 初始化
@@ -86,6 +87,9 @@ Page({
   // 获取好友列表
   getData(){
     let url = 'user/friend.list';
+    if(this.data.tag=='look'){
+      url='group/user.list'
+    }
     let tm = new Date().getTime();
     let limit = this.data.limit;
     let pageData = [];
@@ -98,19 +102,39 @@ Page({
       network.get(url,{tm,page,limit,gid})
       .then((res)=>{
         if(res.code == '0'){
-          let list = res.data.list;
-          pageData = this.data.data.concat(res.data.list);
-          if(list.length < limit){
-            flag =false;
+          if(this.data.tag=='look'){
+            let list = res.data.group;
+            pageData = this.data.data.concat(list);
+            if(list.length < limit){
+              flag =false;
+            }
+            if(pageData.length > 0){
+              pageData.forEach((el,index) => {
+                if(el['user']){
+                  pageData[index]['avatar']=el.user.avatar;
+                  pageData[index]['nickname']=el.user.nickname;
+                }else{
+                  pageData[index]['avatar']='../../imgs/chat/logo.png';
+                  pageData[index]['nickname']='神秘人';
+                }
+              });
+            }
+            this.setData({data: pageData,flag,friendPage: page})
+          }else{
+            let list = res.data.list;
+            pageData = this.data.data.concat(list);
+            if(list.length < limit){
+              flag =false;
+            }
+            if(pageData.length > 0){
+              pageData.forEach(element => {
+                if(element.group_user){
+                  allFid.push(element.relate_id)
+                }
+              });
+            }
+            this.setData({data: pageData,flag,friendPage: page,allFid,clue: allFid.length})
           }
-          if(pageData.length > 0){
-            pageData.forEach(element => {
-              if(element.group_user){
-                allFid.push(element.uid)
-              }
-            });
-          }
-          this.setData({data: pageData,flag,friendPage: page,allFid,clue: allFid.length})
         }
       })
     }else{

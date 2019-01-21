@@ -18,11 +18,7 @@ Page({
     isUpGro: true,
     // canIUse: wx.canIUse('button.open-type.getUserInfo'),
     data1:[],
-    dataa:[
-      {gcover:'../imgs/chat/image.png',gname:'鸡蛋供应',gintro:'将持续更新该品类的最新价格，敬请关注！'},
-      {gcover:'../imgs/chat/image.png',gname:'牛肉竞价',gintro:'将持续更新该品类的最新价格，敬请关注！'},
-      {gcover:'../imgs/chat/image.png',gname:'大米供应',gintro:'将持续更新该品类的最新价格，敬请关注！'},
-    ],
+    dataa:[],
     datab:[],
     searchSta:false,
     timeId: '',
@@ -69,12 +65,16 @@ Page({
         {avatar:'../imgs/chat/image.png',nickname:'大米供应',remark:'将持续更新该品类的最新价格，敬请关注！',gid:3},
         {avatar:'../imgs/chat/image.png',nickname:'鸡蛋供应',remark:'将持续更新该品类的最新价格，敬请关注！',gid:1},]
         let datab= [{gcover:'../imgs/chat/image.png',gname:'鸡蛋竞价',gintro:'将持续更新该品类的最新价格，敬请关注！'},
-          {gcover:'../imgs/chat/image.png',gname:'牛肉竞价',gintro:'将持续更新该品类的最新价格，敬请关注！'},
-          {gcover:'../imgs/chat/image.png',gname:'大米竞价',gintro:'将持续更新该品类的最新价格，敬请关注！'}]
+        {gcover:'../imgs/chat/image.png',gname:'牛肉竞价',gintro:'将持续更新该品类的最新价格，敬请关注！'},
+        {gcover:'../imgs/chat/image.png',gname:'大米竞价',gintro:'将持续更新该品类的最新价格，敬请关注！'}]
+        let dataa= [{gcover:'../imgs/chat/image.png',gname:'鸡蛋供应',gintro:'将持续更新该品类的最新价格，敬请关注！'},
+        {gcover:'../imgs/chat/image.png',gname:'牛肉竞价',gintro:'将持续更新该品类的最新价格，敬请关注！'},
+        {gcover:'../imgs/chat/image.png',gname:'大米供应',gintro:'将持续更新该品类的最新价格，敬请关注！'},]
         this.setData({
           audit:true,
           data1,
-          datab
+          datab,
+          dataa
         })
       }else{
         this.setData({audit:false})
@@ -202,7 +202,6 @@ Page({
     if(flag){
       network.get(url,{tm,page,limit})
       .then((res)=>{
-        util.isClick(this,'1')
         if(res.code == '0'){
           let list = res.data.list;
           let goon = true;
@@ -220,7 +219,7 @@ Page({
             }
           }
           pageData.forEach((element,index) => {
-            if (pageData[index]["last_info"]) {
+            if (pageData[index].last_info['type']) {
               if (pageData[index].last_info.type=='1') {
                 pageData[index].last_content = pageData[index].last_info.content;
               }
@@ -239,16 +238,17 @@ Page({
             } else {
               pageData[index].last_content = '你们可以聊天了';
               pageData[index].mute = false;
-              pageData[index].now_tm = util.nowDate(pageData[index].last_info.relate_tm);
+              pageData[index].now_tm = util.nowDate(pageData[index].create_tm);
+              console.log(pageData)
             }
           });
           if(list.length !=0 && list.length < this.data.limit){
             goon =false;
           }
           if(tab == '1'){
-            this.setData({fdata: pageData,data1:pageData,isUpFri:goon,hasUserInfo:false,friendPage:page})
+            this.setData({fdata: pageData,data1:pageData,isUpFri:goon,hasUserInfo:false,friendPage:page,url})
           }else if(tab == '2') {
-            this.setData({gdata: pageData,datab:pageData,isUpGro:goon,hasUserInfo:false,groupPage:page})
+            this.setData({gdata: pageData,datab:pageData,isUpGro:goon,hasUserInfo:false,groupPage:page,url})
           }
         }
       })
@@ -272,18 +272,104 @@ Page({
   // from 表单提交 搜索
   form(e){
     let fromId = e.detail.formId;
-    let v = e.detail.value.search;
-    let searchSta = this.data.searchSta;
-    if(!searchSta && v){
-      searchSta = true;
+    let v = e.detail.value.search.trim();
+    let url=this.data.url;
+    let audit= this.data.audit;
+    let tm = new Date().getTime();
+    if(v==''){
+      util.toast('搜索内容不能为空！')
+      return;
+    }else{
+      network.get(url,{tm,page:1,limit:5,name:v})
+      .then((res)=>{
+        if(audit){
+          this.setData({searchSta:true})
+          return
+        }
+        if(res.code=='0'){
+          let pageData = res.data.list;
+          if(pageData.length==0){
+            util.toast("没有您要的内容")
+            return;
+          }
+          pageData.forEach((element,index) => {
+            if (pageData[index].last_info['type']) {
+              if (pageData[index].last_info.type=='1') {
+                pageData[index].last_content = pageData[index].last_info.content;
+              }
+              if (pageData[index].last_info.type=='2') {
+                pageData[index].last_content='图片'
+              }
+              if (pageData[index].last_info.type=='3') {
+                pageData[index].last_content='语音'
+              }
+              pageData[index].now_tm = util.nowDate(pageData[index].last_info.time);
+              if (pageData[index].last_view_tm<pageData[index].last_info.time) {
+                pageData[index].mute = true;
+              } else {
+                pageData[index].mute = false;
+              }
+            } else {
+              pageData[index].last_content = '你们可以聊天了';
+              pageData[index].mute = false;
+              pageData[index].now_tm = util.nowDate(pageData[index].create_tm);
+              console.log(pageData)
+            }
+          });
+          console.log(res)
+          this.setData({dataa: pageData,searchSta:true})
+        }else{
+          util.toast(res.msg)
+        }
+      })
     }
-    this.setData({searchSta})
   },
-  // 关闭搜索
-  onSearchV(e){
-    let v = e.detail.value;
-    if(!v){
-      this.setData({searchSta:false})
+  // 取消搜索
+  onSearchCancel(){
+    this.setData({searchSta:false,searchV:''})
+  },
+  onChat(){
+    let title = e.currentTarget.dataset.title;
+    let uid = e.currentTarget.dataset.uid;
+    let id = e.currentTarget.dataset.id;
+    let rid = e.currentTarget.dataset.rid;
+    let tab = this.data.tab;
+    let isOk = app.globalData.isOk;
+    let unum = e.currentTarget.dataset.unum;
+    let i = e.currentTarget.dataset.i;
+    let gdata= this.data.gdata;
+    let fdata= this.data.fdata;
+    if (id) {
+      if (!isOk) {
+        util.toast('正在连接')
+        this.restore(3)
+        return false;
+      }
+      if(tab == '1'){
+        this.pushDo({ action: 'view_friend', to_uid: uid });
+        if (fdata[i]['mute']) {
+          fdata[i]['mute'] = false;
+          this.setData({ fdata });
+        }
+        wx.navigateTo({
+          url: `./chat/chat?title=${title}&to_uid=${uid}&id=${rid}`
+        })
+      }else if(tab == '2'){
+        this.pushDo({ action: 'view_group', gid: id });
+        if (gdata[i]['mute']) {
+          gdata[i]['mute'] = false;
+          this.setData({ gdata });
+        }
+        wx.navigateTo({
+          url: `./chat/chat?title=${title}&gid=${id}&id=${rid}&unum=${unum}`
+        })
+      }
+      this.restore(4)
+      return false;
+    }else{
+      wx.navigateTo({
+        url: `../market/market?title=${title}`
+      })
     }
   },
   // 取消授权

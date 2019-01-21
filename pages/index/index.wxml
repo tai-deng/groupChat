@@ -14,37 +14,62 @@
   </view>
 
   <view class="tm"></view>
-  <view class="topBar">
+  <view class="topBar {{searchSta?'search-bg':''}}">
     <view class="topBar-l rows">
       <view class="topBar-l-warp flexrow">
         <view class="topBar-l-input">
-          <input type="text" bindinput='onSearchV' name='search'/>
+          <input type="text" value="{{searchV}}" placeholder-style='placeholder' placeholder='搜索结果为当前选中项' name='search'/>
         </view>
-          <button hover-class="none" form-type="submit" class='topBar-l-btn'>
-            <image src="../imgs/chat/search.png"></image>
-          </button>
+        <button hover-class="none" form-type="submit" class='topBar-l-btn'>
+          <image src="../imgs/chat/search.png"></image>
+        </button>
       </view>
       <!-- <view class="systemMsg"catchtap='onSystemMsg'>系统消息</view> -->
+      <view class="cancel-sear"bindtap='onSearchCancel'wx:if="{{searchSta}}">
+        <image src="../imgs/chat/cancel.png"></image>
+      </view>
     </view>
     <block wx:if="{{searchSta}}">
       <view class="search-cnt">
-        <button form-type="submit" hover-class="none" class="chat-item rows"bindtap="onChat"wx:for="{{dataa}}"wx:key="{{index}}"data-id="{{item.gid}}"data-title="{{item.gname}}">
-          <view class="chat-item-l flexrow">
-            <view class="chat-item-l-pic">
-              <image src="{{item.gcover}}" />
-            </view>
-            <view class="chat-item-l-info column">
-              <view class="chat-item-l-name">{{item.gname}}</view>
-              <view class="chat-item-l-cnt">{{item.gintro}}</view>
-            </view>
+    <button form-type="submit" hover-class="none" class="chat-item rows"
+    catchtouchstart='onTouchMoveItem'catchtouchend='onTouchMoveItem'
+    data-title="{{tab==1?item.nickname:item.gname}}"wx:for="{{dataa}}"wx:key="{{index}}"data-id="{{tab==1?item.friend_id:item.gid}}"data-uid="{{item.relate_id}}"data-rid="{{item.relate_id}}"data-i="{{index}}"
+    data-unum="{{item.unum}}">
+      <view class="chat-item-l flexrow">
+        <view class="chat-item-l-pic">
+          <block wx:if="{{tab==1}}">
+             <image src="{{item.avatar}}" />
+          </block>
+          <block wx:else>
+            <image src="{{item.gcover}}" />
+          </block>
+        </view>
+        <view class="chat-item-l-info column">
+          <view class="chat-item-l-name">
+            <block wx:if="{{tab==1}}">
+              {{item.nickname}}
+            </block>
+            <block wx:else>
+              {{item.gname}}
+            </block>
           </view>
-          <view class="chat-item-r column">
-            <view class="chat-item-r-time">{{item.last_view_tm}}</view>
-            <view class="chat-item-r-state">
-              <image wx:if="{{mute}}" src="../imgs/ltb.png"/>
+            <view class="chat-item-l-cnt">
+              <block wx:if="{{tab==1}}">
+                {{item.last_content}}
+              </block>
+              <block wx:else>
+                {{item.last_content}}
+              </block>
             </view>
-          </view>
-        </button>
+        </view>
+      </view>
+      <view class="chat-item-r column">
+        <view class="chat-item-r-time">{{item.now_tm}}</view>
+        <view class="chat-item-r-state row">
+          <view wx:if="{{item.mute}}"class="ring"></view>
+        </view>
+      </view>
+    </button>
       </view>
     </block>
   </view>

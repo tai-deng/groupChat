@@ -138,7 +138,6 @@ button {
 
 .topBar {
   width: 100vw;
-  padding: 20rpx;
   position: fixed;
   top: 0;
   left: 0;
@@ -147,6 +146,7 @@ button {
 }
 .topBar-l {
   flex: 1;
+  padding: 20rpx;
 }
 .topBar-l-warp{
   width: 100%;
@@ -167,28 +167,41 @@ button {
   background-color: #f1f1f1;
   display: flex;
 }
+.topBar-l-input input {
+  flex: 1;
+}
 .topBar-l-btn {
-  width: 45rpx;
-  height: 45rpx;
+  width: 48rpx;
+  height: 48rpx;
   margin-left: 20rpx;
   margin-right: 20rpx;
 }
 .topBar-l-btn image {
   display: block;
-  width: 45rpx;
-  height: 45rpx;
+  width: 48rpx;
+  height: 48rpx;
+}
+.menu-r image {
+  width: 48rpx;
+  height: 48rpx;
+  display: block;
 }
 
 .search-cnt {
-  position: absolute;
-  top: 82rpx;
-  left: 0;
-  width: 100vw;
   background-color: #f1f1f1;
+}
+.search-bg{
+  background-color: #f1f1f1;
+  height: 100vh;
 }
 .ring{
   width: 30rpx;
   height: 30rpx;
   border-radius: 50%;
   background-color: #ff5800;
+}
+.cancel-sear image{
+  width: 48rpx;
+  height: 48rpx;
+  display: block;
 }

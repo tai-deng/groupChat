@@ -13,20 +13,34 @@
         </block>
         <block wx:else> -->
         <view class="menu-show">
-            <view wx:if="{{isGroup}}" class="menu-show-item tp row" catchtap="onRouter"data-r="mute">
-                <image src="../imgs/chat/flock.png"></image>
-                扎堆会　
+            <view wx:if="{{isGroup}}" class="menu-show-item tp rows" catchtap="onRouter"data-r="mute">
+                <view class="menu-l flexrow">
+                    <image src="../imgs/chat/flock.png"></image>
+                    扎堆会　
+                </view>
+                <view class="menu-r">
+                    <image src="../imgs/chat/ringht.png"></image>
+                </view>
             </view>
-            <button wx:if="{{isGroup}}" open-type="share" hover-class="none" class="menu-show-item row">
-            <image src="../imgs/chat/addfrend.png"></image>
-            邀请好友
+            <button wx:if="{{isGroup}}" open-type="share" hover-class="none" class="menu-show-item rows">
+                <view class="menu-l flexrow">
+                    <image src="../imgs/chat/addfrend.png"></image>
+                    邀请好友
+                </view>
+                <view class="menu-r">
+                    <image src="../imgs/chat/ringht.png"></image>
+                </view>
             </button>
-            <button open-type="contact" hover-class="none" class="menu-show-item row">
-            <image src="../imgs/chat/advice.png"></image>
-            投诉建议
+            <button open-type="contact" hover-class="none" class="menu-show-item rows">
+                <view class="menu-l flexrow">
+                    <image src="../imgs/chat/advice.png"></image>
+                    投诉建议
+                </view>
+                <view class="menu-r">
+                    <image src="../imgs/chat/ringht.png"></image>
+                </view>
             </button>
         </view>
         <!-- </block> -->
-
     </view>
 </view>
