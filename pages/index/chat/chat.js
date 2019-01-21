@@ -244,7 +244,7 @@ Page({
   onCopyName(e) {
     let msg = '@' + e.currentTarget.dataset.name+" ";
     this.msg = msg
-    this.setData({ msg })
+    this.setData({ msg ,msgFocus:true})
   },
   // 点击滚动框
   scrollClick: function () {

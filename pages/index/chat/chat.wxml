@@ -41,7 +41,7 @@
       </scroll-view>
         <view class="msgbox">
           <image style="background-color:{{isSpeaking?'#f9f9f9;':''}}" bindtouchstart="touchStartSilk" bindtouchend='touchUpSilk' src="../../imgs/chat/voice.png"></image>
-          <input value="{{msg}}"placeholder="" wx:if='{{!isSpeaking}}' bindinput="inputMsg" placeholder-style='inputStyle' cursor-spacing='10' bindfocus="inputFocus" class="msgbox_input" maxlength="999" bindconfirm="scrollClick" confirm-hold='true' bindblur="blurInput" confirm-type="发送" />
+          <input value="{{msg}}"focus="{{msgFocus}}" placeholder="" wx:if='{{!isSpeaking}}' bindinput="inputMsg" placeholder-style='inputStyle' cursor-spacing='10' bindfocus="inputFocus" class="msgbox_input" maxlength="999" bindconfirm="scrollClick" confirm-hold='true' bindblur="blurInput" confirm-type="发送" />
           <view wx:else class="msgbox_input replace-input row">正在录音</view>
           <image catchtap="toggleEmojis" src="../../imgs/chat/emotion-o.png"></image>
           <image catchtap="toggleFiles" src="../../imgs/chat/plus.png"></image>

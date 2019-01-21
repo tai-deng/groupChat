@@ -17,7 +17,7 @@
   <view class="topBar {{searchSta?'search-bg':''}}">
     <view class="topBar-l rows">
       <view class="topBar-l-warp flexrow">
-        <view class="topBar-l-input">
+        <view class="topBar-l-input row">
           <input type="text" value="{{searchV}}" placeholder-style='placeholder' placeholder='搜索结果为当前选中项' name='search'/>
         </view>
         <button hover-class="none" form-type="submit" class='topBar-l-btn'>
