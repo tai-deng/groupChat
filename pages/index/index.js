@@ -23,6 +23,7 @@ Page({
     searchSta:false,
     timeId: '',
     click:true,
+    url:'user/friend.list',
   },
   onLoad: function (op) {
     this.init(op)
@@ -60,6 +61,7 @@ Page({
     network.get('config.get',{tm:new Date().getTime()})
     .then((res)=>{
       if(res.audit == 1){
+        app.globalData.audit = true;
         let data1 = [{avatar:'../imgs/chat/image.png',nickname:'鸡蛋供应',remark:'将持续更新该品类的最新价格，敬请关注！',gid:1},
         {avatar:'../imgs/chat/image.png',nickname:'牛肉供应',remark:'将持续更新该品类的最新价格，敬请关注！',gid:2},
         {avatar:'../imgs/chat/image.png',nickname:'大米供应',remark:'将持续更新该品类的最新价格，敬请关注！',gid:3},
@@ -77,6 +79,7 @@ Page({
           dataa
         })
       }else{
+        app.globalData.audit = false;
         this.setData({audit:false})
       }
       this.getData(this.data.tab);
@@ -184,7 +187,7 @@ Page({
   // 获取聊天
   getData(tab=1){
     let audit= this.data.audit;
-    let url = 'user/friend.list';
+    let url = this.data.url;
     let tm = new Date().getTime();
     let page = 1;
     let limit = this.data.limit;
@@ -208,12 +211,16 @@ Page({
           if(tab == '1'){
             if(audit){
               pageData = this.data.data1;
+              this.setData({fdata: pageData})
+              return
             }else{
               pageData = this.data.data1.concat(list);
             }
           }else if(tab == '2') {
             if(audit){
               pageData = this.data.datab;
+              this.setData({gdata: pageData})
+              return
             }else{
               pageData = this.data.datab.concat(list);
             }
@@ -284,6 +291,7 @@ Page({
       .then((res)=>{
         if(audit){
           this.setData({searchSta:true})
+          console.log(this.data.dataa)
           return
         }
         if(res.code=='0'){

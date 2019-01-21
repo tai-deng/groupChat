@@ -161,7 +161,6 @@ Page({
       console.log('被中断')
       this.speaking(false)
     })
-
     this.bgmanger = wx.createInnerAudioContext();
   },
   // 滚动聊天
@@ -431,6 +430,7 @@ Page({
     if (!this.bgmanger.paused) {
       this.bgmanger.stop();
     }
+    console.log(this.bgmanger)
     this.bgmanger.src = sr;
     this.bgmanger.play();
   },
@@ -565,8 +565,10 @@ Page({
       this.end= e.changedTouches[0]['pageX'];
       this.endTime= e.timeStamp;
     }
-    console.log(this.start,this.end,power)
-    if(this.start && this.end && (this.start- this.end)>30 && power){
+    if(!this.start && !this.end ){
+      return
+    }
+    if((this.start- this.end)>30 && power){
       util.showModal('提示','是否确定删除?',true,()=>{
         network.post('chat/remove.do',{chat_id})
         .then((res)=>{
@@ -593,6 +595,12 @@ Page({
           util.preview([t],t)
           this.restore(4)
           return false;
+        }else if(genre == '3'){
+          if (!this.bgmanger.paused) {
+            this.bgmanger.stop();
+          }
+          this.bgmanger.src = t;
+          this.bgmanger.play();
         }
     }else{
       if(!power){

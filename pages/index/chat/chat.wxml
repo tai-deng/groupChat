@@ -24,9 +24,9 @@
                 </block>
               </view>
               <view class="img_msg" wx:if="{{item.msg_type==='2'}}">
-                <image catchtap="previewImage" id="{{item.msg_image.src}}" src="{{item.msg_image.src}}" style="width:100px;height:{{item.msg_image.height*100/item.msg_image.width}}px"></image>
+                <image id="{{item.msg_image.src}}" src="{{item.msg_image.src}}" style="width:100px;height:{{item.msg_image.height*100/item.msg_image.width}}px"></image>
               </view>
-              <view class="audio_msg flexrow" wx:if="{{item.msg_type==='3'}}"catchtap="onPlayAudio" data-src="{{item.msg_audio.src}}">
+              <view class="audio_msg flexrow" wx:if="{{item.msg_type==='3'}}" data-src="{{item.msg_audio.src}}">
                 <block wx:if="{{item.isMe}}">
                   {{item.msg_audio.ms}}''<image class='myAudio' src='../../imgs/chat/audioIcon.png'></image>
                 </block>

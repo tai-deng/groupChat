@@ -2,6 +2,7 @@
 import {get,set} from '../../utils/cache.js'
 import util from '../../utils/util.js'
 import {network} from '../../utils/ajax.js'
+const app = getApp();
 Page({
   data: {
     isGroup:false,
@@ -10,6 +11,9 @@ Page({
   },
   // 初始化
   init(){
+    if(app.globalData.audit){
+      return
+    }
     network.get('user.get',{})
     .then((res)=>{
       if(res.code == '0'){

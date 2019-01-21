@@ -259,7 +259,7 @@
 }
 .userchatb{
   position: absolute;
-  bottom: 70rpx;
+  bottom: 80rpx;
   left: 0;
 }
 .userchat-time{
@@ -267,7 +267,7 @@
   color: #ccc;
 }
 .userchat-name{
-  max-width: 150rpx;
+  max-width: 230rpx;
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;

@@ -18,5 +18,6 @@ App({
     query:null,
     isOk: null,
     isAuth: null,
+    audit:false,
   },
 })
