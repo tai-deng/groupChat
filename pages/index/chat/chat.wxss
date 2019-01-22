@@ -153,11 +153,11 @@
 }
 
 .emoji {
-  width: 24px;
-  height: 24px;
+  width: 48rpx;
+  height: 48rpx;
 }
 .emoji_wrap .emoji {
-  padding: 5px;
+  padding: 10rpx;
 }
 
 .emoji_send {

@@ -195,8 +195,8 @@ button {
   height: 100vh;
 }
 .ring{
-  width: 30rpx;
-  height: 30rpx;
+  width: 15rpx;
+  height: 15rpx;
   border-radius: 50%;
   background-color: #ff5800;
 }

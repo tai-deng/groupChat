@@ -80,7 +80,7 @@ Page({
         })
       }else{
         app.globalData.audit = false;
-        this.setData({audit:false})
+        this.setData({audit:false,fdata:[],gdata:[]})
       }
       this.getData(this.data.tab);
     })
@@ -193,6 +193,8 @@ Page({
     let limit = this.data.limit;
     let pageData = '';
     let flag = true;
+    let myUid= cache.get('userInfo').userInfo.uid;
+    let power= cache.get('userInfo').userInfo.create_group;
     if(tab == '1'){
       url = 'user/friend.list';
       page = this.data.friendPage+ 1;
@@ -203,6 +205,7 @@ Page({
       flag = this.data.isUpGro;
     }
     if(flag){
+      this.setData({myUid,power})
       network.get(url,{tm,page,limit})
       .then((res)=>{
         if(res.code == '0'){
@@ -238,7 +241,11 @@ Page({
               }
               pageData[index].now_tm = util.nowDate(pageData[index].last_info.time);
               if (pageData[index].last_view_tm<pageData[index].last_info.time) {
-                pageData[index].mute = true;
+                  if(pageData[index].last_info.uid == myUid){
+                    pageData[index].mute = false;
+                  }else{
+                    pageData[index].mute = true;
+                  }
               } else {
                 pageData[index].mute = false;
               }
@@ -246,7 +253,6 @@ Page({
               pageData[index].last_content = '你们可以聊天了';
               pageData[index].mute = false;
               pageData[index].now_tm = util.nowDate(pageData[index].create_tm);
-              console.log(pageData)
             }
           });
           if(list.length !=0 && list.length < this.data.limit){
@@ -423,11 +429,13 @@ Page({
   // 数据处理
   pageDataManage(tab,f,d) {
     let dm = '';
+    let myUid= this.data.myUid;
     if (tab == '1') {
       dm = this.data.fdata;
     } else if(tab== '2'){
       dm = this.data.gdata;
     }
+    console.log(dm)
     // 加减好友
     if (f == '1') {
       dm.unshift(Object.assign({}, d, {
@@ -454,7 +462,11 @@ Page({
           }else if(d.type == '3'){
             obj.last_content= '语音';
           }
-          obj.mute= true
+          if(d.uid==myUid){
+            obj.mute= false;
+          }else{
+            obj.mute= true
+          }
           let item = dm.splice(ind, 1)['0'];
           dm.unshift(Object.assign({}, item, obj))
         }
@@ -471,7 +483,11 @@ Page({
           }else if(d.type == '3'){
             obj.last_content= '语音';
           }
-          obj.mute = true;
+          if(d.user.uid==myUid){
+            obj.mute = false;
+          }else{
+            obj.mute = true;
+          }
           obj.now_tm=util.nowDate(d.chat_tm)
           let item = dm.splice(ind, 1)['0'];
           dm.unshift(Object.assign({}, item, obj))
@@ -576,7 +592,7 @@ Page({
     let tab = this.data.tab;
     let isOk = app.globalData.isOk;
     let unum = e.currentTarget.dataset.unum;
-    let power = cache.get('userInfo').userInfo.create_group;
+    let power = this.data.power;
     let i = e.currentTarget.dataset.i;
     let gdata= this.data.gdata;
     let fdata= this.data.fdata;
@@ -590,7 +606,7 @@ Page({
       this.end= e.changedTouches[0]['pageX'];
       this.endTime= e.timeStamp;
     }
-    if(this.start && this.end && (this.start- this.end)>30 && power){
+    if(this.start && this.end && (this.start- this.end)>100 && power){
       util.showModal('提示', '是否确定删除?', true, () => {
         let tm = new Date().getTime();
         if(tab == '1'){

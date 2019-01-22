@@ -121,7 +121,7 @@ Page({
           }
           this.setData({chatList,page,pull})
           if(!p)
-          this.goBottom(500);
+          this.goBottom(50);
         }
       }
     })
@@ -568,7 +568,7 @@ Page({
     if(!this.start && !this.end ){
       return
     }
-    if((this.start- this.end)>30 && power){
+    if((this.start- this.end)>100 && power){
       util.showModal('提示','是否确定删除?',true,()=>{
         network.post('chat/remove.do',{chat_id})
         .then((res)=>{
