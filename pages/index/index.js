@@ -4,6 +4,7 @@ import util from '../../utils/util.js'
 import cache from '../../utils/cache.js'
 import {network} from '../../utils/ajax.js'
 import websocket from '../../utils/socket.js'
+import dataManage from '../../utils/DataManage'
 const app = getApp()
 Page({
   data: {
@@ -28,6 +29,7 @@ Page({
   onLoad: function (op) {
     this.init(op)
     console.log('index-->',op)
+    dataManage.instance;
   },
   // 处理 back
   onBack(op){
