@@ -127,7 +127,7 @@
 
 .msgbox input {
   flex: 1;
-  padding: 5px;
+  padding: 5rpx 10rpx;
   border-bottom: 1px solid #ccc;
   font-size: 14px;
 }

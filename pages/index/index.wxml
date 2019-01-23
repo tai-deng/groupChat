@@ -78,7 +78,7 @@
     <view class="tab flexrow">
         <view class="tab-item row"bindtap='onTab'data-i='1'>
             <view class="tab-item-v row {{tab==1?'se':''}}">
-                通讯录
+                通讯列表
             </view>
         </view>
         <view class="tab-item row"bindtap='onTab'data-i='2'>

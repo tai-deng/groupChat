@@ -46,8 +46,7 @@ Page({
     let windowHeight = sysInfo.windowHeight * ratio;
     let inputHeight = this.data.inputHeight * ratio;
     let emojiHeight = this.data.emojiHeight * ratio;
-    const scrollHeight = `${windowHeight - inputHeight}rpx`
-    console.log(windowHeight,inputHeight,sysInfo,ratio)
+    const scrollHeight = `${windowHeight - inputHeight}rpx`;
     // 更新状态
     this.setData({
       emojiList,
@@ -238,6 +237,7 @@ Page({
   },
   blurInput: function (e) {
     this.msg = e.detail.value;
+    this.setData({focus:false})
   },
   // @名字
   onCopyName(e) {

@@ -19,7 +19,7 @@
     <view class="state-bar area {{tag!='look'? 'flexrow': 'rows'}}">
         <view class="state-bar-l">扎堆会公告：</view>
         <block wx:if="{{tag!='look'}}">
-            <textarea type="text" value="{{notice}}" maxlength='140' name='notice' placeholder-style='placeholder' placeholder='请输入公告内容'/>
+            <input type="text" value="{{notice}}" maxlength='140' name='notice' placeholder-style='placeholder' placeholder='请输入公告内容'/>
         </block>
         <block wx:else>
             <view class="mtext flexcolumn">{{notice}}</view>
