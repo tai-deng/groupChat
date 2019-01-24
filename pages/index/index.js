@@ -4,7 +4,7 @@ import util from '../../utils/util.js'
 import cache from '../../utils/cache.js'
 import {network} from '../../utils/ajax.js'
 import websocket from '../../utils/socket.js'
-import dataManage from '../../utils/DataManage'
+// import dataManage from '../../utils/DataManage'
 const app = getApp()
 Page({
   data: {
@@ -29,7 +29,7 @@ Page({
   onLoad: function (op) {
     this.init(op)
     console.log('index-->',op)
-    dataManage.instance;
+    // dataManage.instance;
   },
   // 处理 back
   onBack(op){
@@ -182,7 +182,6 @@ Page({
         user.userInfo = res.data.user;
         cache.set('userInfo',user);
         this.socketInit()
-        this.getData(this.data.tab);
       }
     })
   },
@@ -254,11 +253,18 @@ Page({
             } else {
               pageData[index].last_content = '你们可以聊天了';
               pageData[index].mute = false;
-              pageData[index].now_tm = util.nowDate(pageData[index].create_tm);
+              if(tab == '1'){
+                pageData[index].now_tm = util.nowDate(pageData[index].relate_tm);
+              }else if(tab == '2'){
+                pageData[index].now_tm = util.nowDate(pageData[index].create_tm);
+              }
             }
           });
-          if(list.length !=0 && list.length < this.data.limit){
+          if(list.length !=0 && list.length <= this.data.limit){
             goon =false;
+          }else if(list.length ==0){
+            this.setData({hasUserInfo:false})
+            return
           }
           if(tab == '1'){
             this.setData({fdata: pageData,data1:pageData,isUpFri:goon,hasUserInfo:false,friendPage:page,url})
@@ -437,13 +443,13 @@ Page({
     } else if(tab== '2'){
       dm = this.data.gdata;
     }
-    console.log(dm)
     // 加减好友
     if (f == '1') {
       dm.unshift(Object.assign({}, d, {
         mute: true,
         now_tm: util.nowDate(new Date().getTime() / 1000),
-        relate_id:d.uid
+        relate_id:d.uid,
+        last_content:'你们可以聊天了'
       }))
     }
     if (f == '-1') {
@@ -456,7 +462,7 @@ Page({
     if (f == '3') {
       dm.forEach((el, ind) => {
         let obj = {};
-        if (el.relate_id == d.uid) {
+        if (el.relate_id == d.uid || el.relate_id == d.relate_id) {
           if(d.type == '1'){
             obj.last_content= d.content;
           }else if(d.type == '2'){
@@ -501,7 +507,8 @@ Page({
       dm.unshift(Object.assign({}, d.group, {
         mute: true,
         now_tm: util.nowDate(new Date().getTime() / 1000),
-        gid:d.gid
+        gid:d.gid,
+        last_content:'你们可以聊天了'
       }))
     }
     if (f == '-2') {
@@ -589,6 +596,8 @@ Page({
     let type= e.type;
     let title = e.currentTarget.dataset.title;
     let uid = e.currentTarget.dataset.uid;
+    let guid = e.currentTarget.dataset.guid;
+    let myUid = cache.get('userInfo').userInfo.uid;
     let id = e.currentTarget.dataset.id;
     let rid = e.currentTarget.dataset.rid;
     let tab = this.data.tab;
@@ -608,7 +617,7 @@ Page({
       this.end= e.changedTouches[0]['pageX'];
       this.endTime= e.timeStamp;
     }
-    if(this.start && this.end && (this.start- this.end)>100 && power){
+    if(this.start && this.end && (this.start- this.end)>100 &&power){
       util.showModal('提示', '是否确定删除?', true, () => {
         let tm = new Date().getTime();
         if(tab == '1'){
@@ -623,7 +632,7 @@ Page({
             }
           })
         }
-        if(tab == '2'){
+        if(tab == '2' &&  guid == myUid){
           network.post('user/group.remove',{gid:id,tm})
           .then((res)=>{
             if(res.code == '0'){
@@ -639,18 +648,17 @@ Page({
       this.restore(1)
       return false;
     }else if(this.start == this.end){
-      if((this.endTime-this.startTime >= 350)){
-        if (tab == '2') {
-          util.showModal('提示', '要设置该会话吗？', true, () => {
-              wx.navigateTo({
-                url:`/pages/index/group/group?tag=chat&id=${id}&title=${title}`
-              })
-          })
-        }
-        this.restore(2)
-        return false;
-      }else{
-        if (id) {
+       if((this.endTime-this.startTime >= 350)){
+          if (tab == '2') {
+            util.showModal('提示', '要设置该会话吗？', true, () => {
+                wx.navigateTo({
+                  url:`/pages/index/group/group?tag=chat&id=${id}&title=${title}`
+                })
+            })
+          }
+          this.restore(2)
+          return false;
+        }else if (id) {
           if (!isOk) {
             util.toast('正在连接')
             this.restore(3)
@@ -684,7 +692,6 @@ Page({
         }
         this.restore(5)
         return false;
-      }
     }else{
       if(!power){
         util.toast('不能删除')

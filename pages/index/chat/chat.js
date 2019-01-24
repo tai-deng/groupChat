@@ -259,7 +259,6 @@ Page({
   },
   // 点击表情
   clickEmoji: function (e) {
-    console.log(e)
     const { key } = e.currentTarget.dataset;
     this.msg= this.msg + key;
     this.setData({msg:this.msg})
@@ -479,8 +478,11 @@ Page({
     obj.chat_id= d.chat_id;
     obj.isMe= isMe;
     obj.chat_tm = util.nowDate(d.chat_tm);
-    
+    let pages = getCurrentPages();
+    let prePage = pages[pages.length - 2];
+
     if (d.action == 'receive_from_friend') {
+      prePage.pageDataManage('1','3',d);
       if(this.data.to_uid == d.uid || d.uid == myId){
         if(d.type == '1'){
           obj.text_list= textToEmoji(d.content);
@@ -496,6 +498,7 @@ Page({
         this.goBottom(500);
       }
     }else if(d.action = 'receive_from_group'){
+      prePage.pageDataManage('2','4',d);
       if(this.data.gid == d.gid){
         if(d.type == '1'){
           obj.text_list= textToEmoji(d.content);

@@ -283,7 +283,8 @@ Page({
     preview(arr,pic)
   },
   // 上传图片
-  bindupload(){
+  bindupload(e){
+    console.log(e)
     let upload = '';
     let that = this;
     wx.chooseImage({
