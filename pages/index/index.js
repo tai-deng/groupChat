@@ -4,7 +4,8 @@ import util from '../../utils/util.js'
 import cache from '../../utils/cache.js'
 import {network} from '../../utils/ajax.js'
 import websocket from '../../utils/socket.js'
-// import dataManage from '../../utils/DataManage'
+import resource from '../../utils/datas.js'
+import datas from '../../utils/datas.js';
 const app = getApp()
 Page({
   data: {
@@ -29,7 +30,6 @@ Page({
   onLoad: function (op) {
     this.init(op)
     console.log('index-->',op)
-    // dataManage.instance;
   },
   // 处理 back
   onBack(op){
@@ -64,21 +64,21 @@ Page({
     .then((res)=>{
       if(res.audit == 1){
         app.globalData.audit = true;
-        let data1 = [{avatar:'../imgs/chat/image.png',nickname:'鸡蛋供应',remark:'将持续更新该品类的最新价格，敬请关注！',gid:1},
-        {avatar:'../imgs/chat/image.png',nickname:'牛肉供应',remark:'将持续更新该品类的最新价格，敬请关注！',gid:2},
-        {avatar:'../imgs/chat/image.png',nickname:'大米供应',remark:'将持续更新该品类的最新价格，敬请关注！',gid:3},
-        {avatar:'../imgs/chat/image.png',nickname:'鸡蛋供应',remark:'将持续更新该品类的最新价格，敬请关注！',gid:1},]
-        let datab= [{gcover:'../imgs/chat/image.png',gname:'鸡蛋竞价',gintro:'将持续更新该品类的最新价格，敬请关注！'},
-        {gcover:'../imgs/chat/image.png',gname:'牛肉竞价',gintro:'将持续更新该品类的最新价格，敬请关注！'},
-        {gcover:'../imgs/chat/image.png',gname:'大米竞价',gintro:'将持续更新该品类的最新价格，敬请关注！'}]
-        let dataa= [{gcover:'../imgs/chat/image.png',gname:'鸡蛋供应',gintro:'将持续更新该品类的最新价格，敬请关注！'},
-        {gcover:'../imgs/chat/image.png',gname:'牛肉竞价',gintro:'将持续更新该品类的最新价格，敬请关注！'},
-        {gcover:'../imgs/chat/image.png',gname:'大米供应',gintro:'将持续更新该品类的最新价格，敬请关注！'},]
+        let datab= [];
+        let data1 = [];
+        datas.forEach((el,index) => {
+          if(Math.ceil(datas.length/2)<index){
+            data1.push(el);
+          }else{
+            el['gcover']=el.avatar;
+            el['gname']=el.nickname;
+            datab.push(el);
+          }
+        });
         this.setData({
           audit:true,
           data1,
           datab,
-          dataa
         })
       }else{
         app.globalData.audit = false;
@@ -301,13 +301,26 @@ Page({
       util.toast('搜索内容不能为空！')
       return;
     }else{
+      if(audit){
+        let dataa=[];
+        if(this.data.tab=='1'){
+          this.data.data1.forEach(element => {
+            if(element.nickname==v){
+              dataa.push(element)
+            }
+          });
+        }else if(this.data.tab== '2'){
+          this.data.datab.forEach(element => {
+            if(element.nickname==v){
+              dataa.push(element)
+            }
+          });
+        }
+        this.setData({searchSta:true,dataa})
+        return
+      }
       network.get(url,{tm,page:1,limit:5,name:v})
       .then((res)=>{
-        if(audit){
-          this.setData({searchSta:true})
-          console.log(this.data.dataa)
-          return
-        }
         if(res.code=='0'){
           let pageData = res.data.list;
           if(pageData.length==0){
@@ -607,6 +620,8 @@ Page({
     let i = e.currentTarget.dataset.i;
     let gdata= this.data.gdata;
     let fdata= this.data.fdata;
+    let mark_id=e.currentTarget.dataset.mark_id;
+
     if(!e.changedTouches[0]){
       return false
     }
@@ -623,13 +638,7 @@ Page({
         if(tab == '1'){
           network.post('user/friend.remove',{relate_id:rid,tm})
           .then((res)=>{
-            if(res.code == '0'){
-              // fdata.splice(i,1);
-              // util.toast(res.data.message)
-              // this.setData({fdata})
-            }else{
-              util.toast(res.msg)
-            }
+            if(res.code == '0'){}else{util.toast(res.msg)}
           })
         }
         if(tab == '2' &&  guid == myUid){
@@ -658,7 +667,7 @@ Page({
           }
           this.restore(2)
           return false;
-        }else if (id) {
+        }else if (!mark_id) {
           if (!isOk) {
             util.toast('正在连接')
             this.restore(3)
@@ -687,14 +696,14 @@ Page({
           return false;
         }else{
           wx.navigateTo({
-            url: `../market/market?title=${title}`
+            url: `../market/market?title=${title}&mark_id=${mark_id}`
           })
         }
         this.restore(5)
         return false;
     }else{
       if(!power){
-        util.toast('不能删除')
+        // util.toast('不能删除')
       }
     }
   },
@@ -714,8 +723,9 @@ Page({
     // util.isClick(this,'1')
   },
   onShow() {
-    if (!websocket.socketOpened) {
-      websocket.setReceiveCallback(this.msgReceived, this);
-    }
+    websocket.onClose((res) => {
+      app.globalData.isOk = false;
+      this.socketInit()
+    })
   }
 })

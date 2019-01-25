@@ -1,11 +1,8 @@
 // pages/market/market.js
 import {setTitle} from '../../utils/util.js'
+import datas from '../../utils/datas.js'
 Page({
   data: {
-    data:{
-      resource:'耿庄大蒜，产地位于辽宁省海城市耿庄镇，农产品地理标志地域保护范围:辽宁省海城市耿庄镇丁家村、北耿村等20个村。地理坐标为东经122°37′～122°42′，北纬40°48′～40°59′。生产面积3万亩。2009年获得农业部农产品地理标志登记，证书持有人为海城市耿庄镇农业科技服务站。耿庄镇姜蒜种植是鞍山地区独有的特色产业，具有广泛的群众基础和丰富的栽培经验。大蒜生产可追溯到清代，具有300余年的历史，曾为朝廷贡品，素有“关东蒜乡”、“贡蒜之乡”等称谓。耿庄大蒜具有蒜头肥大、蒜瓣均匀、蒜味辛辣浓烈、蒜汁粘稠的特点，捣成蒜泥后一夜不泻汤、不跑味。据专家检测“耿庄大蒜”含有18种氨基酸，锌、钙、镁三种微量元素含量高，具有极强的抗氧化功能。“耿庄大蒜”在东北、华北地区享有盛名。海城市政府非常重视耿庄大蒜的产业发展，出台了相关扶持政策，加大了品牌建设力度，正在向规模化，产业化方向发展。目前，耿庄大蒜年产量3万吨，产值1，8亿元，耿庄镇已成为东北地区优质大蒜种植、加工基地之一，发展前景十分看好。',
-      price:'1.54'
-    }
   },
 
   /**
@@ -16,8 +13,16 @@ Page({
   },
   // 初始化数据
   init(op){
-    if(op.title){
-      setTitle(op.title)
+    if(op.mark_id){
+      let data={}
+      datas.forEach(element => {
+        if(element.id=op.mark_id){
+          setTitle(element.nickname)
+          data['resource']=element.resource;
+          data['price']=element.price;
+        }
+      });
+      this.setData({data})
     }
   },
   onReady: function () {

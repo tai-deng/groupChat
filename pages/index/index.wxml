@@ -31,45 +31,45 @@
     </view>
     <block wx:if="{{searchSta}}">
       <view class="search-cnt">
-    <button form-type="submit" hover-class="none" class="chat-item rows"
+      <button form-type="submit" hover-class="none" class="chat-item rows"
     catchtouchstart='onTouchMoveItem'catchtouchend='onTouchMoveItem'
-    data-title="{{tab==1?item.nickname:item.gname}}"wx:for="{{dataa}}"wx:key="{{index}}"data-id="{{tab==1?item.friend_id:item.gid}}"data-uid="{{item.relate_id}}"data-rid="{{item.relate_id}}"data-i="{{index}}"
-    data-unum="{{item.unum}}">
-      <view class="chat-item-l flexrow">
-        <view class="chat-item-l-pic">
-          <block wx:if="{{tab==1}}">
-             <image src="{{item.avatar}}" />
-          </block>
-          <block wx:else>
-            <image src="{{item.gcover}}" />
-          </block>
-        </view>
-        <view class="chat-item-l-info column">
-          <view class="chat-item-l-name">
+    data-title="{{tab==1?item.nickname:item.gname}}"wx:for="{{tab==1?fdata:gdata}}"wx:key="{{index}}"data-id="{{tab==1?item.friend_id:item.gid}}"data-uid="{{item.relate_id}}"data-rid="{{item.relate_id}}"data-i="{{index}}"
+    data-unum="{{item.unum}}"data-guid="{{item.guid}}"data-mark_id='{{item.id}}'>
+        <view class="chat-item-l flexrow">
+          <view class="chat-item-l-pic">
             <block wx:if="{{tab==1}}">
-              {{item.nickname}}
+              <image src="{{item.avatar}}" />
             </block>
             <block wx:else>
-              {{item.gname}}
+              <image src="{{item.gcover}}" />
             </block>
           </view>
-            <view class="chat-item-l-cnt">
+          <view class="chat-item-l-info column">
+            <view class="chat-item-l-name">
               <block wx:if="{{tab==1}}">
-                {{item.last_content}}
+                {{item.nickname}}
               </block>
               <block wx:else>
-                {{item.last_content}}
+                {{item.gname}}
               </block>
             </view>
+              <view class="chat-item-l-cnt">
+                <block wx:if="{{tab==1}}">
+                  {{item.last_content}}
+                </block>
+                <block wx:else>
+                  {{item.last_content}}
+                </block>
+              </view>
+          </view>
         </view>
-      </view>
-      <view class="chat-item-r column">
-        <view class="chat-item-r-time">{{item.now_tm}}</view>
-        <view class="chat-item-r-state row">
-          <view wx:if="{{item.mute}}"class="ring"></view>
+        <view class="chat-item-r column">
+          <view class="chat-item-r-time">{{item.now_tm}}</view>
+          <view class="chat-item-r-state row">
+            <view wx:if="{{item.mute}}"class="ring"></view>
+          </view>
         </view>
-      </view>
-    </button>
+      </button>
       </view>
     </block>
   </view>
@@ -91,7 +91,7 @@
     <button form-type="submit" hover-class="none" class="chat-item rows"
     catchtouchstart='onTouchMoveItem'catchtouchend='onTouchMoveItem'
     data-title="{{tab==1?item.nickname:item.gname}}"wx:for="{{tab==1?fdata:gdata}}"wx:key="{{index}}"data-id="{{tab==1?item.friend_id:item.gid}}"data-uid="{{item.relate_id}}"data-rid="{{item.relate_id}}"data-i="{{index}}"
-    data-unum="{{item.unum}}"data-guid="{{item.guid}}">
+    data-unum="{{item.unum}}"data-guid="{{item.guid}}"data-mark_id='{{item.id}}'>
       <view class="chat-item-l flexrow">
         <view class="chat-item-l-pic">
           <block wx:if="{{tab==1}}">

@@ -23,5 +23,5 @@
     color: #2d2d2d;
     background-color: #fff;
     margin-bottom: 4rpx;
-    padding: 0 20rpx;
+    padding: 20rpx;
 }

@@ -123,6 +123,9 @@ Page({
           this.goBottom(50);
         }
       }
+      if(res.code=='400'){
+        util.toast(res.msg)
+      }
     })
   },
   onUnload: function () {
