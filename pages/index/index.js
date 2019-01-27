@@ -415,9 +415,9 @@ Page({
   msgReceived(res){
     let d = JSON.parse(res);
     console.log(d)
+    app.globalData.isOk = true;
     switch (d.action) {
       case "connect_ok":    // 链接成功
-        app.globalData.isOk = true;
         this.pushDo({ action: 'say_hello', client_id: d.client_id });
         cache.set('client_id', d.client_id)
         this.setData({ client_id: d.client_id })
@@ -525,7 +525,8 @@ Page({
       }))
     }
     if (f == '-2') {
-      dm.forEach((el,ind) => {
+      console.log(dm[0].gid,d.gid)
+      dm.forEach((el, ind) => {
         if (el.gid == d.gid) {
           dm.splice(ind, 1);
         }
