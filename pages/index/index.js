@@ -51,7 +51,7 @@ Page({
   // socket 链接
   socketInit() {
     let time = setInterval(() => {
-      if (!websocket.socketOpened) {
+      if (!websocket.getSocketOpened()) {
         websocket.setReceiveCallback(this.msgReceived, this);
         websocket.connect();
         clearInterval(time)
@@ -127,6 +127,7 @@ Page({
           roomid,
         }).then((res)=>{
           if (res.code == '0') {
+            app.globalData.firstLoad=true;
             if (res.data.bind_id) {
               this.setData({bind_id:res.data.bind_id,hasUserInfo:true})
             } else {
@@ -157,6 +158,10 @@ Page({
         })
       }
     })
+    if(op['create']){
+      this.setData({tab:2});
+      // this.getData(2)
+    }
   },
   // 用户注册
   reg(bind_id,raw_data,signature,encrypted_data,iv){
@@ -190,7 +195,7 @@ Page({
     let audit= this.data.audit;
     let url = this.data.url;
     let tm = new Date().getTime();
-    let page = 1;
+    let page = '';
     let limit = this.data.limit;
     let pageData = '';
     let flag = true;
@@ -414,7 +419,7 @@ Page({
   // 获取 socket 返回
   msgReceived(res){
     let d = JSON.parse(res);
-    console.log(d)
+    // console.log(d)
     app.globalData.isOk = true;
     switch (d.action) {
       case "connect_ok":    // 链接成功
@@ -525,7 +530,6 @@ Page({
       }))
     }
     if (f == '-2') {
-      console.log(dm[0].gid,d.gid)
       dm.forEach((el, ind) => {
         if (el.gid == d.gid) {
           dm.splice(ind, 1);
@@ -690,7 +694,7 @@ Page({
               this.setData({ gdata });
             }
             wx.navigateTo({
-              url: `./chat/chat?title=${title}&gid=${id}&id=${rid}&unum=${unum}`
+              url: `./chat/chat?title=${title}&gid=${id}&id=${id}&unum=${unum}`
             })
           }
           this.restore(4)
@@ -728,5 +732,11 @@ Page({
       app.globalData.isOk = false;
       this.socketInit()
     })
+    if (app.globalData.firstLoad) {
+      websocket.setReceiveCallback(this.msgReceived, this);
+      if(!websocket.getSocketOpened()){
+        this.socketInit()
+      }
+    }
   }
 })

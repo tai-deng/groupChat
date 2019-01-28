@@ -19,5 +19,6 @@ App({
     isOk: null,
     isAuth: null,
     audit:false,
+    firstLoad:null,
   },
 })

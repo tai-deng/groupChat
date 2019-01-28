@@ -467,6 +467,7 @@ Page({
       }
       return false;
     }
+    app.globalData.isOk = true;
     let isMe = false;
     let uid = cache.get('userInfo').userInfo.uid;
     let obj = new Object();
@@ -500,7 +501,7 @@ Page({
         this.setData({chatList})
         this.goBottom(500);
       }
-    }else if(d.action = 'receive_from_group'){
+    }else if(d.action == 'receive_from_group'){
       prePage.pageDataManage('2','4',d);
       if(this.data.gid == d.gid){
         if(d.type == '1'){

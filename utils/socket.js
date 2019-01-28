@@ -63,12 +63,18 @@ module.exports = (function() {
         wx.onSocketClose(cb);
     }
 
+    function getSocketOpened(){
+        return socketOpened;
+    }
+
     init();
+    
     return {
         connect: connect,
         send: sendSocketMessage,
         setReceiveCallback: setReceiveCallback,
         socketOpened: socketOpened,
+        getSocketOpened,
         onClose:onClose
     };
 })();

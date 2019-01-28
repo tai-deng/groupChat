@@ -16,7 +16,7 @@ Page({
     if(op.mark_id){
       let data={}
       datas.forEach(element => {
-        if(element.id=op.mark_id){
+        if(element.id==op.mark_id){
           setTitle(element.nickname)
           data['resource']=element.resource;
           data['price']=element.price;

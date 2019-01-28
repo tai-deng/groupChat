@@ -3,6 +3,7 @@ import {preview} from '../../../utils/util.js'
 import {network,upFile} from '../../../utils/ajax.js'
 import util from '../../../utils/util.js'
 import cache from '../../../utils/cache.js'
+import websocket from '../../../utils/socket.js'
 const app = getApp();
 Page({
   data: {
@@ -162,7 +163,7 @@ Page({
               if (res.code == '0') {
               util.showModal('提示',"创建成功",false,()=>{
                 wx.switchTab({
-                  url:'/pages/index/index'
+                  url:'/pages/index/index?create:1'
                 })
               })
               } else {
