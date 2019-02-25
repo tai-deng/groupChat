@@ -1,12 +1,8 @@
 //app.js
-import websocket from './utils/socket.js'
 App({
   onLaunch: function (e) {
     this.globalData.scene = e.scene;
     this.globalData.query = e.query;
-  },
-  onHide() {
-    clearInterval(this.globalData.timeId)
   },
   globalData: {
     userInfo: null,

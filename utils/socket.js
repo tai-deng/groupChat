@@ -32,6 +32,7 @@ module.exports = (function() {
         });
         wx.onSocketError(function(res){ // 链接出错时的处理
             console.log('webSocket fail');
+            socketOpened=false;
         });
     }
 
@@ -67,14 +68,19 @@ module.exports = (function() {
         return socketOpened;
     }
 
+    function setSocketOpened(){
+        socketOpened=false;
+        console.log('!!!socketOpened',socketOpened)
+    }
+
     init();
     
     return {
         connect: connect,
         send: sendSocketMessage,
         setReceiveCallback: setReceiveCallback,
-        socketOpened: socketOpened,
         getSocketOpened,
-        onClose:onClose
+        onClose:onClose,
+        setSocketOpened
     };
 })();

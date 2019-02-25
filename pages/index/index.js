@@ -28,7 +28,8 @@ Page({
     url:'user/friend.list',
   },
   onLoad: function (op) {
-    this.init(op)
+    this.getAudit();
+    this.init(op);
     console.log('index-->',op)
   },
   // 处理 back
@@ -50,16 +51,18 @@ Page({
   },
   // socket 链接
   socketInit() {
-    let time = setInterval(() => {
+    let timer = setInterval(() => {
       if (!websocket.getSocketOpened()) {
         websocket.setReceiveCallback(this.msgReceived, this);
         websocket.connect();
-        clearInterval(time)
-        wx.hideLoading()
-      } else {
-        wx.showLoading({title:'网络连接中'})
+      }else{
+        clearInterval(timer)
       }
     }, 500);
+    this.setData({timer})
+  },
+  // 用户权限
+  getAudit(){
     network.get('config.get',{tm:new Date().getTime()})
     .then((res)=>{
       if(res.audit == 1){
@@ -84,7 +87,6 @@ Page({
         app.globalData.audit = false;
         this.setData({audit:false,fdata:[],gdata:[]})
       }
-      this.getData(this.data.tab);
     })
   },
   // 用户登录
@@ -137,10 +139,11 @@ Page({
               user['userInfo'] = res.data.user;
               cache.set('userInfo',user)
               this.socketInit()
-              websocket.onClose((res) => {
-                app.globalData.isOk = false;
-                this.socketInit()
-              })
+              // websocket.onClose((res) => {
+              //   app.globalData.isOk = false;
+              //   this.socketInit()
+              // })
+              this.setData({hasUserInfo:false})
               let isOk = app.globalData.isOk;
               if(isOk && op['back']){
                 let time = setInterval(()=>{
@@ -160,7 +163,6 @@ Page({
     })
     if(op['create']){
       this.setData({tab:2});
-      // this.getData(2)
     }
   },
   // 用户注册
@@ -191,7 +193,7 @@ Page({
     })
   },
   // 获取聊天
-  getData(tab=1){
+  getData(tab=1,sw){
     let audit= this.data.audit;
     let url = this.data.url;
     let tm = new Date().getTime();
@@ -210,6 +212,11 @@ Page({
       page = this.data.groupPage+ 1;
       flag = this.data.isUpGro;
     }
+    if(sw){
+      page = 1;
+      flag = true;
+    }
+
     if(flag){
       this.setData({myUid,power})
       network.get(url,{tm,page,limit})
@@ -217,53 +224,47 @@ Page({
         if(res.code == '0'){
           let list = res.data.list;
           let goon = true;
-          if(tab == '1'){
-            if(audit){
+          if(audit){
+            if(tab== '1'){
               pageData = this.data.data1;
               this.setData({fdata: pageData})
-              return
-            }else{
-              pageData = this.data.data1.concat(list);
-            }
-          }else if(tab == '2') {
-            if(audit){
+            }else if(tab == '2'){
               pageData = this.data.datab;
               this.setData({gdata: pageData})
-              return
-            }else{
-              pageData = this.data.datab.concat(list);
             }
+            return
           }
-          pageData.forEach((element,index) => {
-            if (pageData[index].last_info['type']) {
-              if (pageData[index].last_info.type=='1') {
-                pageData[index].last_content = pageData[index].last_info.content;
+          list.forEach((element,index) => {
+            if (list[index].last_info['type']) {
+              if (list[index].last_info.type=='1') {
+                list[index].last_content = list[index].last_info.content;
               }
-              if (pageData[index].last_info.type=='2') {
-                pageData[index].last_content='图片'
+              if (list[index].last_info.type=='2') {
+                list[index].last_content='图片'
               }
-              if (pageData[index].last_info.type=='3') {
-                pageData[index].last_content='语音'
+              if (list[index].last_info.type=='3') {
+                list[index].last_content='语音'
               }
-              pageData[index].now_tm = util.nowDate(pageData[index].last_info.time);
-              if (pageData[index].last_view_tm<pageData[index].last_info.time) {
-                  if(pageData[index].last_info.uid == myUid){
-                    pageData[index].mute = false;
+              list[index].now_tm = util.nowDate(list[index].last_info.time);
+              if (list[index].last_view_tm<list[index].last_info.time) {
+                  if(list[index].last_info.uid == myUid){
+                    list[index].mute = false;
                   }else{
-                    pageData[index].mute = true;
+                    list[index].mute = true;
                   }
               } else {
-                pageData[index].mute = false;
+                list[index].mute = false;
               }
             } else {
-              pageData[index].last_content = '你们可以聊天了';
-              pageData[index].mute = false;
+              list[index].last_content = '你们可以聊天了';
+              list[index].mute = false;
               if(tab == '1'){
-                pageData[index].now_tm = util.nowDate(pageData[index].relate_tm);
+                list[index].now_tm = util.nowDate(list[index].relate_tm);
               }else if(tab == '2'){
-                pageData[index].now_tm = util.nowDate(pageData[index].create_tm);
+                list[index].now_tm = util.nowDate(list[index].create_tm);
               }
             }
+
           });
           if(list.length !=0 && list.length <= this.data.limit){
             goon =false;
@@ -272,8 +273,18 @@ Page({
             return
           }
           if(tab == '1'){
+            if(page== 1){
+              pageData = list;
+            }else{
+              pageData = this.data.data1.concat(list);
+            }
             this.setData({fdata: pageData,data1:pageData,isUpFri:goon,hasUserInfo:false,friendPage:page,url})
           }else if(tab == '2') {
+            if(page== 1){
+              pageData = list;
+            }else{
+              pageData = this.data.datab.concat(list);
+            }
             this.setData({gdata: pageData,datab:pageData,isUpGro:goon,hasUserInfo:false,groupPage:page,url})
           }
         }
@@ -292,7 +303,7 @@ Page({
     }else if(tab == '2'){
       data = this.data.datab;
     }
-    this.getData(tab)
+    this.getData(tab,'tab')
     this.setData({tab,data})
   },
   // from 表单提交 搜索
@@ -380,7 +391,9 @@ Page({
     let gdata= this.data.gdata;
     let fdata= this.data.fdata;
     if (id) {
-      if (!isOk) {
+      console.log('###',websocket.getSocketOpened())
+      if (!websocket.getSocketOpened()) {
+        this.socketInit()
         util.toast('正在连接')
         this.restore(3)
         return false;
@@ -419,13 +432,15 @@ Page({
   // 获取 socket 返回
   msgReceived(res){
     let d = JSON.parse(res);
-    // console.log(d)
+    console.log('index',d)
     app.globalData.isOk = true;
     switch (d.action) {
       case "connect_ok":    // 链接成功
         this.pushDo({ action: 'say_hello', client_id: d.client_id });
         cache.set('client_id', d.client_id)
         this.setData({ client_id: d.client_id })
+        clearInterval(this.data.timer)
+        this.getData(this.data.tab);
         break;
       case 'receive_from_friend':  // 收到新聊天消息1
         this.pageDataManage('1','3',d)
@@ -673,7 +688,9 @@ Page({
           this.restore(2)
           return false;
         }else if (!mark_id) {
-          if (!isOk) {
+          console.log('@@@',websocket.getSocketOpened())
+          if (!websocket.getSocketOpened()) {
+            this.socketInit()
             util.toast('正在连接')
             this.restore(3)
             return false;
@@ -712,7 +729,7 @@ Page({
       }
     }
   },
-  // 体统消息
+  // 系统消息
   onSystemMsg(e){
     wx.navigateTo({
       url:'/pages/index/systemMsg/systemMsg'
@@ -728,15 +745,16 @@ Page({
     // util.isClick(this,'1')
   },
   onShow() {
+    // 统一在执行了 load 之后执行以下判断
+    // 后台回来判断 socket 是否掉线
     websocket.onClose((res) => {
       app.globalData.isOk = false;
+      websocket.setSocketOpened();
+      clearInterval(this.data.timer)
       this.socketInit()
     })
-    if (app.globalData.firstLoad) {
+    if(websocket.getSocketOpened()){
       websocket.setReceiveCallback(this.msgReceived, this);
-      if(!websocket.getSocketOpened()){
-        this.socketInit()
-      }
     }
   }
 })

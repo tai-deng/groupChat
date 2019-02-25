@@ -315,6 +315,7 @@ Page({
     });
   },
   pushDo(arg,cb) {
+    console.log("*****",websocket.getSocketOpened())
     network.post('push.do',Object.assign({}, {
       action:'',			//必传
       client_id:'',		//可选	socket链接成功时返回
